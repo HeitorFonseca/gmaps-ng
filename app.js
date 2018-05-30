@@ -4,16 +4,22 @@ var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
 var mongoose = require('mongoose');
-var apiRouter = require('./routes/properties');
-
+var propertyRouter = require('./routes/properties');
+var authRouter = require('./routes/authentication');
+const bodyParser = require('body-parser'); // Parse incoming request bodies in a middleware before your handlers, available under the req.body property.
+var cors = require('cors');
 var app = express();
 
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: true })); // parse application/x-www-form-urlencoded
+app.use(bodyParser.json()); // parse application/json
+app.use(cors());
 app.use(express.static(path.join(__dirname, 'dist/gmaps-ng5')));
 app.use('/', express.static(path.join(__dirname, 'dist/gmaps-ng5')));
-app.use('/api', apiRouter);
+app.use('/api', propertyRouter);
+app.use('/api/authentication', authRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
