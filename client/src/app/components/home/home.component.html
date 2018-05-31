@@ -1,33 +1,21 @@
-  <div class = "container">
-    <ngui-map #gmap zoom="8"       [center]="mapProps.center"    >
-      <drawing-manager
-        [drawingMode]="'polygon'"
-        [drawingControl]="true"
-        [drawingControlOptions]="{
-          position: 2,
-          drawingModes: ['circle', 'polygon', 'polyline', 'rectangle']
-        }"
-        [circleOptions]="{
-          fillColor: '#ffff00',
-          fillOpacity: 1,
-          strokeWeight: 5,
-          editable: true,
-          zIndex: 1
-        }">
-      </drawing-manager>
-    </ngui-map>
-    
-    selectedOverlay: {{selectedOverlay}} <br/>
-    <p> Area: {{areaText}} <br/>
-    <button (click)="deleteSelectedOverlay()">Delete Selected Overlay</button>
+<app-navbar></app-navbar>
+
+
+<!-- address: {{address | json}} -->
+
+<div class="row">
+    <div class="col-xl-6 text-xs-center">
+        <div class="card mb-3">
+            <div class="card-body">
+                .col-xl-6
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-6 text-xs-center">
+        <div class="card mb-3">
+            <div class="card-body">
+                <app-gmaps></app-gmaps>
+            </div>
+        </div>
+    </div>
 </div>
-
-
-<h1>Place Autocomplete Address Form</h1>
-<input places-auto-complete (initialized$)="initialized($event)" (place_changed)="placeChanged(place)" [types]="['geocode']"/>
-<br/> 
-address: {{address | json}}
-
-<p>
-  <a routerLink = "/login">Login</a> 
-</p>

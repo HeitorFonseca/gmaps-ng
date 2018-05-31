@@ -19,6 +19,7 @@ import { LoginComponent } from './components/login/login.component';
 
 import { AuthService } from './services/auth.service';
 import { NavbarComponent } from './components/navbar/navbar.component';
+import { GmapsComponent } from './components/home/gmaps/gmaps.component';
 
 export function tokenGetter() {
   return localStorage.getItem('access_token');
@@ -30,7 +31,8 @@ export function tokenGetter() {
     HomeComponent,
     AboutComponent,
     LoginComponent,
-    NavbarComponent
+    NavbarComponent,
+    GmapsComponent
   ],
   imports: [
     BrowserModule,
@@ -57,7 +59,8 @@ export function tokenGetter() {
       },
       {
         path: "",
-        component: HomeComponent
+        component: HomeComponent,
+        canActivate: [AuthGuard]
       }
     ]),
     NgbModule.forRoot(),    

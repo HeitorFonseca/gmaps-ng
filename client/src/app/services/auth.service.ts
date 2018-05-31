@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { Router } from '@angular/router';
 import { JwtHelperService } from '@auth0/angular-jwt';
 
 interface LoginData {
@@ -20,7 +21,7 @@ export class AuthService {
   user;
   requestOptions;
 
-  constructor(private http: HttpClient, private helper: JwtHelperService) { }
+  constructor(private http: HttpClient, private router: Router, private helper: JwtHelperService) { }
 
   // Function to register user accounts
   registerUser(user) {
@@ -70,6 +71,17 @@ export class AuthService {
 
   // Function to check if user is logged in
   loggedIn() {
-    return this.helper.isTokenExpired();
+    this.loadToken();
+    
+    console.log(this.authToken);
+    console.log(this.helper.isTokenExpired(this.authToken));
+
+    if (!this.helper.isTokenExpired(this.authToken))
+    {
+      return true;
+    }
+    
+    this.router.navigate(['/login']);
+    return false;
   }
 }
