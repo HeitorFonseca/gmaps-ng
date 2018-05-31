@@ -1,11 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-
-
-interface myData {
-  success: boolean,
-  message: string
-}
+import { JwtHelperService } from '@auth0/angular-jwt';
 
 interface LoginData {
   success: string;
@@ -25,7 +20,7 @@ export class AuthService {
   user;
   requestOptions;
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private helper: JwtHelperService) { }
 
   // Function to register user accounts
   registerUser(user) {
@@ -71,5 +66,10 @@ export class AuthService {
   loadToken() {
     const token = localStorage.getItem('token');
     this.authToken = token;
+  }
+
+  // Function to check if user is logged in
+  loggedIn() {
+    return this.helper.isTokenExpired();
   }
 }

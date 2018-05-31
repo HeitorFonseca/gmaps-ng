@@ -7,6 +7,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { NguiMapModule} from '@ngui/map';
 import { NguiAutoCompleteModule } from '@ngui/auto-complete';
 import { FlashMessagesModule } from 'angular2-flash-messages';
+import { JwtModule } from '@auth0/angular-jwt';
+
 
 import { AuthGuard } from './auth.guard';
 
@@ -17,6 +19,10 @@ import { LoginComponent } from './components/login/login.component';
 
 import { AuthService } from './services/auth.service';
 import { NavbarComponent } from './components/navbar/navbar.component';
+
+export function tokenGetter() {
+  return localStorage.getItem('access_token');
+}
 
 @NgModule({
   declarations: [
@@ -30,6 +36,13 @@ import { NavbarComponent } from './components/navbar/navbar.component';
     BrowserModule,
     FlashMessagesModule.forRoot(),
     HttpClientModule,
+    JwtModule.forRoot({
+      config: {
+        tokenGetter: tokenGetter,
+        whitelistedDomains: ['localhost:3001'],
+        blacklistedRoutes: ['localhost:3001/auth/']
+      }
+    }),
     FormsModule,
     ReactiveFormsModule,
     RouterModule.forRoot([
