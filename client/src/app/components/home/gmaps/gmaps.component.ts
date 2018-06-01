@@ -2,6 +2,9 @@ import { Component, ViewChild, OnInit, ElementRef, NgZone, ChangeDetectorRef } f
 import { } from '@types/googlemaps';
 import { DrawingManager } from '@ngui/map';
 
+import { PropertyService } from '../../../services/property.service';
+
+
 @Component({
   selector: 'app-gmaps',
   templateUrl: './gmaps.component.html',
@@ -10,11 +13,10 @@ import { DrawingManager } from '@ngui/map';
 export class GmapsComponent implements OnInit {
 
   @ViewChild(DrawingManager) drawingManager: DrawingManager;
-  areaText: string = "";
   selectedOverlay: any;
   @ViewChild('search') public searchElement: ElementRef;
   @ViewChild('gmap') public gmap: ElementRef;
-
+  area;
   autocomplete: google.maps.places.Autocomplete;
   address: any = {};
 
@@ -24,7 +26,7 @@ export class GmapsComponent implements OnInit {
     drawingMode: ''
   };
 
-  constructor(private ref: ChangeDetectorRef) { }
+  constructor(public propertyService: PropertyService, private ref: ChangeDetectorRef) { }
 
   initialized(autocomplete: any) {
     console.log(autocomplete);
@@ -48,7 +50,6 @@ export class GmapsComponent implements OnInit {
     let la = place.geometry.location.lat();
     let lb =  place.geometry.location.lng();
 
-
     this.mapProps.center = new google.maps.LatLng(la, lb);
 
     console.log(this.mapProps);
@@ -58,13 +59,15 @@ export class GmapsComponent implements OnInit {
 
   ngOnInit() {
 
-    console.log("this.searchElement");
-    
+    this.propertyService.deleteSelectedOverlay.subscribe(
+      data => this.deleteSelectedOverlay()
+    );    
+
     this.drawingManager['initialized$'].subscribe(dm => {
 
       google.maps.event.addListener(dm, 'overlaycomplete', event => {
         if (event.type !== google.maps.drawing.OverlayType.MARKER) {
-          dm.setDrawingMode(null);
+          //dm.setDrawingMode(null);
 
           google.maps.event.addListener(event.overlay, 'click', e => {
             this.selectedOverlay = event.overlay;
@@ -72,11 +75,16 @@ export class GmapsComponent implements OnInit {
           });
 
           this.selectedOverlay = event.overlay;
-          this.selectedOverlay.type = event.type;
 
-          var area = google.maps.geometry.spherical.computeArea(this.selectedOverlay.getPath());
+          var areaM2 = google.maps.geometry.spherical.computeArea(this.selectedOverlay.getPath());
 
-          this.areaText = this.SquareMetersToHectare(area).toString();
+          this.area = this.SquareMetersToHectare(areaM2)
+
+          this.mapProps.drawingMode = '';
+
+          console.log(this.selectedOverlay.getPath());
+
+          this.propertyService.addArea(this.area.toString());
         } 
       });      
     });
@@ -84,10 +92,11 @@ export class GmapsComponent implements OnInit {
   }
 
   deleteSelectedOverlay() {
+    console.log("called");
     if (this.selectedOverlay) {
       this.selectedOverlay.setMap(null);
-      delete this.selectedOverlay;
-      this.areaText = "";
+      delete this.selectedOverlay;   
+      this.propertyService.addArea("");  
     }
   }
 
@@ -97,6 +106,10 @@ export class GmapsComponent implements OnInit {
 
   clickDrawPolygon() {
     this.mapProps.drawingMode = 'polygon';
+  }
+
+  clickMovePolygon() {
+    this.mapProps.drawingMode = '';
   }
 
 }

@@ -20,6 +20,7 @@ import { LoginComponent } from './components/login/login.component';
 import { AuthService } from './services/auth.service';
 import { NavbarComponent } from './components/navbar/navbar.component';
 import { GmapsComponent } from './components/home/gmaps/gmaps.component';
+import { PropertyAreaComponent } from './components/home/property-area/property-area.component';
 
 export function tokenGetter() {
   return localStorage.getItem('access_token');
@@ -32,7 +33,8 @@ export function tokenGetter() {
     AboutComponent,
     LoginComponent,
     NavbarComponent,
-    GmapsComponent
+    GmapsComponent,
+    PropertyAreaComponent
   ],
   imports: [
     BrowserModule,

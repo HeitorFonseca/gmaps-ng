@@ -1,0 +1,17 @@
+:host .navbar {
+background-color: #222;
+}
+:host .navbar .navbar-brand {
+color: #fff;
+}
+:host .navbar .nav-item > a {
+color: rgb(0, 0, 0);
+}
+:host .navbar .nav-item > a:hover {
+color: rgb(116, 116, 116);
+}
+:host .messages {
+width: 300px;
+}
+
+  

@@ -2,21 +2,16 @@
 
 
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand" href="#">Navbar</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-  
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav mr-auto">
         <li class="nav-item">
           <a class="nav-link" > <i class="fa fa-map-marker fa-lg"></i> <span class="sr-only">(current)</span></a>
         </li>
         <li class="nav-item">
-          <a class="nav-link"(click)="clickDrawPolygon()"> <i class="fas fa-edit fa-lg"></i></a> 
+          <a class="nav-link" (click)="clickDrawPolygon()"> <i class="fas fa-edit fa-lg"></i></a> 
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#"> <i class="fas fa-plus-square"></i></a> 
+          <a class="nav-link" (click)="clickMovePolygon()"> <i class="fas fa-plus-square"></i></a> 
         </li>
         <li class="nav-item">
           <a class="nav-link" href="#"> <i class="fas fa-minus-square"></i></a> 
@@ -25,28 +20,23 @@
           <a class="nav-link" href="#"> <i class="fas fa-arrows-alt"></i></a> 
         </li>  
         <li class="nav-item">
-          <a class="nav-link" href="#"> <i class="fas fa-question"></i></a> 
+          <a class="nav-link" href="#" ngbPopover="Vivamus sagittis lacus vel augue laoreet rutrum faucibus." placement="bottom" > <i class="fas fa-question"></i></a> 
         </li>  
 
       </ul>
-      <form class="form-inline my-2 my-lg-0">
         <input places-auto-complete (initialized$)="initialized($event)" (place_changed) ="placeChanged(place)" [types]="['geocode']" 
                class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
         <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-      </form>
     </div>
   </nav>
 
-<ngui-map #gmap zoom="12" disableDefaultUI="true" [center]="mapProps.center" mapTypeId="satellite">
+<ngui-map #gmap zoom="12" disableDefaultUI="true" [center]="mapProps.center" mapTypeId="satellite" >
       <drawing-manager
         [drawingMode]="mapProps.drawingMode"
-        [drawingControl]="true"
+        [drawingControl]="false"
         [drawingControlOptions]="{
-          drawingModes: ['polygon']
+          drawingModes: ['']
         }"
         >
       </drawing-manager>
 </ngui-map>
-    
-<p> Area: {{areaText}} <br/>
-<button (click)="deleteSelectedOverlay()">Delete Selected Overlay</button>
