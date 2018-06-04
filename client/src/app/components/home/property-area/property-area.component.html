@@ -36,22 +36,22 @@
 
       <div class="row mt-4" >
           <div class="btn-group" data-toggle="buttons">
-            <label class="btn btn-primary ">
-              <input type="checkbox" autocomplete="off"> NDVI
+            <label class="btn btn-primary" [class.active]="checkBoxBtn.NDVI">
+              <input type="checkbox" [(ngModel)]="checkBoxBtn.NDVI" autocomplete="off"> NDVI
             </label>
           </div>
       </div>
       <div class="row">
           <div class="btn-group" data-toggle="buttons">
-            <label class="btn btn-secondary ">
-              <input type="checkbox" autocomplete="off"> NDWI
+            <label class="btn btn-secondary " [class.active]="checkBoxBtn.NDWI">
+              <input type="checkbox" [(ngModel)]="checkBoxBtn.NDWI" autocomplete="off"> NDWI
             </label>
           </div>
       </div>
       <div class="row">
           <div class="btn-group" data-toggle="buttons">
-            <label class="btn btn-success ">
-              <input type="checkbox" autocomplete="off"> Produtividade
+            <label class="btn btn-success " [class.active]="checkBoxBtn.Produtividade">
+              <input type="checkbox" [(ngModel)]="checkBoxBtn.Produtividade" autocomplete="off"> Produtividade
             </label>
           </div>
       </div>

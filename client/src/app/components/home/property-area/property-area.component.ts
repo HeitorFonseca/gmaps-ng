@@ -11,6 +11,12 @@ export class PropertyAreaComponent implements OnInit {
   model: any;
   area: string = "";
 
+  checkBoxBtn = {
+    NDVI: true,
+    NDWI: true,
+    Produtividade: true
+  };
+
   constructor(public propertyService: PropertyService) { }
 
   ngOnInit() {

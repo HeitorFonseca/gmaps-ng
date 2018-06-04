@@ -30,13 +30,18 @@
     </div>
   </nav>
 
-<ngui-map #gmap zoom="12" disableDefaultUI="true" [center]="mapProps.center" mapTypeId="satellite" >
-      <drawing-manager
+<ngui-map #gmap zoom="12" disableDefaultUI="true" [center]="mapProps.center"  mapTypeId="satellite" >
+  
+ <data-layer *ngIf="geoJsonObject" [geoJson]="geoJsonObject" (click)="clicked($event)" [style]="styleFunc">
+  
+  </data-layer>
+  <drawing-manager
         [drawingMode]="mapProps.drawingMode"
         [drawingControl]="false"
         [drawingControlOptions]="{
           drawingModes: ['']
-        }"
+        }"       
         >
       </drawing-manager>
+      
 </ngui-map>
