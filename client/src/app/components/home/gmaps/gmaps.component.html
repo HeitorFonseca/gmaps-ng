@@ -11,13 +11,13 @@
           <a class="nav-link" (click)="clickDrawPolygon()"> <i class="fas fa-edit fa-lg"></i></a> 
         </li>
         <li class="nav-item">
-          <a class="nav-link" (click)="clickMovePolygon()"> <i class="fas fa-plus-square"></i></a> 
+          <a class="nav-link" (click)="clickZoomIn()"> <i class="fas fa-plus-square"></i></a> 
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#"> <i class="fas fa-minus-square"></i></a> 
+          <a class="nav-link" (click)="clickZoomOut()"> <i class="fas fa-minus-square"></i></a> 
         </li>  
         <li class="nav-item">
-          <a class="nav-link" href="#"> <i class="fas fa-arrows-alt"></i></a> 
+          <a class="nav-link" href=""> <i class="fas fa-arrows-alt"></i></a> 
         </li>  
         <li class="nav-item">
           <a class="nav-link" href="#" ngbPopover="Vivamus sagittis lacus vel augue laoreet rutrum faucibus." placement="bottom" > <i class="fas fa-question"></i></a> 
@@ -30,18 +30,12 @@
     </div>
   </nav>
 
-<ngui-map #gmap zoom="12" disableDefaultUI="true" [center]="mapProps.center"  mapTypeId="satellite" >
-  
- <data-layer *ngIf="geoJsonObject" [geoJson]="geoJsonObject" (click)="clicked($event)" [style]="styleFunc">
-  
+<ngui-map zoom="{{mapProps.zoom}}" disableDefaultUI="true" [center]="mapProps.center"  mapTypeId="satellite" (mapReady$)="onMapReady($event)">
+
+  <data-layer >
   </data-layer>
-  <drawing-manager
-        [drawingMode]="mapProps.drawingMode"
-        [drawingControl]="false"
-        [drawingControlOptions]="{
-          drawingModes: ['']
-        }"       
-        >
-      </drawing-manager>
+
+  <drawing-manager [drawingMode]="mapProps.drawingMode" [drawingControl]="false" [drawingControlOptions]="{drawingModes: ['']}">
+  </drawing-manager>
       
 </ngui-map>
