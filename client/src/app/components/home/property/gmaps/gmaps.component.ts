@@ -2,7 +2,7 @@ import { Component, ViewChild, OnInit, ElementRef, NgZone, ChangeDetectorRef } f
 import { } from '@types/googlemaps';
 import {NguiMap,  DataLayer, DrawingManager} from '@ngui/map';
 
-import { PropertyService } from '../../../services/property.service';
+import { PropertyService } from '../../../../services/property.service';
 import { zip } from 'rxjs';
 
 
@@ -19,6 +19,7 @@ export class GmapsComponent implements OnInit {
   @ViewChild('search') public searchElement: ElementRef;
   @ViewChild('gmap') public gmap: ElementRef;
   area;
+  areaName:string ='';
   autocomplete: google.maps.places.Autocomplete;
   address: any = {};
 
@@ -74,20 +75,24 @@ export class GmapsComponent implements OnInit {
 
     this.geoJsonObject = geojson; 
 
-    this.dataLayer['initialized$'].subscribe( dl =>
-    {
-      var stateLayer = new google.maps.Data();
-      stateLayer.loadGeoJson('https://storage.googleapis.com/mapsdevsite/json/google.json');
-      stateLayer.setStyle(function(feature) {
-        var ascii = feature.getProperty('ascii');
-        var color = feature.getProperty('color');
-        return {
-          fillColor: color,
-          strokeWeight: 1
-        };
-      });  
-      stateLayer.setMap(dl.map);
-    })
+    this.propertyService.deleteSelectedOverlay.subscribe(
+      data => this.deleteSelectedOverlay()
+    );  
+    
+    // this.dataLayer['initialized$'].subscribe(dl =>
+    // {
+    //   var stateLayer = new google.maps.Data();
+    //   stateLayer.loadGeoJson('https://storage.googleapis.com/mapsdevsite/json/google.json');
+    //   stateLayer.setStyle(function(feature) {
+    //     var ascii = feature.getProperty('ascii');
+    //     var color = feature.getProperty('color');
+    //     return {
+    //       fillColor: color,
+    //       strokeWeight: 1
+    //     };
+    //   });  
+    //   stateLayer.setMap(dl.map);
+    // })
     
     this.drawingManager['initialized$'].subscribe(dm => {
  
@@ -105,12 +110,29 @@ export class GmapsComponent implements OnInit {
           this.mapProps.drawingMode = ''; 
           this.propertyService.addArea(this.area.toString());
 
-          for (let coord of this.selectedOverlay.getPath().getArray()) {
-            console.log(coord.lat(), coord.lng());
-          }
+          var bounds = new google.maps.LatLngBounds();
 
-          // console.log(this.selectedOverlay.getPath());
-          // console.log(this.selectedOverlay.getPath().getArray()[0].lat());
+          let array = this.selectedOverlay.getPath().getArray();
+          
+          for (let coord of this.selectedOverlay.getPath().getArray()) {
+            bounds.extend(coord);            
+          }
+          
+        //   if (this.selectedOverlay) {
+
+        //     var marker = new google.maps.Marker({
+        //       position: bounds.getCenter(),
+        //       map: this.currentMap,
+        //       icon: {
+        //         path: google.maps.SymbolPath.CIRCLE,
+        //         scale: 0
+        //       },
+        //       label: {
+        //         text: this.areaName,
+        //         color: 'white',
+        //       }
+        //     });
+        //  }
         }
       });    
          
@@ -141,11 +163,7 @@ export class GmapsComponent implements OnInit {
   clickZoomIn()
   {
     this.currentMap.setZoom(this.currentMap.getZoom() + 1);
-    this.ref.detectChanges();
-
-    for (let coord of this.selectedOverlay.getPath().getArray()) {
-      console.log(coord.lat(), coord.lng());
-    }
+    this.ref.detectChanges();   
   }
 
   clickZoomOut()

@@ -19,8 +19,10 @@ import { LoginComponent } from './components/login/login.component';
 
 import { AuthService } from './services/auth.service';
 import { NavbarComponent } from './components/navbar/navbar.component';
-import { GmapsComponent } from './components/home/gmaps/gmaps.component';
-import { PropertyAreaComponent } from './components/home/property-area/property-area.component';
+import { GmapsComponent } from './components/home/property/gmaps/gmaps.component';
+import { PropertyAreaComponent } from './components/home/property/property-area/property-area.component';
+import { DashboardComponent } from './components/home/dashboard/dashboard.component';
+import { PropertyComponent } from './components/home/property/property.component';
 
 export function tokenGetter() {
   return localStorage.getItem('access_token');
@@ -34,7 +36,9 @@ export function tokenGetter() {
     LoginComponent,
     NavbarComponent,
     GmapsComponent,
-    PropertyAreaComponent
+    PropertyAreaComponent,
+    DashboardComponent,
+    PropertyComponent
   ],
   imports: [
     BrowserModule,
@@ -56,13 +60,23 @@ export function tokenGetter() {
       },
       { 
         path: "about",
-        component: AboutComponent,
+        component: AboutComponent,  
+        canActivate: [AuthGuard]
+      },
+      {
+        path: "home",
+        component: HomeComponent,
+        canActivate: [AuthGuard]
+      },
+      {
+        path: "createProperty",
+        component: PropertyComponent,
         canActivate: [AuthGuard]
       },
       {
         path: "",
-        component: HomeComponent,
-        canActivate: [AuthGuard]
+         redirectTo: '/home', 
+         pathMatch: 'full' ,
       }
     ]),
     NgbModule.forRoot(),    

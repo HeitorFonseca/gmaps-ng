@@ -12,11 +12,21 @@ import { FlashMessagesService } from 'angular2-flash-messages';
 
 export class NavbarComponent implements OnInit {
 
+  username:string;
+
   constructor(
     public authService: AuthService,
     private router: Router,
     private flashMessagesService: FlashMessagesService
-  ) { }
+  ) { 
+    
+    let obj = JSON.parse(localStorage.getItem('user'));
+
+    if (obj) {
+      this.username = obj;
+    }
+  }
+
 
   // Function to logout user
   onLogoutClick() {
