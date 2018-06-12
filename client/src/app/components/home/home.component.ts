@@ -12,7 +12,7 @@ export class HomeComponent implements OnInit {
 
   @ViewChild(DrawingManager) drawingManager: DrawingManager;
   areaText: string = "";
-  selectedOverlay: any;
+  selectedPolygon: any;
   @ViewChild('search') public searchElement: ElementRef;
   @ViewChild('gmap') public gmap: ElementRef;
 

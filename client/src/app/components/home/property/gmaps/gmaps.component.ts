@@ -1,9 +1,12 @@
 import { Component, ViewChild, OnInit, ElementRef, NgZone, ChangeDetectorRef } from '@angular/core';
 import { } from '@types/googlemaps';
-import {NguiMap,  DataLayer, DrawingManager} from '@ngui/map';
+import { NguiMap,  DataLayer, DrawingManager, NguiMapComponent} from '@ngui/map';
+import { NgbModal, NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { PropertyService } from '../../../../services/property.service';
 import { zip } from 'rxjs';
+
+import { Property, AreasOverlay } from '../../../../models/property';
 
 
 @Component({
@@ -15,13 +18,17 @@ export class GmapsComponent implements OnInit {
   
   @ViewChild(DrawingManager) drawingManager: DrawingManager;
   @ViewChild(DataLayer) dataLayer: DataLayer;
-  selectedOverlay: any;
-  @ViewChild('search') public searchElement: ElementRef;
-  @ViewChild('gmap') public gmap: ElementRef;
   area;
   areaName:string ='';
   autocomplete: google.maps.places.Autocomplete;
   address: any = {};
+  overlayAreas: Array<any> =  new Array<any>();
+  makerLabels: Array<any> = new Array<any>();
+
+  coordinate: any = {
+    latitude: '',
+    longitude: ''
+  }
 
   mapProps: any = {
     center: 'Recife',
@@ -32,7 +39,10 @@ export class GmapsComponent implements OnInit {
   geoJsonObject: any;
   currentMap:any;
 
-  constructor(public propertyService: PropertyService, private ref: ChangeDetectorRef) { }
+  constructor(public propertyService: PropertyService, 
+              public activeModal: NgbActiveModal,
+              private ref: ChangeDetectorRef,
+              private modalService: NgbModal) { }
 
   initialized(autocomplete: any) {
     this.autocomplete = autocomplete;
@@ -75,8 +85,12 @@ export class GmapsComponent implements OnInit {
 
     this.geoJsonObject = geojson; 
 
+    this.propertyService.propertyAreaNameSubject.subscribe(
+      data => this.addAreaName(data)
+    );
+
     this.propertyService.deleteSelectedOverlay.subscribe(
-      data => this.deleteSelectedOverlay()
+      data => this.deleteSelectedOverlay(+data)
     );  
     
     // this.dataLayer['initialized$'].subscribe(dl =>
@@ -99,53 +113,83 @@ export class GmapsComponent implements OnInit {
       google.maps.event.addListener(dm, 'overlaycomplete', event => {
         if (event.type !== google.maps.drawing.OverlayType.MARKER) {
  
+
+          var overlay:any;
           google.maps.event.addListener(event.overlay, 'click', e => {
-            this.selectedOverlay = event.overlay;
-            this.selectedOverlay.setEditable(true);
+            overlay = event.overlay;
+            overlay.setEditable(true);
           });
  
-          this.selectedOverlay = event.overlay; 
-          var areaM2 = google.maps.geometry.spherical.computeArea(this.selectedOverlay.getPath()); 
+          overlay = event.overlay; 
+          var areaM2 = google.maps.geometry.spherical.computeArea(overlay.getPath()); 
           this.area = this.SquareMetersToHectare(areaM2) 
           this.mapProps.drawingMode = ''; 
-          this.propertyService.addArea(this.area.toString());
 
-          var bounds = new google.maps.LatLngBounds();
+          var areasOverlay:AreasOverlay = new AreasOverlay;
 
-          let array = this.selectedOverlay.getPath().getArray();
-          
-          for (let coord of this.selectedOverlay.getPath().getArray()) {
-            bounds.extend(coord);            
+          areasOverlay.AreaName = this.area.toString();
+
+          let array = overlay.getPath().getArray();
+        
+          for (let coord of overlay.getPath().getArray()) {
+            let lat = coord.lat();
+            let lng = coord.lng();
+            areasOverlay.Lats.push(lat.toString());
+            areasOverlay.Lngs.push(lng.toString());
           }
-          
-        //   if (this.selectedOverlay) {
 
-        //     var marker = new google.maps.Marker({
-        //       position: bounds.getCenter(),
-        //       map: this.currentMap,
-        //       icon: {
-        //         path: google.maps.SymbolPath.CIRCLE,
-        //         scale: 0
-        //       },
-        //       label: {
-        //         text: this.areaName,
-        //         color: 'white',
-        //       }
-        //     });
-        //  }
+          this.propertyService.addArea(areasOverlay);
+
+          this.overlayAreas.push(overlay);             
         }
       });    
          
     });
   }
 
-  deleteSelectedOverlay() {
+  deleteSelectedOverlay(id:number) {
     console.log("called");
-    if (this.selectedOverlay) {
-      this.selectedOverlay.setMap(null);
-      delete this.selectedOverlay;   
+    if (this.overlayAreas[id]) {
+      this.overlayAreas[id].setMap(null);
+      delete this.overlayAreas[id];
       this.propertyService.addArea("");  
+
+      //this.makerLabels[id].setMap(null);
+    }    
+    else {
+      console.log("error in delete selected overlay");
     }
+  }
+
+  addAreaName(areaField) 
+  {
+    var obj = JSON.parse(areaField);
+
+      if (this.overlayAreas[obj.id]) {
+        
+        var bounds = new google.maps.LatLngBounds();
+
+        let array = this.overlayAreas[obj.id].getPath().getArray();
+        
+        for (let coord of this.overlayAreas[obj.id].getPath().getArray()) {
+          bounds.extend(coord);            
+        }
+
+        var marker = new google.maps.Marker({
+          position: bounds.getCenter(),
+          map: this.currentMap,
+          icon: {
+            path: google.maps.SymbolPath.CIRCLE,
+            scale: 0
+          },
+          label: {
+            text: obj.areaName,
+            color: 'white',
+          }
+        });
+        
+        this.makerLabels.push(marker);
+      }
   }
 
   SquareMetersToHectare(area: any) : Number {
@@ -180,7 +224,21 @@ export class GmapsComponent implements OnInit {
   onMapReady(event)
   {
     this.currentMap = event;
+  }
 
-    console.log(this.currentMap);
+  /*********************************************** Modal functions ***********************************************/
+
+  openCoordsModal(modal) {
+    console.log(modal);
+    this.activeModal = this.modalService.open(modal);
+  }
+
+  locate()
+  {
+    console.log(this.coordinate);
+    if ( this.coordinate.longitude != '' && this.coordinate.latitude != '' ) {
+      this.mapProps.center = new google.maps.LatLng(this.coordinate.latitude,  this.coordinate.longitude);
+    }
+    this.activeModal.dismiss();
   }
 }

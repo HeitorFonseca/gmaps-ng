@@ -18,7 +18,7 @@ app.use(bodyParser.json()); // parse application/json
 app.use(cors());
 app.use(express.static(path.join(__dirname, 'dist/gmaps-ng5')));
 app.use('/', express.static(path.join(__dirname, 'dist/gmaps-ng5')));
-app.use('/api', propertyRouter);
+app.use('/api/property', propertyRouter);
 app.use('/api/authentication', authRouter);
 
 // catch 404 and forward to error handler

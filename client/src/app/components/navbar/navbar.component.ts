@@ -21,9 +21,9 @@ export class NavbarComponent implements OnInit {
   ) { 
     
     let obj = JSON.parse(localStorage.getItem('user'));
-
+    console.log(obj);
     if (obj) {
-      this.username = obj;
+      this.username = obj.username;
     }
   }
 

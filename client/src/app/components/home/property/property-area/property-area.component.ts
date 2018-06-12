@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
+import { FormGroup, FormArray, FormBuilder, Validators, FormControl, Form } from '@angular/forms';
+
 import { PropertyService } from '../../../../services/property.service';
-import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
+import { Property, AreasOverlay } from '../../../../models/property';
 
 @Component({
   selector: 'app-property-area',
@@ -9,9 +11,12 @@ import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms'
 })
 export class PropertyAreaComponent implements OnInit {
 
+  property: Property = new Property();
   model: any;
   area: string = "";
   form: FormGroup;
+  areas =  new FormArray([]);
+  processing;
 
   checkBoxBtn = {
     NDVI: true,
@@ -24,9 +29,13 @@ export class PropertyAreaComponent implements OnInit {
    }
 
   ngOnInit() {
+    this.processing = false;
+
+
     this.propertyService.propertyAreaSubject.subscribe(
-      data => this.area = data
-    );
+      data => this.fillPropertyArea(data)
+    );   
+
   }
 
   createForm()
@@ -40,9 +49,43 @@ export class PropertyAreaComponent implements OnInit {
     });
   }
 
-  deleteSelectedOverlay(data)
-  {
-    console.log("123123");
-    this.propertyService.cancelPolygon();
+  onResetClick() {
+    console.log("asdasdasdas");
+    this.propertyService.cancelPolygon(this.areas.length);
+  }
+
+  addProperty() {
+    this.processing = true;
+    
+    let dt = this.form.controls['date'].value;
+
+    this.property.AreasOverlay[this.property.AreasOverlay.length-1].HarvestDate = dt.day + "/" + dt.month + "/" + dt.year;
+
+    this.property.Area = this.form.controls['propertyArea'].value
+    this.property.PropertyName = this.form.controls['propertyName'].value
+    
+    this.areas.push(this.form);
+    var objStr = JSON.stringify({"id":this.areas.length-1, "areaName": this.form.controls['areaName'].value})
+    this.propertyService.addAreaName(objStr);
+
+    this.property.AreasOverlay[this.property.AreasOverlay.length-1].AreaName = this.form.controls['areaName'].value;
+    this.createForm();
+
+    console.log(this.areas);
+
+    this.processing = false;
+
+  }
+
+  registerProperty() {
+    console.log("register property", this.property);
+    this.propertyService.registerProperty(this.property).subscribe(data => {
+      console.log(data);
+    });
+  }
+
+  fillPropertyArea(data:AreasOverlay) {    
+    this.form.get('propertyArea').setValue(data.AreaName);
+    this.property.AreasOverlay.push(data);
   }
 }

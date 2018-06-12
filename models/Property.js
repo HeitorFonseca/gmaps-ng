@@ -2,10 +2,16 @@ var mongoose = require('mongoose');
 mongoose.Promise = global.Promise;
 
 var PropertySchema = new mongoose.Schema({
-    name: String,
-    harvestDate: String,
+    PropertyName: String,
     Area: Number,
-    Address: String
+    AreasOverlay: [{
+      //Address: String,
+      HarvestDate: String,
+      AreaName: String, 
+      Lats: { type : Array , "default" : [] },
+      Lngs: { type : Array , "default" : [] }
+    }]
+    
   });
 
   module.exports = mongoose.model('property', PropertySchema);

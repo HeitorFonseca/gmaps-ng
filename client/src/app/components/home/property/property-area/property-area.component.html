@@ -3,13 +3,13 @@
 
     <div class="col-lg-12"> 
         <!-- Login Form -->
-        <form [formGroup]="form" (submit)="onLoginSubmit()">
+        <form [formGroup]="form" (submit)="addProperty()">
            
              <!-- Property Name Field -->
              <div class="form-group">  
                 <label> Nome da fazenda (*)</label>    
                 <div [ngClass]="{'has-error': form.controls.propertyName.errors && form.controls.propertyName.dirty, 'has-success': form.controls.propertyName.valid && form.controls.propertyName.dirty }">
-                    <input class="form-control input-underline input-lg" type="text" placeholder="Informe o nome da propriedade" name="username" formControlName="propertyName" />
+                    <input class="form-control input-underline input-lg" type="text" placeholder="Informe o nome da propriedade" name="propertyName" formControlName="propertyName" />
                     <!-- Validation -->
                     <ul class="help-block">
                         <li *ngIf="form.controls.propertyName.errors?.required && form.controls.propertyName.dirty">This field is required.</li>
@@ -17,7 +17,7 @@
                 </div>
             </div>
 
-            <!-- Property Name Field -->
+            <!-- Area Name Field -->
             <div class="form-group">  
                 <label> Nome da área (*)</label>    
                 <div [ngClass]="{'has-error': form.controls.areaName.errors && form.controls.areaName.dirty, 'has-success': form.controls.areaName.valid && form.controls.areaName.dirty }">
@@ -50,7 +50,7 @@
                 <label> Data da última colheita </label>      
                 <div [ngClass]="{'has-error': form.controls.date.errors && form.controls.date.dirty, 'has-success': form.controls.date.valid && form.controls.date.dirty }">
                     <div class="input-group datepicker-input"> 
-                        <input class="form-control" name="dp" [(ngModel)]="model" ngbDatepicker #d="ngbDatepicker" placeholder="yyyy-mm-dd" name="date" formControlName="date" />
+                        <input class="form-control" name="dp" ngbDatepicker #d="ngbDatepicker" placeholder="yyyy-mm-dd" name="date" formControlName="date" />
                         <button class="input-group-addon" (click)="d.toggle()" type="button">
                             <span class="fa fa-calendar"></span>
                         </button>                        
@@ -61,7 +61,7 @@
             <!-- Area Field -->
             <div class="form-group">   
                 <label>Area [ha]</label>   
-                <input class="form-control input-underline input-lg" [(ngModel)]="area" readonly="true" type="text" name="propertyArea" formControlName="propertyArea" />
+                <input class="form-control input-underline input-lg"  readonly="true" type="text" name="propertyArea" formControlName="propertyArea" />
                 <!-- Validation -->
                 <ul class="help-block">
                     <li *ngIf="form.controls.propertyArea.errors?.required && form.controls.propertyArea?.dirty">This field is required.</li>
@@ -69,7 +69,8 @@
             </div>
 
             <input [disabled]="!form.valid || processing" class="btn btn-primary mr-2" type="submit" value="Adicionar" />
-            <input class="btn btn-secondary" type="reset" value="Cancelar" />
+            <input class="btn btn-secondary mr-2" type="reset" (click)="onResetClick()" value="Cancelar" />
+            <input class="btn btn-secondary" (click)="registerProperty()" value="Registrar" />
 
         </form>
         

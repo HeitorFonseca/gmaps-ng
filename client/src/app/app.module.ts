@@ -2,7 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModule, NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { NguiMapModule} from '@ngui/map';
 import { NguiAutoCompleteModule } from '@ngui/auto-complete';
@@ -23,6 +23,7 @@ import { GmapsComponent } from './components/home/property/gmaps/gmaps.component
 import { PropertyAreaComponent } from './components/home/property/property-area/property-area.component';
 import { DashboardComponent } from './components/home/dashboard/dashboard.component';
 import { PropertyComponent } from './components/home/property/property.component';
+import { PropertyDetailsComponent } from './components/home/property-details/property-details.component';
 
 export function tokenGetter() {
   return localStorage.getItem('access_token');
@@ -38,7 +39,8 @@ export function tokenGetter() {
     GmapsComponent,
     PropertyAreaComponent,
     DashboardComponent,
-    PropertyComponent
+    PropertyComponent,
+    PropertyDetailsComponent
   ],
   imports: [
     BrowserModule,
@@ -74,6 +76,11 @@ export function tokenGetter() {
         canActivate: [AuthGuard]
       },
       {
+        path: "propertyDetails/:propertyName",
+        component: PropertyDetailsComponent,
+        canActivate: [AuthGuard]
+      },
+      {
         path: "",
          redirectTo: '/home', 
          pathMatch: 'full' ,
@@ -82,7 +89,7 @@ export function tokenGetter() {
     NgbModule.forRoot(),    
     NguiMapModule.forRoot({apiUrl: 'https://maps.google.com/maps/api/js?key=AIzaSyCVRKkMBanRLv3SJzkcc3XaYdGB-4q1_98&libraries=visualization,places,drawing'})
   ],
-  providers: [AuthService, AuthGuard],
+  providers: [AuthService, AuthGuard, NgbActiveModal],
   bootstrap: [AppComponent]
 })
 

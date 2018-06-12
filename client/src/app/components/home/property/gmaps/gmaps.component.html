@@ -5,7 +5,7 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav mr-auto">
         <li class="nav-item">
-          <a class="nav-link" > <i class="fa fa-map-marker fa-lg"></i> <span class="sr-only">(current)</span></a>
+          <a class="nav-link" (click)="openCoordsModal(coordsModal)"> <i class="fa fa-map-marker fa-lg"></i></a>
         </li>
         <li class="nav-item">
           <a class="nav-link" (click)="clickDrawPolygon()"> <i class="fas fa-edit fa-lg"></i></a> 
@@ -39,3 +39,25 @@
   </drawing-manager>
       
 </ngui-map>
+
+
+<ng-template #coordsModal>
+  <div class="modal-header">
+    <h4> Insira as coordenadas geográficas </h4>
+  </div>
+  <div class="modal-body">
+      <fieldset class="form-group">
+          <label>Latitude</label>
+          <input class="form-control" [(ngModel)]="coordinate.latitude" placeholder="Informe a latitude da propriedade">          
+      </fieldset>
+      <fieldset class="form-group">
+          <label>Longitude</label>
+          <input class="form-control" [(ngModel)]="coordinate.longitude" placeholder="Informe a longitude da propriedade">          
+      </fieldset>
+
+      <button class="btn btn-secondary mr-3" (click)="locate()">Localizar</button>
+
+  </div>
+  <div class="modal-footer">
+  </div>
+</ng-template>

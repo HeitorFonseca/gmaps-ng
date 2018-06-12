@@ -11,11 +11,11 @@ color: rgb(0, 0, 0);
 
 :host .navbar .nav-item > a:hover {
 color: rgb(116, 116, 116);
-    border-bottom: 3px solid red;
+    border-bottom: 3px solid rgb(45, 141, 16);
 }
 
 a.nav-link.active {
-    border-bottom: 3px solid red !important;
+    border-bottom: 3px solid rgb(45, 141, 16);
 }
 
 :host .messages {
