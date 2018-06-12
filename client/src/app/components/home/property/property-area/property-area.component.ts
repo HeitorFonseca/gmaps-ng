@@ -50,28 +50,35 @@ export class PropertyAreaComponent implements OnInit {
   }
 
   onResetClick() {
-    console.log("asdasdasdas");
+    console.log(this.areas.length);
     this.propertyService.cancelPolygon(this.areas.length);
   }
 
   addProperty() {
     this.processing = true;
-    
-    let dt = this.form.controls['date'].value;
 
-    this.property.AreasOverlay[this.property.AreasOverlay.length-1].HarvestDate = dt.day + "/" + dt.month + "/" + dt.year;
-
-    this.property.Area = this.form.controls['propertyArea'].value
+    // Property Name
     this.property.PropertyName = this.form.controls['propertyName'].value
+    // Area in Hectare
+    this.property.AreasOverlay[this.property.AreasOverlay.length-1].Area = this.form.controls['propertyArea'].value
+    // Date
+    let dt = this.form.controls['date'].value;
+    this.property.AreasOverlay[this.property.AreasOverlay.length-1].HarvestDate = dt.day + "/" + dt.month + "/" + dt.year;
+    // Harvest Type
+    this.property.AreasOverlay[this.property.AreasOverlay.length-1].HarvestType =  this.form.controls['havestType'].value;
+    // Area Name
+    this.property.AreasOverlay[this.property.AreasOverlay.length-1].AreaName = this.form.controls['areaName'].value;
+
+    console.log("prp", this.property);
     
     this.areas.push(this.form);
+
+    // Add area name in maps
     var objStr = JSON.stringify({"id":this.areas.length-1, "areaName": this.form.controls['areaName'].value})
     this.propertyService.addAreaName(objStr);
 
-    this.property.AreasOverlay[this.property.AreasOverlay.length-1].AreaName = this.form.controls['areaName'].value;
+    // Reset form
     this.createForm();
-
-    console.log(this.areas);
 
     this.processing = false;
 
@@ -84,8 +91,10 @@ export class PropertyAreaComponent implements OnInit {
     });
   }
 
-  fillPropertyArea(data:AreasOverlay) {    
-    this.form.get('propertyArea').setValue(data.AreaName);
+  fillPropertyArea(data:AreasOverlay) {   
+    let num = new Number(+data.AreaName);
+
+    this.form.get('propertyArea').setValue(num.toPrecision(1));
     this.property.AreasOverlay.push(data);
   }
 }

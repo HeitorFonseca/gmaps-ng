@@ -1,23 +1,34 @@
 
+<app-navbar></app-navbar>
 
   <div class="row">
-      <div class="col-xl-6 text-xs-center">
-          <div class="card card-default">
-              <div class="card-body">
-                     
-              </div>
-          </div>
-      </div>
-      <div class="col-xl-6 text-xs-center">
-          <div class="card card-default">
-              <div class="card-body">
-                  <ngui-map zoom="{{mapProps.zoom}}" disableDefaultUI="true" [center]="mapProps.center"  mapTypeId="satellite" (mapReady$)="onMapReady($event)">
-
-                      <data-layer >
-                      </data-layer>
-                          
-                    </ngui-map>  
-              </div>
-          </div>
-      </div>
+    <div class="col-xl-6 text-xs-center">
+        <div class="card card-default">
+            <div class="card-header">
+                Areas da propriedade
+            </div>
+            <div class="card-body">
+                <div class="card-deck">
+                    <div *ngFor="let areas of property.AreasOverlay" class="col-5 card">
+                        <div class="card-header">
+                            {{areas.AreaName}}
+                        </div>
+                        <div class="card-body">
+                            {{areas.Area}} ha  {{areas.HarvestType}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>   
+    </div>
+    <div class="col-xl-6 text-xs-center">
+        <div class="card card-default">
+            <div class="card-body">
+                <ngui-map zoom="{{mapProps.zoom}}" disableDefaultUI="true" [center]="mapProps.center"  mapTypeId="satellite" (mapReady$)="onMapReady($event)">
+                    <data-layer >
+                    </data-layer>                          
+                </ngui-map>  
+            </div>
+        </div>
+    </div>
   </div>

@@ -3,11 +3,12 @@ mongoose.Promise = global.Promise;
 
 var PropertySchema = new mongoose.Schema({
     PropertyName: String,
-    Area: Number,
     AreasOverlay: [{
       //Address: String,
       HarvestDate: String,
-      AreaName: String, 
+      HarvestType: String,
+      AreaName: String,
+      Area: Number,
       Lats: { type : Array , "default" : [] },
       Lngs: { type : Array , "default" : [] }
     }]

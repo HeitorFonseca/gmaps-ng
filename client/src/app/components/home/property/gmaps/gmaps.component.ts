@@ -140,7 +140,8 @@ export class GmapsComponent implements OnInit {
 
           this.propertyService.addArea(areasOverlay);
 
-          this.overlayAreas.push(overlay);             
+          this.overlayAreas.push(overlay);   
+          console.log(this.overlayAreas);
         }
       });    
          
@@ -148,10 +149,11 @@ export class GmapsComponent implements OnInit {
   }
 
   deleteSelectedOverlay(id:number) {
-    console.log("called");
+    console.log("called ", id, " ", this.overlayAreas);
     if (this.overlayAreas[id]) {
       this.overlayAreas[id].setMap(null);
-      delete this.overlayAreas[id];
+      // delete this.overlayAreas[id];
+      this.overlayAreas.splice(id);
       this.propertyService.addArea("");  
 
       //this.makerLabels[id].setMap(null);

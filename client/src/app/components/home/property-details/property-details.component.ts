@@ -40,26 +40,25 @@ mapProps: any = {
   }
 
   drawPolygons() {
-  var coords = new Array<any>();
-  console.log("HEREE");
 
-  for (let areas of this.property.AreasOverlay) {
-    for (let i = 0; i < areas.Lats.length; i++) {
-      coords.push({lat: +areas.Lats[i], lng: +areas.Lngs[i]});
+    for (let areas of this.property.AreasOverlay) {
+      var coords = new Array<any>();
+
+      for (let i = 0; i < areas.Lats.length; i++) {
+        coords.push({lat: +areas.Lats[i], lng: +areas.Lngs[i]});
+      }
+
+      var bermudaTriangle = new google.maps.Polygon({
+        paths: coords,
+        strokeColor: '#FF0000',
+        strokeOpacity: 0.8,
+        strokeWeight: 3,
+        fillColor: '#FF0000',
+        fillOpacity: 0.35
+      });
+      
+      bermudaTriangle.setMap(this.map);
     }
-  }
-  
-
-  var bermudaTriangle = new google.maps.Polygon({
-      paths: coords,
-      strokeColor: '#FF0000',
-      strokeOpacity: 0.8,
-      strokeWeight: 3,
-      fillColor: '#FF0000',
-      fillOpacity: 0.35
-    });
-    bermudaTriangle.setMap(this.map);
-
   }
 
   onMapReady(event)
