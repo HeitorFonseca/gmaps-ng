@@ -39,10 +39,28 @@ export class GmapsComponent implements OnInit {
   geoJsonObject: any;
   currentMap:any;
 
+  polygonsCoord: Array<any> = new Array<any>();
+
   constructor(public propertyService: PropertyService, 
               public activeModal: NgbActiveModal,
               private ref: ChangeDetectorRef,
-              private modalService: NgbModal) { }
+              private modalService: NgbModal) {
+
+    this.propertyService.propertyAreaNameSubject.subscribe(
+      data => this.addAreaName(data)
+    );
+
+    this.propertyService.deleteSelectedOverlay.subscribe(
+      data => this.deleteSelectedOverlay(+data)
+    );  
+    
+    this.propertyService.drawPolygons.subscribe(
+      data =>  { 
+        this.drawPolygons(data) 
+      }
+    );  
+    
+    }
 
   initialized(autocomplete: any) {
     this.autocomplete = autocomplete;
@@ -83,16 +101,8 @@ export class GmapsComponent implements OnInit {
 
     var geojson = JSON.parse(path);
 
-    this.geoJsonObject = geojson; 
+    this.geoJsonObject = geojson;    
 
-    this.propertyService.propertyAreaNameSubject.subscribe(
-      data => this.addAreaName(data)
-    );
-
-    this.propertyService.deleteSelectedOverlay.subscribe(
-      data => this.deleteSelectedOverlay(+data)
-    );  
-    
     // this.dataLayer['initialized$'].subscribe(dl =>
     // {
     //   var stateLayer = new google.maps.Data();
@@ -170,8 +180,6 @@ export class GmapsComponent implements OnInit {
       if (this.overlayAreas[obj.id]) {
         
         var bounds = new google.maps.LatLngBounds();
-
-        let array = this.overlayAreas[obj.id].getPath().getArray();
         
         for (let coord of this.overlayAreas[obj.id].getPath().getArray()) {
           bounds.extend(coord);            
@@ -226,6 +234,61 @@ export class GmapsComponent implements OnInit {
   onMapReady(event)
   {
     this.currentMap = event;
+
+    for (let coord of  this.polygonsCoord) {
+      this.addPolygons(coord);
+    }
+  }
+
+  drawPolygons(data) {
+
+    var prop:Property = data;
+
+    if (this.currentMap) {      
+       this.addPolygons(prop);
+    } else {
+      this.polygonsCoord.push(prop);
+    }
+    
+  }
+
+  addPolygons(propert:Property) {
+    for (let areas of propert.AreasOverlay) {
+      
+      var bounds = new google.maps.LatLngBounds();
+      var coords = new Array<any>();
+
+      for (let i = 0; i < areas.Lats.length; i++) {
+        bounds.extend(new google.maps.LatLng(+areas.Lats[i], +areas.Lngs[i]));
+        coords.push({lat: +areas.Lats[i], lng: +areas.Lngs[i]});
+      }
+
+      var bermudaTriangle = new google.maps.Polygon({
+        paths: coords,
+        strokeColor: '#FF0000',
+        strokeOpacity: 0.8,
+        strokeWeight: 3,
+        fillColor: '#FF0000',
+        fillOpacity: 0.35
+      });      
+
+      bermudaTriangle.setMap(this.currentMap);
+
+      var marker = new google.maps.Marker({
+        position: bounds.getCenter(),
+        map: this.currentMap,
+        icon: {
+          path: google.maps.SymbolPath.CIRCLE,
+          scale: 0
+        },
+        label: {
+          text: areas.AreaName,
+          color: 'white',
+        }
+      });
+      
+      this.makerLabels.push(marker);
+    } 
   }
 
   /*********************************************** Modal functions ***********************************************/

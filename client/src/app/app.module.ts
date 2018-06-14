@@ -10,7 +10,7 @@ import { FlashMessagesModule } from 'angular2-flash-messages';
 import { JwtModule } from '@auth0/angular-jwt';
 
 
-import { AuthGuard } from './auth.guard';
+import { AuthGuard } from './providers/auth.guard';
 
 import { AppComponent } from './app.component';
 import { HomeComponent } from './components/home/home.component';
@@ -24,6 +24,8 @@ import { PropertyAreaComponent } from './components/home/property/property-area/
 import { DashboardComponent } from './components/home/dashboard/dashboard.component';
 import { PropertyComponent } from './components/home/property/property.component';
 import { PropertyDetailsComponent } from './components/home/property-details/property-details.component';
+
+import { Data } from './providers/data';
 
 export function tokenGetter() {
   return localStorage.getItem('access_token');
@@ -71,7 +73,12 @@ export function tokenGetter() {
         canActivate: [AuthGuard]
       },
       {
-        path: "createProperty",
+        path: "map",
+        component: PropertyComponent,
+        canActivate: [AuthGuard]
+      },
+      {
+        path: "map/:name",
         component: PropertyComponent,
         canActivate: [AuthGuard]
       },
@@ -84,12 +91,17 @@ export function tokenGetter() {
         path: "",
          redirectTo: '/home', 
          pathMatch: 'full' ,
+      },
+      {
+        path: '**', 
+        component: HomeComponent
       }
+
     ]),
     NgbModule.forRoot(),    
     NguiMapModule.forRoot({apiUrl: 'https://maps.google.com/maps/api/js?key=AIzaSyCVRKkMBanRLv3SJzkcc3XaYdGB-4q1_98&libraries=visualization,places,drawing'})
   ],
-  providers: [AuthService, AuthGuard, NgbActiveModal],
+  providers: [AuthService, AuthGuard, Data, NgbActiveModal],
   bootstrap: [AppComponent]
 })
 

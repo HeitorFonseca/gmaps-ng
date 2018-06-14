@@ -18,10 +18,12 @@ export class PropertyService {
   public propertyAreaSubject = new Subject<any>();
   public propertyAreaNameSubject = new Subject<any>();
   public deleteSelectedOverlay = new Subject<any>();
+  public drawPolygons = new Subject<any>();
 
   constructor(private http: HttpClient, private router: Router) { }
 
-  
+  /*********************************** HTTP ***********************************/
+
   // Function to register property
   registerProperty(property:Property) {
     return this.http.post(this.domain + 'property/register', property).map(res => res);
@@ -32,14 +34,25 @@ export class PropertyService {
     return this.http.get(this.domain + 'property/').map(res => res);
   }
 
-  // Function to get properties
-  getPropertiyByName(name): Observable<Property> {
-    console.log("parameter", name)
+  // Function to get properties by name
+  getPropertyByName(name): Observable<Property> {
+    //console.log("getPropertyByName", name)
     let params = new HttpParams();
     params = params.append('name', name);
 
     return this.http.get<Property>(this.domain + 'property/name', {params: params}).map(res => res);
   }
+
+   // Function to get properties by name
+   deletePropertyByName(name) {
+    console.log("deletePropertyByName", name)
+    let params = new HttpParams();
+    params = params.append('name', name);
+
+    return this.http.delete(this.domain + 'property/name', {params: params}).map(res => res);
+  }
+
+  /*********************************** Subjects ***********************************/
 
   // Function to add area in property area field
   addArea(data)
@@ -50,7 +63,6 @@ export class PropertyService {
   // Function to add area in property area field
   addAreaName(data)
   {
-    console.log(data);
     this.propertyAreaNameSubject.next(data);
   }
 
@@ -58,6 +70,12 @@ export class PropertyService {
   cancelPolygon(id)
   {
     this.deleteSelectedOverlay.next(id);
+  }
+
+  // Function add polygon in maps when edit
+  addPolygon(data)
+  {
+    this.drawPolygons.next(data);
   }
 
 }

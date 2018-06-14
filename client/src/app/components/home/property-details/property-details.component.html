@@ -1,7 +1,7 @@
-
 <app-navbar></app-navbar>
 
   <div class="row">
+   
     <div class="col-xl-6 text-xs-center">
         <div class="card card-default">
             <div class="card-header">
@@ -10,16 +10,23 @@
             <div class="card-body">
                 <div class="card-deck">
                     <div *ngFor="let areas of property.AreasOverlay" class="col-5 card">
-                        <div class="card-header">
-                            {{areas.AreaName}}
-                        </div>
                         <div class="card-body">
-                            {{areas.Area}} ha  {{areas.HarvestType}}
+                            <h6> {{areas.AreaName}} </h6>
+                            <p> <span class="small-5 float-left"> {{areas.Area}} ha  </span>
+                                <span class="small-7 float-right">{{areas.HarvestType}}</span>   </p>
                         </div>
                     </div>
-                </div>
+                </div>               
             </div>
-        </div>   
+        </div>
+        
+        <div>
+            <br>
+            <h6> Ações </h6>
+            <input class="btn btn-primary mr-2" (click)="onEditPropertyClick()" value="Editar Propriedade" />
+            <input class="btn btn-secondary" (click)="onRemoveProperty()" value="Excluir Propriedade" />
+        </div>
+        
     </div>
     <div class="col-xl-6 text-xs-center">
         <div class="card card-default">

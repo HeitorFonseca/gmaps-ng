@@ -11,9 +11,8 @@ router.get('/', function(req, res, next) {
 });
 
 /* GET SINGLE PROPERTY BY NAME */
-router.get('/name', function(req, res, next) {
- 
-  console.log("property by name here2");
+router.get('/:name', function(req, res, next) { 
+  console.log("get property by name");
   var query = { PropertyName: req.query.name };
   console.log(query);
   Property.find(query, function(err, properties) {
@@ -23,7 +22,6 @@ router.get('/name', function(req, res, next) {
       console.log(properties);
       res.json(properties);
   });
-
 }); 
 
 /* SAVE Property */
@@ -44,8 +42,14 @@ router.put('/:id', function(req, res, next) {
 });
 
 /* DELETE Property */
-router.delete('/:id', function(req, res, next) {
-  Property.findByIdAndRemove(req.params.id, req.body, function (err, post) {
+router.delete('/:name', function(req, res, next) {
+  console.log("delete by name:", req.params );
+  // Property.findByIdAndRemove(req.params.id, req.body, function (err, post) {
+  //   if (err) return next(err);
+  //   res.json(post);
+  // });
+  var query = { PropertyName: req.query.name };
+  Property.findOneAndRemove(query, function (err, post) {
     if (err) return next(err);
     res.json(post);
   });

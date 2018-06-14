@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { FormGroup, FormArray, FormBuilder, Validators, FormControl, Form } from '@angular/forms';
 
 import { PropertyService } from '../../../../services/property.service';
@@ -10,6 +10,8 @@ import { Property, AreasOverlay } from '../../../../models/property';
   styleUrls: ['./property-area.component.css']
 })
 export class PropertyAreaComponent implements OnInit {
+
+  @Input() prop: Property;
 
   property: Property = new Property();
   model: any;
@@ -24,17 +26,29 @@ export class PropertyAreaComponent implements OnInit {
     Produtividade: true
   };
 
-  constructor(public propertyService: PropertyService, private formBuilder: FormBuilder) {
+  constructor(public propertyService: PropertyService, 
+              private formBuilder: FormBuilder) {
+    
     this.createForm();
    }
 
   ngOnInit() {
     this.processing = false;
 
-
     this.propertyService.propertyAreaSubject.subscribe(
       data => this.fillPropertyArea(data)
     );   
+
+    if (!this.prop ) {
+      console.log("eh nulo");
+    }
+    else {
+      
+      this.form.get('propertyName').setValue(this.prop.PropertyName);     
+      this.propertyService.addPolygon(this.prop);
+        
+      console.log("works");
+    }
 
   }
 
@@ -97,4 +111,6 @@ export class PropertyAreaComponent implements OnInit {
     this.form.get('propertyArea').setValue(num.toPrecision(1));
     this.property.AreasOverlay.push(data);
   }
+
+  
 }
