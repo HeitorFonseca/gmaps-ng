@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
+import { PropertyService } from '../../../services/property.service';
 import { Property } from '../../../models/property';
 
 import { Data } from './../../../providers/data';
@@ -12,17 +13,28 @@ import { Data } from './../../../providers/data';
 })
 export class PropertyComponent implements OnInit {
 
-  constructor(private route: ActivatedRoute,  private propData:Data) { }
+  constructor(private route: ActivatedRoute, private propData: Data,
+    private propertyService: PropertyService) { }
 
   property: Property;
 
   ngOnInit() {
     var propName = this.route.snapshot.paramMap.get('name');
 
-    console.log("propName=",propName);
+    console.log("propName=", propName);
 
-    if(propName) {
+    if (propName) {
       let properties = this.propData.propertyData;
+
+      if (!properties) {
+
+        this.propertyService.getProperties().subscribe(data => {
+          properties = data;
+          console.log(properties);
+          this.propData.propertyData = properties;
+        });
+
+      }
 
       console.log(properties);
 
@@ -31,7 +43,7 @@ export class PropertyComponent implements OnInit {
           this.property = prop;
           console.log("achou");
         }
-      }      
+      }
     }
   }
 

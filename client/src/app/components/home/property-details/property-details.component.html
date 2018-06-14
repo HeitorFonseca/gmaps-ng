@@ -31,7 +31,7 @@
     <div class="col-xl-6 text-xs-center">
         <div class="card card-default">
             <div class="card-body">
-                <ngui-map zoom="{{mapProps.zoom}}" disableDefaultUI="true" [center]="mapProps.center"  mapTypeId="satellite" (mapReady$)="onMapReady($event)">
+                <ngui-map zoom="{{mapProps.zoom}}"  style="height: 400px"  disableDefaultUI="true" [center]="mapProps.center"  mapTypeId="satellite" (mapReady$)="onMapReady($event)">
                     <data-layer >
                     </data-layer>                          
                 </ngui-map>  

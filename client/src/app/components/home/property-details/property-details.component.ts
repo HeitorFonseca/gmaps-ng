@@ -31,13 +31,15 @@ mapProps: any = {
 
     this.propertyService.getPropertyByName(propName).subscribe(data => {
       this.property = data[0];
-      console.log("data res", this.property);     
 
+      console.log("data res", this.property);     
     })
 
   }
 
   drawPolygonsAndLabels() {
+
+    var globalBounds = new google.maps.LatLngBounds();
 
     for (let areas of this.property.AreasOverlay) {
       var coords = new Array<any>();
@@ -46,6 +48,7 @@ mapProps: any = {
       for (let i = 0; i < areas.Lats.length; i++) {
         coords.push({lat: +areas.Lats[i], lng: +areas.Lngs[i]});
         bounds.extend(new google.maps.LatLng(+areas.Lats[i], +areas.Lngs[i]));
+        globalBounds.extend(new google.maps.LatLng(+areas.Lats[i], +areas.Lngs[i]));
       }
 
       var bermudaTriangle = new google.maps.Polygon({
@@ -70,8 +73,11 @@ mapProps: any = {
           text: areas.AreaName,
           color: 'white',
         }
-      });
+      });     
     }
+
+    this.mapProps.center = new google.maps.LatLng(globalBounds.getCenter().lat(), globalBounds.getCenter().lng());
+    this.mapProps.zoom = 17;
   }
 
   onMapReady(event)

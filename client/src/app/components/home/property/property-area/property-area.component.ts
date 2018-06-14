@@ -46,7 +46,7 @@ export class PropertyAreaComponent implements OnInit {
       
       this.form.get('propertyName').setValue(this.prop.PropertyName);     
       this.propertyService.addPolygon(this.prop);
-        
+      
       console.log("works");
     }
 
@@ -68,7 +68,7 @@ export class PropertyAreaComponent implements OnInit {
     this.propertyService.cancelPolygon(this.areas.length);
   }
 
-  addProperty() {
+  onAddPropertyClick() {
     this.processing = true;
 
     // Property Name
@@ -94,11 +94,12 @@ export class PropertyAreaComponent implements OnInit {
     // Reset form
     this.createForm();
 
+    this.form.get('propertyName').setValue(this.property.PropertyName);
     this.processing = false;
 
   }
 
-  registerProperty() {
+  onRegisterPropertyClick() {
     console.log("register property", this.property);
     this.propertyService.registerProperty(this.property).subscribe(data => {
       console.log(data);
@@ -112,5 +113,8 @@ export class PropertyAreaComponent implements OnInit {
     this.property.AreasOverlay.push(data);
   }
 
+  onRemoveOverlayClick() { 
+    console.log("area");
+  }
   
 }

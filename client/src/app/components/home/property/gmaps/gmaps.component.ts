@@ -1,6 +1,6 @@
 import { Component, ViewChild, OnInit, ElementRef, NgZone, ChangeDetectorRef } from '@angular/core';
 import { } from '@types/googlemaps';
-import { NguiMap,  DataLayer, DrawingManager, NguiMapComponent} from '@ngui/map';
+import { NguiMap, DataLayer, DrawingManager, NguiMapComponent } from '@ngui/map';
 import { NgbModal, NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { PropertyService } from '../../../../services/property.service';
@@ -15,14 +15,14 @@ import { Property, AreasOverlay } from '../../../../models/property';
   styleUrls: ['./gmaps.component.css']
 })
 export class GmapsComponent implements OnInit {
-  
+
   @ViewChild(DrawingManager) drawingManager: DrawingManager;
   @ViewChild(DataLayer) dataLayer: DataLayer;
   area;
-  areaName:string ='';
+  areaName: string = '';
   autocomplete: google.maps.places.Autocomplete;
   address: any = {};
-  overlayAreas: Array<any> =  new Array<any>();
+  overlayAreas: Array<any> = new Array<any>();
   makerLabels: Array<any> = new Array<any>();
 
   coordinate: any = {
@@ -37,14 +37,14 @@ export class GmapsComponent implements OnInit {
   };
 
   geoJsonObject: any;
-  currentMap:any;
+  currentMap: any;
 
   polygonsCoord: Array<any> = new Array<any>();
 
-  constructor(public propertyService: PropertyService, 
-              public activeModal: NgbActiveModal,
-              private ref: ChangeDetectorRef,
-              private modalService: NgbModal) {
+  constructor(public propertyService: PropertyService,
+    public activeModal: NgbActiveModal,
+    private ref: ChangeDetectorRef,
+    private modalService: NgbModal) {
 
     this.propertyService.propertyAreaNameSubject.subscribe(
       data => this.addAreaName(data)
@@ -52,15 +52,15 @@ export class GmapsComponent implements OnInit {
 
     this.propertyService.deleteSelectedOverlay.subscribe(
       data => this.deleteSelectedOverlay(+data)
-    );  
-    
+    );
+
     this.propertyService.drawPolygons.subscribe(
-      data =>  { 
-        this.drawPolygons(data) 
+      data => {
+        this.drawPolygons(data)
       }
-    );  
-    
-    }
+    );
+
+  }
 
   initialized(autocomplete: any) {
     this.autocomplete = autocomplete;
@@ -74,10 +74,10 @@ export class GmapsComponent implements OnInit {
   }
 
   placeChanged() {
-    
+
     let place = this.autocomplete.getPlace();
     console.log(place);
-    
+
     if (place.geometry === undefined || place.geometry === null) {
       return;
     }
@@ -88,7 +88,7 @@ export class GmapsComponent implements OnInit {
     }
 
     let la = place.geometry.location.lat();
-    let lb =  place.geometry.location.lng();
+    let lb = place.geometry.location.lng();
 
     this.mapProps.center = new google.maps.LatLng(la, lb);
     this.ref.detectChanges();
@@ -101,7 +101,7 @@ export class GmapsComponent implements OnInit {
 
     var geojson = JSON.parse(path);
 
-    this.geoJsonObject = geojson;    
+    this.geoJsonObject = geojson;
 
     // this.dataLayer['initialized$'].subscribe(dl =>
     // {
@@ -117,30 +117,30 @@ export class GmapsComponent implements OnInit {
     //   });  
     //   stateLayer.setMap(dl.map);
     // })
-    
+
     this.drawingManager['initialized$'].subscribe(dm => {
- 
+
       google.maps.event.addListener(dm, 'overlaycomplete', event => {
         if (event.type !== google.maps.drawing.OverlayType.MARKER) {
- 
 
-          var overlay:any;
+
+          var overlay: any;
           google.maps.event.addListener(event.overlay, 'click', e => {
             overlay = event.overlay;
             overlay.setEditable(true);
           });
- 
-          overlay = event.overlay; 
-          var areaM2 = google.maps.geometry.spherical.computeArea(overlay.getPath()); 
-          this.area = this.SquareMetersToHectare(areaM2) 
-          this.mapProps.drawingMode = ''; 
 
-          var areasOverlay:AreasOverlay = new AreasOverlay;
+          overlay = event.overlay;
+          var areaM2 = google.maps.geometry.spherical.computeArea(overlay.getPath());
+          this.area = this.SquareMetersToHectare(areaM2)
+          this.mapProps.drawingMode = '';
+
+          var areasOverlay: AreasOverlay = new AreasOverlay;
 
           areasOverlay.AreaName = this.area.toString();
 
           let array = overlay.getPath().getArray();
-        
+
           for (let coord of overlay.getPath().getArray()) {
             let lat = coord.lat();
             let lng = coord.lng();
@@ -150,117 +150,115 @@ export class GmapsComponent implements OnInit {
 
           this.propertyService.addArea(areasOverlay);
 
-          this.overlayAreas.push(overlay);   
+          this.overlayAreas.push(overlay);
           console.log(this.overlayAreas);
         }
-      });    
-         
+      });
+
     });
   }
 
-  deleteSelectedOverlay(id:number) {
+  deleteSelectedOverlay(id: number) {
     console.log("called ", id, " ", this.overlayAreas);
     if (this.overlayAreas[id]) {
       this.overlayAreas[id].setMap(null);
       // delete this.overlayAreas[id];
       this.overlayAreas.splice(id);
-      this.propertyService.addArea("");  
+      this.propertyService.addArea("");
 
       //this.makerLabels[id].setMap(null);
-    }    
+    }
     else {
       console.log("error in delete selected overlay");
     }
   }
 
-  addAreaName(areaField) 
-  {
+  addAreaName(areaField) {
     var obj = JSON.parse(areaField);
 
-      if (this.overlayAreas[obj.id]) {
-        
-        var bounds = new google.maps.LatLngBounds();
-        
-        for (let coord of this.overlayAreas[obj.id].getPath().getArray()) {
-          bounds.extend(coord);            
-        }
+    if (this.overlayAreas[obj.id]) {
 
-        var marker = new google.maps.Marker({
-          position: bounds.getCenter(),
-          map: this.currentMap,
-          icon: {
-            path: google.maps.SymbolPath.CIRCLE,
-            scale: 0
-          },
-          label: {
-            text: obj.areaName,
-            color: 'white',
-          }
-        });
-        
-        this.makerLabels.push(marker);
+      var bounds = new google.maps.LatLngBounds();
+
+      for (let coord of this.overlayAreas[obj.id].getPath().getArray()) {
+        bounds.extend(coord);
       }
+
+      var marker = new google.maps.Marker({
+        position: bounds.getCenter(),
+        map: this.currentMap,
+        icon: {
+          path: google.maps.SymbolPath.CIRCLE,
+          scale: 0
+        },
+        label: {
+          text: obj.areaName,
+          color: 'white',
+        }
+      });
+
+      this.makerLabels.push(marker);
+    }
   }
 
-  SquareMetersToHectare(area: any) : Number {
-    return area/10000;
+  SquareMetersToHectare(area: any): Number {
+    return area / 10000;
   }
 
   clickDrawPolygon() {
-    this.mapProps.drawingMode = 'polygon';   
+    this.mapProps.drawingMode = 'polygon';
   }
 
   clickMovePolygon() {
     this.mapProps.drawingMode = '';
   }
 
-  clickZoomIn()
-  {
+  clickZoomIn() {
     this.currentMap.setZoom(this.currentMap.getZoom() + 1);
-    this.ref.detectChanges();   
+    this.ref.detectChanges();
   }
 
-  clickZoomOut()
-  {
+  clickZoomOut() {
     this.currentMap.setZoom(this.currentMap.getZoom() - 1);
     this.ref.detectChanges();
   }
 
-  clicked(event)
-  {
+  clicked(event) {
     console.log(event);
   }
 
-  onMapReady(event)
-  {
+  onMapReady(event) {
     this.currentMap = event;
 
-    for (let coord of  this.polygonsCoord) {
+    for (let coord of this.polygonsCoord) {
       this.addPolygons(coord);
     }
   }
 
   drawPolygons(data) {
 
-    var prop:Property = data;
+    var prop: Property = data;
 
-    if (this.currentMap) {      
-       this.addPolygons(prop);
+    if (this.currentMap) {
+      this.addPolygons(prop);
     } else {
       this.polygonsCoord.push(prop);
     }
-    
+
   }
 
-  addPolygons(propert:Property) {
+  addPolygons(propert: Property) {
+
+    var globalBounds = new google.maps.LatLngBounds();
     for (let areas of propert.AreasOverlay) {
-      
+
       var bounds = new google.maps.LatLngBounds();
       var coords = new Array<any>();
 
       for (let i = 0; i < areas.Lats.length; i++) {
         bounds.extend(new google.maps.LatLng(+areas.Lats[i], +areas.Lngs[i]));
-        coords.push({lat: +areas.Lats[i], lng: +areas.Lngs[i]});
+        globalBounds.extend(new google.maps.LatLng(+areas.Lats[i], +areas.Lngs[i]));
+        coords.push({ lat: +areas.Lats[i], lng: +areas.Lngs[i] });
       }
 
       var bermudaTriangle = new google.maps.Polygon({
@@ -270,7 +268,7 @@ export class GmapsComponent implements OnInit {
         strokeWeight: 3,
         fillColor: '#FF0000',
         fillOpacity: 0.35
-      });      
+      });
 
       bermudaTriangle.setMap(this.currentMap);
 
@@ -286,9 +284,14 @@ export class GmapsComponent implements OnInit {
           color: 'white',
         }
       });
-      
+
       this.makerLabels.push(marker);
-    } 
+    }
+
+    console.log("blobal:",globalBounds);
+    this.mapProps.center = new google.maps.LatLng(globalBounds.getCenter().lat(), globalBounds.getCenter().lng());
+    this.mapProps.zoom = 17;
+
   }
 
   /*********************************************** Modal functions ***********************************************/
@@ -298,11 +301,10 @@ export class GmapsComponent implements OnInit {
     this.activeModal = this.modalService.open(modal);
   }
 
-  locate()
-  {
+  locate() {
     console.log(this.coordinate);
-    if ( this.coordinate.longitude != '' && this.coordinate.latitude != '' ) {
-      this.mapProps.center = new google.maps.LatLng(this.coordinate.latitude,  this.coordinate.longitude);
+    if (this.coordinate.longitude != '' && this.coordinate.latitude != '') {
+      this.mapProps.center = new google.maps.LatLng(this.coordinate.latitude, this.coordinate.longitude);
     }
     this.activeModal.dismiss();
   }
