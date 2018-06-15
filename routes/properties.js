@@ -34,8 +34,15 @@ router.post('/register', function(req, res, next) {
 });
 
 /* UPDATE Property */
-router.put('/:id', function(req, res, next) {
-  Property.findByIdAndUpdate(req.params.id, req.body, function (err, post) {
+router.put('/:name', function(req, res, next) {
+  // Property.findByIdAndUpdate(req.params.id, req.body, function (err, post) {
+  //   if (err) return next(err);
+  //   res.json(post);
+  // });
+  console.log("edit by name:", req.params, " ", req.body   );
+
+  var query = { PropertyName: req.body.PropertyName };
+  Property.findOneAndUpdate(query, req.body, function (err, post) {
     if (err) return next(err);
     res.json(post);
   });

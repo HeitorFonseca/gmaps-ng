@@ -77,7 +77,7 @@
                 
                             <input [disabled]="!form.valid || processing" class="btn btn-primary mr-2" type="submit" value="Adicionar" />
                             <input class="btn btn-secondary mr-2" type="reset" (click)="onResetClick()" value="Cancelar" />
-                            <input class="btn btn-secondary" (click)="onRegisterPropertyClick()" value="Registrar" />
+                            <input class="btn btn-secondary" (click)="onRegisterPropertyClick()" value="Confirmar" />
                 
                         </form>
                         
@@ -93,8 +93,7 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        
+                        </div>                        
                     </div>
                 </div>
             </div>
@@ -118,11 +117,9 @@
                         <li class="nav-item">
                           <a class="nav-link" (click)="clickZoomOut()"> <i class="fas fa-minus-square"></i></a> 
                         </li>  
+ 
                         <li class="nav-item">
-                          <a class="nav-link" href=""> <i class="fas fa-arrows-alt"></i></a> 
-                        </li>  
-                        <li class="nav-item">
-                          <a class="nav-link" href="#" ngbPopover="Vivamus sagittis lacus vel augue laoreet rutrum faucibus." placement="bottom" > <i class="fas fa-question"></i></a> 
+                          <a class="nav-link" ngbPopover="Vivamus sagittis lacus vel augue laoreet rutrum faucibus." placement="bottom" > <i class="fas fa-question"></i></a> 
                         </li>  
                 
                       </ul>
@@ -132,16 +129,17 @@
                     </div>
                   </nav>
                 
-                <ngui-map zoom="{{mapProps.zoom}}" style="height: 400px" disableDefaultUI="true" [center]="mapProps.center"  mapTypeId="satellite" (mapReady$)="onMapReady($event)">                
-                
-                  <data-layer >
-                  </data-layer>
-                
-                  <drawing-manager [drawingMode]="mapProps.drawingMode" [drawingControl]="false" [drawingControlOptions]="{drawingModes: ['']}">
-                  </drawing-manager>
-                      
-                </ngui-map>
-                
+                <div class="div-wrapper">
+                    <ngui-map zoom="{{mapProps.zoom}}" style="height: 400px" disableDefaultUI="true" [center]="mapProps.center"  mapTypeId="satellite" (mapReady$)="onMapReady($event)">                
+                    
+                    <data-layer >
+                    </data-layer>
+                    
+                    <drawing-manager [drawingMode]="mapProps.drawingMode" [drawingControl]="false" [drawingControlOptions]="{drawingModes: ['']}">
+                    </drawing-manager>
+                        
+                    </ngui-map>
+                 </div>
                 
                 <ng-template #coordsModal>
                   <div class="modal-header">

@@ -24,6 +24,12 @@ export class PropertyService {
     return this.http.post(this.domain + 'property/register', property).map(res => res);
   }
 
+  // Function to register property
+  editProperty(property:Property) {
+    console.log("edit called", property);
+    return this.http.put(this.domain + 'property/name', property).map(res => res);
+  }
+
   // Function to get properties
   getProperties() {
     return this.http.get(this.domain + 'property/').map(res => res);
@@ -31,7 +37,6 @@ export class PropertyService {
 
   // Function to get properties by name
   getPropertyByName(name): Observable<Property> {
-    //console.log("getPropertyByName", name)
     let params = new HttpParams();
     params = params.append('name', name);
 
