@@ -15,11 +15,6 @@ export class PropertyService {
 
   domain = "http://localhost:3000/api/";
 
-  public propertyAreaSubject = new Subject<any>();
-  public propertyAreaNameSubject = new Subject<any>();
-  public deleteSelectedOverlay = new Subject<any>();
-  public drawPolygons = new Subject<any>();
-
   constructor(private http: HttpClient, private router: Router) { }
 
   /*********************************** HTTP ***********************************/
@@ -50,32 +45,6 @@ export class PropertyService {
     params = params.append('name', name);
 
     return this.http.delete(this.domain + 'property/name', {params: params}).map(res => res);
-  }
-
-  /*********************************** Subjects ***********************************/
-
-  // Function to add area in property area field
-  addArea(data)
-  {
-    this.propertyAreaSubject.next(data);
-  }
-
-  // Function to add area in property area field
-  addAreaName(data)
-  {
-    this.propertyAreaNameSubject.next(data);
-  }
-
-  // Function to delete area when click in cancel button
-  cancelPolygon(id)
-  {
-    this.deleteSelectedOverlay.next(id);
-  }
-
-  // Function add polygon in maps when edit
-  addPolygon(data)
-  {
-    this.drawPolygons.next(data);
   }
 
 }

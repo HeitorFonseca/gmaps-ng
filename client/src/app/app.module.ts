@@ -19,8 +19,6 @@ import { LoginComponent } from './components/login/login.component';
 
 import { AuthService } from './services/auth.service';
 import { NavbarComponent } from './components/navbar/navbar.component';
-import { GmapsComponent } from './components/home/property/gmaps/gmaps.component';
-import { PropertyAreaComponent } from './components/home/property/property-area/property-area.component';
 import { DashboardComponent } from './components/home/dashboard/dashboard.component';
 import { PropertyComponent } from './components/home/property/property.component';
 import { PropertyDetailsComponent } from './components/home/property-details/property-details.component';
@@ -38,8 +36,6 @@ export function tokenGetter() {
     AboutComponent,
     LoginComponent,
     NavbarComponent,
-    GmapsComponent,
-    PropertyAreaComponent,
     DashboardComponent,
     PropertyComponent,
     PropertyDetailsComponent

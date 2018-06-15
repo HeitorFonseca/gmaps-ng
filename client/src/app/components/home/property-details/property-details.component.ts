@@ -77,7 +77,8 @@ mapProps: any = {
     }
 
     this.mapProps.center = new google.maps.LatLng(globalBounds.getCenter().lat(), globalBounds.getCenter().lng());
-    this.mapProps.zoom = 17;
+    //this.mapProps.zoom = 17;
+    this.map.fitBounds(globalBounds);
   }
 
   onMapReady(event)

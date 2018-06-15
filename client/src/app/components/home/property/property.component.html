@@ -1,17 +1,168 @@
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
+
 <app-navbar></app-navbar>
 
 <div class="row">
     <div class="col-xl-5 text-xs-center">
         <div class="card card-default">
             <div class="card-body">
-                <app-property-area [prop]="property"> </app-property-area>
+                <div class="row"> 
+
+                    <div class="col-lg-12"> 
+                        <!-- Login Form -->
+                        <form [formGroup]="form" (submit)="onAddPropertyClick()">
+                           
+                             <!-- Property Name Field -->
+                             <div class="form-group">  
+                                <label> Nome da fazenda (*)</label>    
+                                <div [ngClass]="{'has-error': form.controls.propertyName.errors && form.controls.propertyName.dirty, 'has-success': form.controls.propertyName.valid && form.controls.propertyName.dirty }">
+                                    <input class="form-control input-underline input-lg" type="text" placeholder="Informe o nome da propriedade" name="propertyName" formControlName="propertyName" />
+                                    <!-- Validation -->
+                                    <ul class="help-block">
+                                        <li *ngIf="form.controls.propertyName.errors?.required && form.controls.propertyName.dirty">This field is required.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                
+                            <!-- Area Name Field -->
+                            <div class="form-group">  
+                                <label> Nome da área (*)</label>    
+                                <div [ngClass]="{'has-error': form.controls.areaName.errors && form.controls.areaName.dirty, 'has-success': form.controls.areaName.valid && form.controls.areaName.dirty }">
+                                    <input class="form-control input-underline input-lg" type="text" placeholder="" name="username" formControlName="areaName" />
+                                    <!-- Validation -->
+                                    <ul class="help-block">
+                                        <li *ngIf="form.controls.areaName.errors?.required && form.controls.areaName.dirty">This field is required.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                
+                             <!-- havestType Field  -->
+                            <div class="form-group">
+                                <label> Tipo de cultura (*) </label>
+                                <div [ngClass]="{'has-error': form.controls.havestType.errors && form.controls.havestType.dirty, 'has-success': form.controls.havestType.valid && form.controls.havestType.dirty }">
+                                <select class="form-control input-underline input-lg" name="havestType" formControlName="havestType" >
+                                        <option>Soja</option>
+                                        <option>Milho</option>
+                                        <option>Cana de açucar</option>  
+                                </select>               
+                                <!-- Validation -->
+                                <ul class="help-block">
+                                    <li *ngIf="form.controls.havestType.errors?.required && form.controls.havestType.dirty">This field is required.</li>
+                                </ul>
+                                </div>
+                            </div>   
+                
+                            <!-- Data Field -->
+                            <div class="form-group">
+                                <label> Data da última colheita </label>      
+                                <div [ngClass]="{'has-error': form.controls.date.errors && form.controls.date.dirty, 'has-success': form.controls.date.valid && form.controls.date.dirty }">
+                                    <div class="input-group datepicker-input"> 
+                                        <input class="form-control" name="dp" ngbDatepicker #d="ngbDatepicker" placeholder="yyyy-mm-dd" name="date" formControlName="date" />
+                                        <button class="input-group-addon" (click)="d.toggle()" type="button">
+                                            <span class="fa fa-calendar"></span>
+                                        </button>                        
+                                    </div>
+                                </div>
+                            </div>
+                
+                            <!-- Area Field -->
+                            <div class="form-group">   
+                                <label>Area [ha]</label>   
+                                <input class="form-control input-underline input-lg"  readonly="true" type="text" name="propertyArea" formControlName="propertyArea" />
+                                <!-- Validation -->
+                                <ul class="help-block">
+                                    <li *ngIf="form.controls.propertyArea.errors?.required && form.controls.propertyArea?.dirty">This field is required.</li>
+                                </ul>
+                            </div>
+                
+                            <input [disabled]="!form.valid || processing" class="btn btn-primary mr-2" type="submit" value="Adicionar" />
+                            <input class="btn btn-secondary mr-2" type="reset" (click)="onResetClick()" value="Cancelar" />
+                            <input class="btn btn-secondary" (click)="onRegisterPropertyClick()" value="Registrar" />
+                
+                        </form>
+                        
+                        <div class="col-lg-12"> 
+                            <div class="card card-default">
+                                <div *ngIf="property">
+                                    <div *ngFor="let area of property.AreasOverlay" class="col-5 card">
+                                        <div class="card-body">
+                                            <button (click)="onRemoveOverlayClick(area)"><i class="far fa-times-circle"></i>
+                                                {{area.AreaName}}
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
             </div>
         </div>
     </div>
     <div class="col-xl-7 text-xs-center">
         <div class="card card-default">
             <div class="card-body">
-                <app-gmaps></app-gmaps>
+                <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                      <ul class="navbar-nav mr-auto">
+                        <li class="nav-item">
+                          <a class="nav-link" (click)="openCoordsModal(coordsModal)"> <i class="fa fa-map-marker fa-lg"></i></a>
+                        </li>
+                        <li class="nav-item">
+                          <a class="nav-link" (click)="clickDrawPolygon()"> <i class="fas fa-edit fa-lg"></i></a> 
+                        </li>
+                        <li class="nav-item">
+                          <a class="nav-link" (click)="clickZoomIn()"> <i class="fas fa-plus-square"></i></a> 
+                        </li>
+                        <li class="nav-item">
+                          <a class="nav-link" (click)="clickZoomOut()"> <i class="fas fa-minus-square"></i></a> 
+                        </li>  
+                        <li class="nav-item">
+                          <a class="nav-link" href=""> <i class="fas fa-arrows-alt"></i></a> 
+                        </li>  
+                        <li class="nav-item">
+                          <a class="nav-link" href="#" ngbPopover="Vivamus sagittis lacus vel augue laoreet rutrum faucibus." placement="bottom" > <i class="fas fa-question"></i></a> 
+                        </li>  
+                
+                      </ul>
+                        <input places-auto-complete (initialized$)="initialized($event)" (place_changed) ="placeChanged(place)" [types]="['geocode']" 
+                               class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+                        <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+                    </div>
+                  </nav>
+                
+                <ngui-map zoom="{{mapProps.zoom}}" style="height: 400px" disableDefaultUI="true" [center]="mapProps.center"  mapTypeId="satellite" (mapReady$)="onMapReady($event)">                
+                
+                  <data-layer >
+                  </data-layer>
+                
+                  <drawing-manager [drawingMode]="mapProps.drawingMode" [drawingControl]="false" [drawingControlOptions]="{drawingModes: ['']}">
+                  </drawing-manager>
+                      
+                </ngui-map>
+                
+                
+                <ng-template #coordsModal>
+                  <div class="modal-header">
+                    <h4> Insira as coordenadas geográficas </h4>
+                  </div>
+                  <div class="modal-body">
+                      <fieldset class="form-group">
+                          <label>Latitude</label>
+                          <input class="form-control" [(ngModel)]="coordinate.latitude" placeholder="Informe a latitude da propriedade">          
+                      </fieldset>
+                      <fieldset class="form-group">
+                          <label>Longitude</label>
+                          <input class="form-control" [(ngModel)]="coordinate.longitude" placeholder="Informe a longitude da propriedade">          
+                      </fieldset>
+                
+                      <button class="btn btn-secondary mr-3" (click)="locate()">Localizar</button>
+                
+                  </div>
+                  <div class="modal-footer">
+                  </div>
+                </ng-template>
             </div>
         </div>
     </div>
