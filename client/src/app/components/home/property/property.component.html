@@ -146,28 +146,29 @@
                         
                     </ngui-map>
                  </div>
-                
-                <ng-template #coordsModal>
-                  <div class="modal-header">
-                    <h4> Insira as coordenadas geográficas </h4>
-                  </div>
-                  <div class="modal-body">
-                      <fieldset class="form-group">
-                          <label>Latitude</label>
-                          <input class="form-control" [(ngModel)]="coordinate.latitude" placeholder="Informe a latitude da propriedade">          
-                      </fieldset>
-                      <fieldset class="form-group">
-                          <label>Longitude</label>
-                          <input class="form-control" [(ngModel)]="coordinate.longitude" placeholder="Informe a longitude da propriedade">          
-                      </fieldset>
-                
-                      <button class="btn btn-secondary mr-3" (click)="locate()">Localizar</button>
-                
-                  </div>
-                  <div class="modal-footer">
-                  </div>
-                </ng-template>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Template for localization modal -->
+<ng-template #coordsModal>
+    <div class="modal-header">
+        <h4> Insira as coordenadas geográficas </h4>
+    </div>
+    <div class="modal-body">
+        <fieldset class="form-group">
+            <label>Latitude</label>
+            <input class="form-control" [(ngModel)]="coordinate.latitude" placeholder="Informe a latitude da propriedade">          
+        </fieldset>
+        <fieldset class="form-group">
+            <label>Longitude</label>
+            <input class="form-control" [(ngModel)]="coordinate.longitude" placeholder="Informe a longitude da propriedade">          
+        </fieldset>
+    
+        <button class="btn btn-secondary mr-3" (click)="locate()">Localizar</button>
+    
+    </div>
+    <div class="modal-footer">
+    </div>
+</ng-template>

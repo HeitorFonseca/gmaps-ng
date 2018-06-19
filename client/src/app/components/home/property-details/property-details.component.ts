@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { } from '@types/googlemaps';
 import { NguiMap,  DataLayer, DrawingManager} from '@ngui/map';
+import { NgbModal, NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { PropertyService } from '../../../services/property.service';
 import { Property } from '../../../models/property';
@@ -23,8 +24,11 @@ mapProps: any = {
 };
 
 
-  constructor(private route: ActivatedRoute, private router: Router,
-              private propertyService:PropertyService) { }
+  constructor(private route: ActivatedRoute, 
+              private router: Router,
+              private propertyService:PropertyService,
+              private activeModal: NgbActiveModal,
+              private modalService: NgbModal) { }
 
   ngOnInit() {
     var propName = this.route.snapshot.paramMap.get('propertyName');
@@ -95,13 +99,24 @@ mapProps: any = {
     this.router.navigate(['/map', this.property.PropertyName]);
   }
 
-  onRemoveProperty() {
+  onRemoveProperty(modal) {
     console.log("onRemoveProperty");
-    this.propertyService.deletePropertyByName(this.property.PropertyName).subscribe(data =>
-    {
-      console.log(data);
-      this.router.navigate(['/home']);
 
-    });
+    const modalRef = this.modalService.open(modal);    
+    this.activeModal = modalRef;
+    
+    modalRef.result.then((userResponse) => {
+      console.log("lelele:", userResponse);
+
+      if(userResponse) {
+        this.propertyService.deletePropertyByName(this.property.PropertyName).subscribe(data =>
+        {
+          console.log(data);
+          this.router.navigate(['/home']);
+        });
+      }
+    }).catch(() => {});    
+
+    console.log('passou');
   }
 }

@@ -24,6 +24,7 @@ import { PropertyComponent } from './components/home/property/property.component
 import { PropertyDetailsComponent } from './components/home/property-details/property-details.component';
 
 import { Data } from './providers/data';
+import { FooterComponent } from './components/footer/footer.component';
 
 export function tokenGetter() {
   return localStorage.getItem('access_token');
@@ -38,7 +39,8 @@ export function tokenGetter() {
     NavbarComponent,
     DashboardComponent,
     PropertyComponent,
-    PropertyDetailsComponent
+    PropertyDetailsComponent,
+    FooterComponent
   ],
   imports: [
     BrowserModule,

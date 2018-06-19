@@ -24,9 +24,21 @@
             <br>
             <h6> Ações </h6>
             <input class="btn btn-primary mr-2" (click)="onEditPropertyClick()" value="Editar Propriedade" />
-            <input class="btn btn-secondary" (click)="onRemoveProperty()" value="Excluir Propriedade" />
+            <input class="btn btn-secondary" (click)="onRemoveProperty(removePropertyModal)" value="Excluir Propriedade" />
         </div>
         
+         <!-- Template for confirme remove property modal -->
+    <ng-template #removePropertyModal>
+        <div class="modal-header">
+            <h4> Tem certeza que deseja remover a propriedade ? </h4>
+        </div>
+        <div class="modal-body">
+            <button class="btn btn-secondary mr-3" (click)="activeModal.close(true)" >Excluir Propriedade</button>    
+        </div>
+        <div class="modal-footer">
+        </div>
+    </ng-template>
+
     </div>
     <div class="col-xl-6 text-xs-center">
         <div class="card card-default">
@@ -39,3 +51,5 @@
         </div>
     </div>
   </div>
+
+ 
