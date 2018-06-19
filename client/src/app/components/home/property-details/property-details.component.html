@@ -20,7 +20,7 @@
             </div>
         </div>
         
-        <div>
+        <div *ngxPermissionsOnly="'ADMIN'">
             <br>
             <h6> Ações </h6>
             <input class="btn btn-primary mr-2" (click)="onEditPropertyClick()" value="Editar Propriedade" />

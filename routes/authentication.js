@@ -65,8 +65,6 @@ router.post('/register', (req, res) => {
 
 router.post('/login', (req, res) => {
     
-    console.log("ASDSADSAD");
-    console.log(req.body);
 
     res.header('Access-Control-Allow-Methods', '*');
     res.header('Access-Control-Allow-Methods: GET, POST, PATCH, PUT, DELETE, OPTIONS');
@@ -94,7 +92,7 @@ router.post('/login', (req, res) => {
 
                             const token = jwt.sign({userId: user._id}, config.secret, {expiresIn: '24h'});
 
-                            res.json( {success: true, message: 'Success!', token: token, user: {username: user.username}});
+                            res.json( {success: true, message: 'Success!', token: token, user: {username: user.username, userId: user._id, roles: user.roles}});
                         }
                     }
                 }

@@ -46,10 +46,12 @@ export class PropertyComponent implements OnInit {
   address: any = {};
 
   form: FormGroup;
-  processing;
-
+  processingAdd;
+  processingCancel;
   /* auxiliar */
   auxOverlay:any;
+  message: string;
+  messageClass;
 
   /* remove */
   areas =  new FormArray([]);
@@ -113,6 +115,8 @@ export class PropertyComponent implements OnInit {
 
   ngOnInit() {    
 
+    this.processingCancel = true;
+
     this.drawingManager['initialized$'].subscribe(dm => {
 
       // Add listener for when user draw a polygon
@@ -147,6 +151,8 @@ export class PropertyComponent implements OnInit {
 
           this.overlayAreas.push(overlay);
           console.log(this.overlayAreas);
+
+          this.processingCancel = false;
         }
       });
 
@@ -167,12 +173,18 @@ export class PropertyComponent implements OnInit {
   }
 
   onResetClick() {
-    console.log(this.areas.length);
-    this.deleteSelectedOverlay(this.areas.length);
+    console.log(this.overlayAreas.length);
+    let size = this.overlayAreas.length-1;
+    this.deleteSelectedOverlay(size);
+    this.deleteSelectedMarker(size);
+
+    this.form.get('propertyArea').setValue("");
+
+    this.processingCancel = true;
   }
 
   onAddPropertyClick() {
-    this.processing = true;
+    this.processingAdd = true;
 
     this.property.AreasOverlay.push(this.auxOverlay);
 
@@ -190,24 +202,39 @@ export class PropertyComponent implements OnInit {
 
     console.log("prp", this.property);
     
-    this.areas.push(this.form);
+    //this.areas.push(this.form);
 
     // Add area name in maps
-    var objStr = JSON.stringify({"id":this.areas.length-1, "areaName": this.form.controls['areaName'].value})
+    var objStr = JSON.stringify({"id":this.overlayAreas.length-1, "areaName": this.form.controls['areaName'].value})
     this.addAreaName(objStr);
 
     // Reset form
     this.createForm();
     // Set the same property name
     this.form.get('propertyName').setValue(this.property.PropertyName);
-    this.processing = false;
+    this.processingAdd = false;
+    this.processingCancel = true;
 
   }
 
   onRegisterPropertyClick() {
     console.log("register property", this.property);
+
+    let usr = JSON.parse(localStorage.getItem('user'));
+    
+    this.property.UserId = usr.userId;
+
     if (!this.propNameParameter) {
       this.propertyService.registerProperty(this.property).subscribe(data => {
+
+        if (!data.success) {
+          this.messageClass = 'alert alert-danger';
+          this.message = data.message;
+          this.processingAdd = false;
+        } else {
+          this.messageClass = 'alert alert-success';
+          this.message = data.message;
+        }
         console.log(data);
       });
     }
@@ -229,7 +256,7 @@ export class PropertyComponent implements OnInit {
     for (let i = 0; i < this.property.AreasOverlay.length; i++) {
       if (this.property.AreasOverlay[i] == area) {
         console.log("achou i");
-        this.property.AreasOverlay.splice(i);
+        this.property.AreasOverlay.splice(i, 1);
         this.deleteSelectedOverlay(i);
         this.deleteSelectedMarker(i);
       }
@@ -276,7 +303,7 @@ export class PropertyComponent implements OnInit {
     console.log("called ", id, " ", this.overlayAreas);
     if (this.overlayAreas[id]) {
       this.overlayAreas[id].setMap(null);
-      this.overlayAreas.splice(id);
+      this.overlayAreas.splice(id, 1);
     }
     else {
       console.log("error in delete selected overlay");
@@ -287,7 +314,7 @@ export class PropertyComponent implements OnInit {
     console.log("marker called ", id);
     if (this.makerLabels[id]) {
       this.makerLabels[id].setMap(null);
-      this.makerLabels.splice(id);
+      this.makerLabels.splice(id, 1);
     }
     else {
       console.log("error in delete selected makerLabels");

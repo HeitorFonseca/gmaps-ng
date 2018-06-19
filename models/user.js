@@ -11,7 +11,8 @@ const bcrypt = require('bcrypt-nodejs'); // A native JS bcrypt library for NodeJ
 const userSchema = new Schema({
   email: { type: String, required: true, unique: true, lowercase: true },
   username: { type: String, required: true, unique: true, lowercase: true },
-  password: { type: String, required: true}
+  password: { type: String, required: true},
+  roles: { type: [String], required: true}
 });
 
 // Schema Middleware to Encrypt Password

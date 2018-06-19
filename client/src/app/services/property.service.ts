@@ -21,7 +21,7 @@ export class PropertyService {
 
   // Function to register property
   registerProperty(property:Property) {
-    return this.http.post(this.domain + 'property/register', property).map(res => res);
+    return this.http.post<any>(this.domain + 'property/register', property).map(res => res);
   }
 
   // Function to register property

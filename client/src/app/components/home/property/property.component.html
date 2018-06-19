@@ -75,10 +75,16 @@
                                 </ul>
                             </div>
                 
-                            <input [disabled]="!form.valid || processing" class="btn btn-primary mr-2" type="submit" value="Adicionar" />
-                            <input class="btn btn-secondary mr-2" type="reset" (click)="onResetClick()" value="Cancelar" />
+                            <input [disabled]="!form.valid || processingAdd" class="btn btn-primary mr-2" type="submit" value="Adicionar" />
+                            <input [disabled]="processingCancel" class="btn btn-secondary mr-2" type="reset" (click)="onResetClick()" value="Cancelar" />
                             <input class="btn btn-secondary" (click)="onRegisterPropertyClick()" value="Confirmar" />
                 
+                            <!-- Custom Success/Error Message -->
+                            <div class="row show-hide-message">
+                                <div [ngClass]="messageClass">
+                                {{ message }}
+                                </div>
+                            </div>
                         </form>
                         
                         <div class="col-lg-12"> 

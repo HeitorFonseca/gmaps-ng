@@ -1,7 +1,8 @@
 export class Property {
 
     PropertyName: string;
-    AreasOverlay: Array<AreasOverlay> = new Array<AreasOverlay>();
+    UserId: string;
+    AreasOverlay: Array<AreasOverlay> = new Array<AreasOverlay>();    
 }
 
 

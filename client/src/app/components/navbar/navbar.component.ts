@@ -30,9 +30,9 @@ export class NavbarComponent implements OnInit {
 
   // Function to logout user
   onLogoutClick() {
-    //this.authService.logout(); // Logout user
+    this.authService.logout(); // Logout user
     this.flashMessagesService.show('You are logged out', { cssClass: 'alert-info' }); // Set custom flash message
-    this.router.navigate(['/']); // Navigate back to home page
+    //this.router.navigate(['/']); // Navigate back to home page
   }
 
   ngOnInit() {

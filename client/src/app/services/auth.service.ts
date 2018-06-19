@@ -44,6 +44,13 @@ export class AuthService {
     return this.http.post<any>(this.domain + 'authentication/login', user);
   }
 
+  // Function to login user
+  logout() {
+    localStorage.removeItem('user');
+    localStorage.removeItem('token');
+    localStorage.removeItem('role');
+  }
+
   // Function to store user's data in client local storage
   storeUserData(token, user) {
     localStorage.setItem('token', token); // Set token in local storage

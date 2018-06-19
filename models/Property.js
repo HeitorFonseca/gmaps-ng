@@ -3,6 +3,7 @@ mongoose.Promise = global.Promise;
 
 var PropertySchema = new mongoose.Schema({
     PropertyName: String,
+    UserId: String,
     AreasOverlay: [{
       //Address: String,
       HarvestDate: String,

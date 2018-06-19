@@ -1,5 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { NgModule, APP_INITIALIZER  } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 import { NgbModule, NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
@@ -8,7 +8,7 @@ import { NguiMapModule} from '@ngui/map';
 import { NguiAutoCompleteModule } from '@ngui/auto-complete';
 import { FlashMessagesModule } from 'angular2-flash-messages';
 import { JwtModule } from '@auth0/angular-jwt';
-
+import { NgxPermissionsModule, NgxPermissionsService, NgxRolesService } from 'ngx-permissions';
 
 import { AuthGuard } from './providers/auth.guard';
 
@@ -53,6 +53,7 @@ export function tokenGetter() {
     }),
     FormsModule,
     ReactiveFormsModule,
+    NgxPermissionsModule.forRoot(),
     RouterModule.forRoot([
       { 
         path: "login",
@@ -97,7 +98,41 @@ export function tokenGetter() {
     NgbModule.forRoot(),    
     NguiMapModule.forRoot({apiUrl: 'https://maps.google.com/maps/api/js?key=AIzaSyCVRKkMBanRLv3SJzkcc3XaYdGB-4q1_98&libraries=visualization,places,drawing'})
   ],
-  providers: [AuthService, AuthGuard, Data, NgbActiveModal],
+  providers: [
+          AuthService, 
+          AuthGuard, 
+          Data, 
+          NgbActiveModal,
+          {
+            provide: APP_INITIALIZER,
+            useFactory: (dt: Data, ps:NgxPermissionsService) => function()
+            { 
+              if (dt) {                  
+                console.log(ps);
+                return ps.loadPermissions(dt.getAllPermissions())                                     
+              }             
+            },
+            multi: true,
+            deps: [Data, NgxPermissionsService]
+          },
+          {
+            provide: APP_INITIALIZER,
+            useFactory: (dt: Data, rs:NgxRolesService) => function()
+            { 
+              var role = localStorage.getItem('role');
+              if (role) {                  
+                console.log(role);
+                if (role == "ADMIN") {
+                  return rs.addRole(role, dt.getPropertyOwnerPermissions())
+                } else if (role == "TECHNICIAN") {
+                  return rs.addRole(role, dt.getTechnicianPermissions())
+                }
+                
+              }             
+            },
+            multi: true,
+            deps: [Data, NgxRolesService]
+          }],
   bootstrap: [AppComponent]
 })
 
