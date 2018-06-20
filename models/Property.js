@@ -2,10 +2,10 @@ var mongoose = require('mongoose');
 mongoose.Promise = global.Promise;
 
 var PropertySchema = new mongoose.Schema({
-    PropertyName: String,
-    UserId: String,
+    PropertyName: {type: String, required: true},
+    UserId: {type: String, required: true},
     AreasOverlay: [{
-      //Address: String,
+      AnalysisId: String,      
       HarvestDate: String,
       HarvestType: String,
       AreaName: String,

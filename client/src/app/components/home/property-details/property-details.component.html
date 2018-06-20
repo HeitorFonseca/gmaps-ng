@@ -1,7 +1,19 @@
-<app-navbar></app-navbar>
+<!-- <app-navbar></app-navbar> -->
 
-  <div class="row">
-   
+<!-- Template for confirme remove property modal -->
+<ng-template #removePropertyModal>
+    <div class="modal-header">
+        <h4> Tem certeza que deseja remover a propriedade ? </h4>
+    </div>
+    <div class="modal-body">
+        <button class="btn btn-secondary mr-3" (click)="activeModal.close(true)">Excluir Propriedade</button>
+    </div>
+    <div class="modal-footer">
+    </div>
+</ng-template>
+
+<div class="row">
+
     <div class="col-xl-6 text-xs-center">
         <div class="card card-default">
             <div class="card-header">
@@ -12,44 +24,62 @@
                     <div *ngFor="let areas of property.AreasOverlay" class="col-5 card">
                         <div class="card-body">
                             <h6> {{areas.AreaName}} </h6>
-                            <p> <span class="small-5 float-left"> {{areas.Area}} ha  </span>
-                                <span class="small-7 float-right">{{areas.HarvestType}}</span>   </p>
+                            <p>
+                                <span class="small-5 float-left"> {{areas.Area}} ha </span>
+                                <span class="small-7 float-right">{{areas.HarvestType}}</span>
+                            </p>
                         </div>
                     </div>
-                </div>               
+                </div>
             </div>
         </div>
-        
+
         <div *ngxPermissionsOnly="'ADMIN'">
             <br>
             <h6> Ações </h6>
             <input class="btn btn-primary mr-2" (click)="onEditPropertyClick()" value="Editar Propriedade" />
             <input class="btn btn-secondary" (click)="onRemoveProperty(removePropertyModal)" value="Excluir Propriedade" />
         </div>
-        
-         <!-- Template for confirme remove property modal -->
-    <ng-template #removePropertyModal>
-        <div class="modal-header">
-            <h4> Tem certeza que deseja remover a propriedade ? </h4>
+        <br>
+        <br>
+        <br>
+        <div>
+            <ul class="nav nav-tabs">
+                <li class="nav-item">
+                    <a class="nav-link active" data-toggle="tab" href="#analises">Análises</a>
+                </li>   
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#novaAnalise">Nova Análise</a>
+                </li>                             
+            </ul>
+            <!-- <app-calendar></app-calendar> -->
         </div>
-        <div class="modal-body">
-            <button class="btn btn-secondary mr-3" (click)="activeModal.close(true)" >Excluir Propriedade</button>    
-        </div>
-        <div class="modal-footer">
-        </div>
-    </ng-template>
+        <div class="container-fluid">
+                <div class="tab-content">
+                    <div id="analises" class="tab-pane fade show active">
+                        <br>
+                        <app-calendar></app-calendar>
+                        <br>
+                    </div>     
+                    <div id="novaAnalise" class="tab-pane fade ">
+                        <p>Superman is a fictional superhero appearing in American comic books published by DC Comics. </p>
+                    </div>
+                                   
+                </div>
+            </div>
 
     </div>
     <div class="col-xl-6 text-xs-center">
         <div class="card card-default">
             <div class="card-body">
-                <ngui-map zoom="{{mapProps.zoom}}"  style="height: 400px"  disableDefaultUI="true" [center]="mapProps.center"  mapTypeId="satellite" (mapReady$)="onMapReady($event)">
-                    <data-layer >
-                    </data-layer>                          
-                </ngui-map>  
+                <ngui-map zoom="{{mapProps.zoom}}" style="height: 400px" disableDefaultUI="true" [center]="mapProps.center" mapTypeId="satellite"
+                    (mapReady$)="onMapReady($event)">
+                    <data-layer>
+                    </data-layer>
+                </ngui-map>
             </div>
         </div>
     </div>
-  </div>
 
- 
+
+</div>

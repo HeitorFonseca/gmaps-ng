@@ -9,6 +9,9 @@ import { NguiAutoCompleteModule } from '@ngui/auto-complete';
 import { FlashMessagesModule } from 'angular2-flash-messages';
 import { JwtModule } from '@auth0/angular-jwt';
 import { NgxPermissionsModule, NgxPermissionsService, NgxRolesService } from 'ngx-permissions';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { CalendarModule } from 'angular-calendar';
+import { DemoUtilsModule } from './components/home/calendar/calendar-utils/module';
 
 import { AuthGuard } from './providers/auth.guard';
 
@@ -25,6 +28,7 @@ import { PropertyDetailsComponent } from './components/home/property-details/pro
 
 import { Data } from './providers/data';
 import { FooterComponent } from './components/footer/footer.component';
+import { CalendarComponent } from './components/home/calendar/calendar.component';
 
 export function tokenGetter() {
   return localStorage.getItem('access_token');
@@ -40,12 +44,19 @@ export function tokenGetter() {
     DashboardComponent,
     PropertyComponent,
     PropertyDetailsComponent,
-    FooterComponent
+    FooterComponent,
+    CalendarComponent
   ],
   imports: [
     BrowserModule,
+    HttpClientModule,    
+    FormsModule,
+    DemoUtilsModule,
+    ReactiveFormsModule,
+    BrowserAnimationsModule, 
+    CalendarModule.forRoot(),
     FlashMessagesModule.forRoot(),
-    HttpClientModule,
+    NgxPermissionsModule.forRoot(),
     JwtModule.forRoot({
       config: {
         tokenGetter: tokenGetter,
@@ -53,9 +64,6 @@ export function tokenGetter() {
         blacklistedRoutes: ['localhost:3001/auth/']
       }
     }),
-    FormsModule,
-    ReactiveFormsModule,
-    NgxPermissionsModule.forRoot(),
     RouterModule.forRoot([
       { 
         path: "login",

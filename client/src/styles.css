@@ -2,7 +2,15 @@
 /* @import 'https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css'; */
 
 @import "~bootstrap/dist/css/bootstrap.css";
+@import "../node_modules/angular-calendar/css/angular-calendar.css";
 
 body {
     overflow-x: hidden;
 }
+  
+.cal-month-view .cal-day-cell.cal-today .cal-day-number {
+    font-size: 1.2em !important; 
+}
+
+.cal-month-view .cal-day-cell {
+    min-height: 50px; }

@@ -48,10 +48,17 @@ export class PropertyComponent implements OnInit {
   form: FormGroup;
   processingAdd;
   processingCancel;
+
   /* auxiliar */
   auxOverlay:any;
   message: string;
   messageClass;
+
+  checkBoxBtn = {
+    NDVI: true,
+    NDWI: true,
+    Produtividade: true
+  };
 
   /* remove */
   areas =  new FormArray([]);
