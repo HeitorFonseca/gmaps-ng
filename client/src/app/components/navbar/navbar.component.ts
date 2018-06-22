@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
@@ -10,7 +10,7 @@ import { FlashMessagesService } from 'angular2-flash-messages';
   styleUrls: ['./navbar.component.css']
 })
 
-export class NavbarComponent implements OnInit {
+export class NavbarComponent implements OnInit, AfterViewInit {
 
   username:string;
 
@@ -34,6 +34,16 @@ export class NavbarComponent implements OnInit {
   ngOnInit() {
     let obj = JSON.parse(localStorage.getItem('user'));
     console.log(obj);
+    if (obj) {
+      this.username = obj.username;
+    }
+
+    this.authService.getLoggedInName.subscribe(name => this.username = name);
+  }
+
+  ngAfterViewInit() {
+    let obj = JSON.parse(localStorage.getItem('user'));
+    console.log("after:",obj);
     if (obj) {
       this.username = obj.username;
     }

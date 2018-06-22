@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Output, EventEmitter } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { JwtHelperService } from '@auth0/angular-jwt';
@@ -10,11 +10,14 @@ interface LoginData {
   user;
 }
 
+
 @Injectable({
   providedIn: 'root'
 })
 
 export class AuthService {
+
+  @Output() getLoggedInName: EventEmitter<any> = new EventEmitter();
 
   domain = "http://localhost:3000/api/";
   authToken;
@@ -41,6 +44,7 @@ export class AuthService {
   // Function to login user
   login(user) {
     console.log(user);
+    this.getLoggedInName.emit(user.username);
     return this.http.post<any>(this.domain + 'authentication/login', user);
   }
 
