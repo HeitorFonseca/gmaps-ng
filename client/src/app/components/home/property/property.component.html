@@ -80,7 +80,8 @@
                             </div>
 
                             <input [disabled]="!form.valid || processingAdd" class="btn btn-primary mr-2" type="submit" value="Adicionar" />
-                            <input [disabled]="processingCancel" class="btn btn-secondary mr-2" type="reset" (click)="onResetClick()" value="Cancelar"/>
+                            <input [disabled]="processingCancel" class="btn btn-secondary mr-2" type="reset" (click)="onResetClick()" value="Cancelar"
+                            />
                             <input class="btn btn-secondary" (click)="onRegisterPropertyClick()" value="Confirmar" />
 
                             <!-- Custom Success/Error Message -->
@@ -93,35 +94,37 @@
                         <br>
 
                         <div class="col-lg-12">
-                            <div class="card card-default">
-                                <div *ngIf="property">
-                                    <div *ngFor="let area of property.AreasOverlay" class="card">
-                                        
-                                            <button (click)="onRemoveOverlayClick(area)">
-                                                <i class="far fa-times-circle"></i>
-                                                {{area.AreaName}}
-                                            </button>
-                                        
+
+                            <div class="row">
+                                <div *ngFor="let area of property.AreasOverlay" class="col-4 card">
+                                    <div class="card-block">
+                                        <a (click)="onRemoveOverlayClick(area)">
+                                            <i class="far fa-times-circle"></i>
+                                        </a>
+                                        {{area.AreaName}}
                                     </div>
                                 </div>
                             </div>
                         </div>
-
-                        <div class="row mt-4">
-                            <div class="btn-group" data-toggle="buttons">
-                                <label class="btn btn-primary" [class.active]="checkBoxBtn.NDVI">
+                        
+                        <hr>
+                        <h5 align="center"> Análises disponíveis </h5>
+                        <p align="center">Escolha as análises do seu interesse </p> 
+                        <div class="row mt-4 d-flex justify-content-center">
+                            <div class="btn-group " data-toggle="buttons">
+                                <label class="btn btn-primary " [class.active]="checkBoxBtn.NDVI">
                                     <input type="checkbox" [(ngModel)]="checkBoxBtn.NDVI" autocomplete="off"> Mapa de produção
                                 </label>
                             </div>
                         </div>
-                        <div class="row">
+                        <div class="row d-flex justify-content-center">
                             <div class="btn-group" data-toggle="buttons">
                                 <label class="btn btn-danger " [class.active]="checkBoxBtn.NDWI">
                                     <input type="checkbox" [(ngModel)]="checkBoxBtn.NDWI" autocomplete="off"> Indice de biomassa
                                 </label>
                             </div>
                         </div>
-                        <div class="row">
+                        <div class="row d-flex justify-content-center">
                             <div class="btn-group" data-toggle="buttons">
                                 <label class="btn btn-success " [class.active]="checkBoxBtn.Produtividade">
                                     <input type="checkbox" [(ngModel)]="checkBoxBtn.Produtividade" autocomplete="off"> Previsão de produtividade
@@ -133,6 +136,7 @@
             </div>
         </div>
     </div>
+    <!-- MAP DIV -->
     <div class="col-xl-7 text-xs-center">
         <div class="card card-default">
             <div class="card-body">

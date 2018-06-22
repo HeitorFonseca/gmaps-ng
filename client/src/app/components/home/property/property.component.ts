@@ -229,7 +229,7 @@ export class PropertyComponent implements OnInit {
 
     let usr = JSON.parse(localStorage.getItem('user'));
     
-    this.property.UserId = usr.userId;
+    this.property.OwnerId = usr.OwnerId;
 
     if (!this.propNameParameter) {
       this.propertyService.registerProperty(this.property).subscribe(data => {

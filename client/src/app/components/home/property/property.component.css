@@ -3,4 +3,10 @@
     border-color: #909090 !important;
 }
 
+.btn-primary:focus, .btn-primary.focus {
+    box-shadow: none !important;
+}
 
+.btn.focus, .btn:focus {
+    box-shadow: none !important;
+}

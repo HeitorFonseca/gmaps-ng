@@ -24,6 +24,12 @@ export class HomeComponent implements OnInit {
     zoom: 11
   };
 
+  checkBoxBtn = {
+    NDVI: true,
+    NDWI: true,
+    Produtividade: true
+  };
+
   constructor(private ref: ChangeDetectorRef) { }
 
   initialized(autocomplete: any) {

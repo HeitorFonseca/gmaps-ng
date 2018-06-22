@@ -71,10 +71,28 @@ router.post('/register', requireAdmin, function(req, res, next) {
   });
 });
 
+/*______________________________________________Analysis____________________________________________________*/
+
+/* Get analysis by property */
+
+router.get("/:name", function(req, res, next) { 
+  console.log("get property by name");
+  var query = { PropertyName: req.query.name };
+  console.log(query);
+  Property.find(query, function(err, properties) {
+      if (err) {
+          res.json(err);
+      }
+      console.log(properties);
+      res.json(properties);
+  });
+}); 
+
+
 function requireAdmin(request, response, next) {
   //console.log("request body is: ",request.body);
 
-  User.findById({_id: request.body.UserId}, (err, user) => {
+  User.findById({_id: request.body.OwnerId}, (err, user) => {
     if (err) {
       console.log("err");
 

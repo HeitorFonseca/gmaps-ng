@@ -23,6 +23,13 @@ mapProps: any = {
   drawingMode: '',
 };
 
+checkBoxBtn = {
+  NDVI: true,
+  NDWI: true,
+  Produtividade: true
+};
+
+propertyAnalyses;
 
   constructor(private route: ActivatedRoute, 
               private router: Router,
@@ -35,7 +42,7 @@ mapProps: any = {
 
     this.propertyService.getPropertyByName(propName).subscribe(data => {
       this.property = data[0];
-
+      
       console.log("data res", this.property);     
     })
 

@@ -20,11 +20,7 @@ export class NavbarComponent implements OnInit {
     private flashMessagesService: FlashMessagesService
   ) { 
     
-    let obj = JSON.parse(localStorage.getItem('user'));
-    console.log(obj);
-    if (obj) {
-      this.username = obj.username;
-    }
+    
   }
 
 
@@ -36,6 +32,11 @@ export class NavbarComponent implements OnInit {
   }
 
   ngOnInit() {
+    let obj = JSON.parse(localStorage.getItem('user'));
+    console.log(obj);
+    if (obj) {
+      this.username = obj.username;
+    }
   }
 
 }

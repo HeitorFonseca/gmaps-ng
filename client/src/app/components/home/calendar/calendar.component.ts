@@ -1,10 +1,12 @@
-import { Component, OnInit, ChangeDetectionStrategy,  ViewChild, TemplateRef  } from '@angular/core';
+import { Component, OnInit, OnChanges, SimpleChanges, ChangeDetectionStrategy, ViewChild, TemplateRef, Input } from '@angular/core';
 import { CalendarEvent, CalendarEventAction, CalendarEventTimesChangedEvent } from 'angular-calendar';
 import { colors } from './calendar-utils/colors';
 
-import { startOfDay,  endOfDay,  subDays,  addDays,  endOfMonth,  isSameDay,  isSameMonth, addHours} from 'date-fns';
+import { startOfDay, endOfDay, subDays, addDays, endOfMonth, isSameDay, isSameMonth, addHours } from 'date-fns';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Subject } from 'rxjs';
+
+import { Property, Analysis } from '../../../models/property';
 
 @Component({
   selector: 'app-calendar',
@@ -12,8 +14,9 @@ import { Subject } from 'rxjs';
   templateUrl: './calendar.component.html',
   styleUrls: ['./calendar.component.css']
 })
-export class CalendarComponent implements OnInit {
+export class CalendarComponent implements OnInit, OnChanges {
 
+  @Input() analyses: Array<Analysis>;
   @ViewChild('modalContent') modalContent: TemplateRef<any>;
 
   view: string = 'month';
@@ -44,34 +47,34 @@ export class CalendarComponent implements OnInit {
   refresh: Subject<any> = new Subject();
 
   events: CalendarEvent[] = [
-    {
-      start: subDays(startOfDay(new Date()), 1),
-      title: 'A 3 day event',
-      color: colors.red,
-      actions: this.actions
-    },
-    {
-      start: startOfDay(new Date()),
-      title: 'An event with no end date',
-      color: colors.yellow,
-      actions: this.actions
-    },
-    {
-      start: subDays(endOfMonth(new Date()), 3),
-      title: 'A long event that spans 2 months',
-      color: colors.blue
-    },
-    {
-      start: addHours(startOfDay(new Date()), 2),
-      title: 'A draggable and resizable event',
-      color: colors.yellow,
-      actions: this.actions,
-      resizable: {
-        beforeStart: true,
-        afterEnd: true
-      },
-      draggable: true
-    }
+    // {
+    //   start: subDays(startOfDay(new Date()), 1),
+    //   title: 'Indice de biomassa',
+    //   color: colors.red,
+    //   actions: this.actions
+    // },
+    // {
+    //   start: startOfDay(new Date()),
+    //   title: 'Previsão de produtividade',
+    //   color: colors.green,
+    //   actions: this.actions
+    // },
+    // {
+    //   start: subDays(endOfMonth(new Date()), 3),
+    //   title: 'Mapa de produção',
+    //   color: colors.blue
+    // },
+    // {
+    //   start: addHours(startOfDay(new Date()), 2),
+    //   title: 'Mapa de produção',
+    //   color: colors.blue,
+    //   actions: this.actions,
+    //   resizable: {
+    //     beforeStart: true,
+    //     afterEnd: true
+    //   },
+    //   draggable: true
+    // }
   ];
 
   activeDayIsOpen: boolean = true;
@@ -79,8 +82,44 @@ export class CalendarComponent implements OnInit {
   constructor(private modal: NgbModal) { }
 
   ngOnInit() {
+    // Get
+    console.log("analyses:", this.analyses);
+
+    if (this.analyses) {
+      this.addCalendarEvents(this.analyses);
+    }
   }
 
+  ngOnChanges(changes: SimpleChanges) {
+    console.log("changes:", changes);
+    if (changes['analyses']) {
+      let varChange = changes['analyses'];
+      this.analyses = varChange.currentValue;
+      this.addCalendarEvents(this.analyses);
+    }
+  }
+
+  /************************************ Functions ************************************/
+
+  addCalendarEvents(analyses: Array<Analysis>) {
+    var title;
+    var color;
+
+    for (let analysis of analyses) {
+      if (analysis.Type == '1') {
+        title = "Mapa de Produção"; color = colors.blue;
+      } else if (analysis.Type == '2') {
+        title = "Indice de Biomassa"; color = colors.red;
+      } else {
+        title = "Previsão de Produtividade"; color = colors.green;
+      }
+      console.log("Add: ", title);
+
+      this.addEvent(title, color, analysis.Date)
+    }
+  }
+
+  /********************************* Calendar Events *********************************/
   dayClicked({ date, events }: { date: Date; events: CalendarEvent[] }): void {
     if (isSameMonth(date, this.viewDate)) {
       if (
@@ -95,31 +134,28 @@ export class CalendarComponent implements OnInit {
     }
   }
 
-  eventTimesChanged({event, newStart, newEnd}: CalendarEventTimesChangedEvent): void {
-    event.start = newStart;
-    event.end = newEnd;
-    this.handleEvent('Dropped or resized', event);
-    this.refresh.next();
-  }
-
   handleEvent(action: string, event: CalendarEvent): void {
     this.modalData = { event, action };
+    console.log("analyses:", this.analyses);
     if (this.modalData.action != "Deleted") {
       this.modal.open(this.modalContent, { size: 'lg' });
     }
   }
 
-  addEvent(): void {
+  addEvent(title:string, color, date ): void {
+    console.log(new Date());
+    console.log(new Date(date));
     this.events.push({
-      title: 'Mapa de produção',
-      start: startOfDay(new Date()),
-      end: endOfDay(new Date()),
-      color: colors.blue,
-      draggable: true,
-      resizable: {
-        beforeStart: true,
-        afterEnd: true
-      }
+      title: title,
+      start: startOfDay(new Date(date)),
+      // end: endOfDay(new Date()),
+      color: color,
+      actions: this.actions,
+      // draggable: true,
+      // resizable: {
+      //   beforeStart: true,
+      //   afterEnd: true
+      // }
     });
     this.refresh.next();
   }
