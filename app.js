@@ -4,10 +4,13 @@ var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
 var mongoose = require('mongoose');
-var propertyRouter = require('./routes/properties');
-var authRouter = require('./routes/authentication');
 const bodyParser = require('body-parser'); // Parse incoming request bodies in a middleware before your handlers, available under the req.body property.
 var cors = require('cors');
+
+var propertyRouter = require('./routes/properties');
+var authRouter = require('./routes/authentication');
+var samplingPoints = require('./routes/samplingPoints');
+
 var app = express();
 
 app.use(logger('dev'));
@@ -20,6 +23,7 @@ app.use(express.static(path.join(__dirname, 'dist/gmaps-ng5')));
 app.use('/', express.static(path.join(__dirname, 'dist/gmaps-ng5')));
 app.use('/api/property', propertyRouter);
 app.use('/api/authentication', authRouter);
+app.use('/api/points', samplingPoints);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
