@@ -1,4 +1,5 @@
 export class Property {
+    Id: number;
     PropertyName: string;
     OwnerId: string;
     AreasOverlay: Array<AreasOverlay> = new Array<AreasOverlay>();    
@@ -10,14 +11,25 @@ export class AreasOverlay {
     AreaName: string;
     HarvestDate: string;
     HarvestType: string;
-    Lats: Array<string> = new Array<string>();
-    Lngs: Array<string> = new Array<string>();
+    Coordinates: Array<Array<number>> = new Array<Array<number>>();    
 }
 
 export class Analysis {
-    AnalysisId: string;
+    AnalysisId: string;     // BD analysis Id
     AreaId: string;
-    Type: string;
+    Type: string;           // Analysis Type
+    Date: string;           // Analysis Date    
+}
+
+export class SamplingPoints {
+    Id: string;
+    AnalysisId: string;
     Date: string;
-    // Response: string;
+    PropertyId: string;
+
+}
+
+export class Geometry {
+    Coordinates: Array<Array<number>> = new Array<Array<number>>();
+    Type: "Point";
 }

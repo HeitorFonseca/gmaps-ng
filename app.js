@@ -41,7 +41,6 @@ app.use(function(err, req, res, next) {
   res.send(err.status);
 });
 
-
 mongoose.connect('mongodb://localhost/Hidrofito', { promiseLibrary: require('bluebird') })
   .then(() =>  console.log('connection successful'))
   .catch((err) => console.error(err));

@@ -57,7 +57,7 @@
                 <div class="tab-content">
                     <div id="analises" class="tab-pane fade show active">
                         <br>
-                        <app-calendar [analyses]=property.Analyses></app-calendar>
+                        <app-calendar [analyses]=property.Analyses (selectedAnalysis)="selectedAnalysis($event)"></app-calendar>
                         <br>
                     </div>     
                     <div id="novaAnalise" class="tab-pane fade ">

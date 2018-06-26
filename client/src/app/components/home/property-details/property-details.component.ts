@@ -5,7 +5,7 @@ import { NguiMap,  DataLayer, DrawingManager} from '@ngui/map';
 import { NgbModal, NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { PropertyService } from '../../../services/property.service';
-import { Property } from '../../../models/property';
+import { Property, Analysis } from '../../../models/property';
 
 @Component({
   selector: 'app-property-details',
@@ -56,10 +56,14 @@ propertyAnalyses;
       var coords = new Array<any>();
       var bounds = new google.maps.LatLngBounds();
 
-      for (let i = 0; i < areas.Lats.length; i++) {
-        coords.push({lat: +areas.Lats[i], lng: +areas.Lngs[i]});
-        bounds.extend(new google.maps.LatLng(+areas.Lats[i], +areas.Lngs[i]));
-        globalBounds.extend(new google.maps.LatLng(+areas.Lats[i], +areas.Lngs[i]));
+      for (let i = 0; i < areas.Coordinates.length; i++) {
+        let coordinate = areas.Coordinates[i];
+        let lat = coordinate[0];
+        let lng = coordinate[1];
+
+        bounds.extend(new google.maps.LatLng(lat, lng));
+        globalBounds.extend(new google.maps.LatLng(lat, lng));
+        coords.push({ lat: lat, lng: lng });
       }
 
       var bermudaTriangle = new google.maps.Polygon({
@@ -125,5 +129,26 @@ propertyAnalyses;
     }).catch(() => {});    
 
     console.log('passou');
+  }
+
+  selectedAnalysis(analysis:Analysis) {
+    console.log("selectedAnalysis", analysis);
+
+    this.propertyService.getPropertyAnalysisPoints(1, analysis.Date, analysis.AnalysisId).subscribe(data => {
+        var points = data.Geometry;
+      console.log(data);
+        if (data.Geometry[0].Type == "Point") {
+          for (let points of data.Geometry[0].Coordinates) {
+            console.log(points);
+            var marker = new google.maps.Marker({
+              //FIX TODO
+              position: new google.maps.LatLng(points[1],points[0]),
+              map: this.map,
+                         
+            });
+
+          }
+        }
+    });
   }
 }

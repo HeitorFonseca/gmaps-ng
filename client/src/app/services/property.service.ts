@@ -5,7 +5,7 @@ import {Observable} from 'rxjs';
 import { Subject } from 'rxjs/Subject';
 import 'rxjs/add/operator/map';
 
-import { Property, AreasOverlay } from '../../../../models/property';
+import { Property, AreasOverla0y, SamplingPoints } from '../../../../models/property';
 
 
 @Injectable({
@@ -50,6 +50,16 @@ export class PropertyService {
     params = params.append('name', name);
 
     return this.http.delete(this.domain + 'property/name', {params: params}).map(res => res);
+  }
+
+  getPropertyAnalysisPoints(propertyId, date, analysisId) {
+
+    let params = new HttpParams();
+    params = params.append('propertyId', propertyId);
+    params = params.append('date', date);
+    params = params.append('analysisId', analysisId);
+
+    return this.http.get<SamplingPoints>(this.domain + 'points/propertyId/date/analysisId', {params: params}).map(res => res);
   }
 
 }

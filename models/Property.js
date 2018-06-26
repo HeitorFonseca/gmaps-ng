@@ -1,7 +1,9 @@
 var mongoose = require('mongoose');
+const AutoIncrement = require('mongoose-sequence')(mongoose);
+
 mongoose.Promise = global.Promise;
 
-var PropertySchema = new mongoose.Schema({
+var PropertySchema = new mongoose.Schema({    
     PropertyName: {type: String, required: true},
     OwnerId: {type: String, required: true},
     AreasOverlay: [{
@@ -9,8 +11,7 @@ var PropertySchema = new mongoose.Schema({
       HarvestType: String,
       AreaName: String,
       Area: Number,
-      Lats: { type : Array , "default" : [] },
-      Lngs: { type : Array , "default" : [] }
+      Coordinates: [ mongoose.Schema.Types.Mixed ],
     }],
     Analyses: [{
       AnalysisId: {type: String, required: true},
@@ -21,5 +22,7 @@ var PropertySchema = new mongoose.Schema({
     }],
     
   });
+
+  PropertySchema.plugin(AutoIncrement, {inc_field: 'id'});
 
   module.exports = mongoose.model('property', PropertySchema);

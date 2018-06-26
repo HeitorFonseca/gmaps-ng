@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 var auth = require('authorized');
 
-var Property = require('../models/property.js');
+var Property = require('../models/property');
 var User = require('../models/user'); // Import User Model Schema
 
 /* GET ALL PROPERTIES */
@@ -33,6 +33,8 @@ router.put('/:name', function(req, res, next) {
   console.log("edit by name:", req.params, " ", req.body   );
 
   var query = { PropertyName: req.body.PropertyName };
+  console.log(query);
+
   Property.findOneAndUpdate(query, req.body, function (err, post) {
     if (err) return next(err);
     res.json(post);
@@ -83,6 +85,7 @@ router.get("/:name", function(req, res, next) {
       if (err) {
           res.json(err);
       }
+
       console.log(properties);
       res.json(properties);
   });

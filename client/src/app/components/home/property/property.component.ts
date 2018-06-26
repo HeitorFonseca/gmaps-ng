@@ -149,8 +149,8 @@ export class PropertyComponent implements OnInit {
           for (let coord of overlay.getPath().getArray()) {
             let lat = coord.lat();
             let lng = coord.lng();
-            areasOverlay.Lats.push(lat.toString());
-            areasOverlay.Lngs.push(lng.toString());
+            areasOverlay.Coordinates.push(new Array<number>(lat, lng));
+            //areasOverlay.Lngs.push(lng.toString());
           }
 
           this.auxOverlay = areasOverlay;
@@ -201,7 +201,7 @@ export class PropertyComponent implements OnInit {
     this.property.AreasOverlay[this.property.AreasOverlay.length-1].Area = this.form.controls['propertyArea'].value
     // Date
     let dt = this.form.controls['date'].value;
-    this.property.AreasOverlay[this.property.AreasOverlay.length-1].HarvestDate = dt.day + "/" + dt.month + "/" + dt.year;
+    this.property.AreasOverlay[this.property.AreasOverlay.length-1].HarvestDate = dt.year + "-" + dt.month + "-" + dt.day;
     // Harvest Type
     this.property.AreasOverlay[this.property.AreasOverlay.length-1].HarvestType =  this.form.controls['havestType'].value;
     // Area Name
@@ -402,10 +402,14 @@ export class PropertyComponent implements OnInit {
       var bounds = new google.maps.LatLngBounds();
       var coords = new Array<any>();
 
-      for (let i = 0; i < areas.Lats.length; i++) {
-        bounds.extend(new google.maps.LatLng(+areas.Lats[i], +areas.Lngs[i]));
-        globalBounds.extend(new google.maps.LatLng(+areas.Lats[i], +areas.Lngs[i]));
-        coords.push({ lat: +areas.Lats[i], lng: +areas.Lngs[i] });
+      for (let i = 0; i < areas.Coordinates.length; i++) {
+        let coordinate = areas.Coordinates[i];
+        let lat = coordinate[0];
+        let lng = coordinate[1];
+
+        bounds.extend(new google.maps.LatLng(lat, lng));
+        globalBounds.extend(new google.maps.LatLng(lat, lng));
+        coords.push({ lat: lat, lng: lng });
       }
 
       var bermudaTriangle = new google.maps.Polygon({

@@ -1,10 +1,12 @@
-import { Component, OnInit, OnChanges, SimpleChanges, ChangeDetectionStrategy, ViewChild, TemplateRef, Input } from '@angular/core';
+import { Component, OnInit, OnChanges, SimpleChanges, ChangeDetectionStrategy, ViewChild, TemplateRef, Input, Output, EventEmitter } from '@angular/core';
 import { CalendarEvent, CalendarEventAction, CalendarEventTimesChangedEvent } from 'angular-calendar';
 import { colors } from './calendar-utils/colors';
 
 import { startOfDay, endOfDay, subDays, addDays, endOfMonth, isSameDay, isSameMonth, addHours } from 'date-fns';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Subject } from 'rxjs';
+
+import { PropertyService } from '../../../services/property.service';
 
 import { Property, Analysis } from '../../../models/property';
 
@@ -17,6 +19,8 @@ import { Property, Analysis } from '../../../models/property';
 export class CalendarComponent implements OnInit, OnChanges {
 
   @Input() analyses: Array<Analysis>;
+  @Output() selectedAnalysis = new EventEmitter();
+
   @ViewChild('modalContent') modalContent: TemplateRef<any>;
 
   view: string = 'month';
@@ -46,40 +50,12 @@ export class CalendarComponent implements OnInit, OnChanges {
 
   refresh: Subject<any> = new Subject();
 
-  events: CalendarEvent[] = [
-    // {
-    //   start: subDays(startOfDay(new Date()), 1),
-    //   title: 'Indice de biomassa',
-    //   color: colors.red,
-    //   actions: this.actions
-    // },
-    // {
-    //   start: startOfDay(new Date()),
-    //   title: 'Previsão de produtividade',
-    //   color: colors.green,
-    //   actions: this.actions
-    // },
-    // {
-    //   start: subDays(endOfMonth(new Date()), 3),
-    //   title: 'Mapa de produção',
-    //   color: colors.blue
-    // },
-    // {
-    //   start: addHours(startOfDay(new Date()), 2),
-    //   title: 'Mapa de produção',
-    //   color: colors.blue,
-    //   actions: this.actions,
-    //   resizable: {
-    //     beforeStart: true,
-    //     afterEnd: true
-    //   },
-    //   draggable: true
-    // }
-  ];
+  events: CalendarEvent[] = [];
 
   activeDayIsOpen: boolean = true;
 
-  constructor(private modal: NgbModal) { }
+  constructor(private modal: NgbModal,
+              private propertyService: PropertyService) { }
 
   ngOnInit() {
     // Get
@@ -104,7 +80,7 @@ export class CalendarComponent implements OnInit, OnChanges {
   addCalendarEvents(analyses: Array<Analysis>) {
     var title;
     var color;
-
+    let index = 0;
     for (let analysis of analyses) {
       if (analysis.Type == '1') {
         title = "Mapa de Produção"; color = colors.blue;
@@ -115,7 +91,9 @@ export class CalendarComponent implements OnInit, OnChanges {
       }
       console.log("Add: ", title);
 
-      this.addEvent(title, color, analysis.Date)
+      this.addEvent(title, color, analysis.Date, index)
+
+      index++;
     }
   }
 
@@ -137,25 +115,33 @@ export class CalendarComponent implements OnInit, OnChanges {
   handleEvent(action: string, event: CalendarEvent): void {
     this.modalData = { event, action };
     console.log("analyses:", this.analyses);
-    if (this.modalData.action != "Deleted") {
+
+    if (action == "Clicked")  {
+      let index = event.id;
+
+      // let dt = event.start.toJSON().split('T')[0]; // Json returns yyyy-mm-dd-T-hh-mm
+     
+      this.selectedAnalysis.emit(this.analyses[index]);
+
+      // this.propertyService.getPropertyAnalysisPoints(1, dt, this.analyses[index].AnalysisId).subscribe(data => {
+      //     console.log("ALL POINTS:", data);
+      // });
+    }
+    else if (this.modalData.action != "Deleted") {
       this.modal.open(this.modalContent, { size: 'lg' });
     }
+
   }
 
-  addEvent(title:string, color, date ): void {
-    console.log(new Date());
-    console.log(new Date(date));
+  addEvent(title:string, color, date:string, index ): void {
+    
     this.events.push({
       title: title,
-      start: startOfDay(new Date(date)),
+      start: new Date(date.replace('-','/')),
       // end: endOfDay(new Date()),
       color: color,
       actions: this.actions,
-      // draggable: true,
-      // resizable: {
-      //   beforeStart: true,
-      //   afterEnd: true
-      // }
+      id: index
     });
     this.refresh.next();
   }
