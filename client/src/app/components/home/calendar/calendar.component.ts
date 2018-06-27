@@ -64,6 +64,8 @@ export class CalendarComponent implements OnInit, OnChanges {
     if (this.analyses) {
       this.addCalendarEvents(this.analyses);
     }
+
+    //console.log("modal content:", this.modalContent);
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -123,9 +125,7 @@ export class CalendarComponent implements OnInit, OnChanges {
      
       this.selectedAnalysis.emit(this.analyses[index]);
 
-      // this.propertyService.getPropertyAnalysisPoints(1, dt, this.analyses[index].AnalysisId).subscribe(data => {
-      //     console.log("ALL POINTS:", data);
-      // });
+      
     }
     else if (this.modalData.action != "Deleted") {
       this.modal.open(this.modalContent, { size: 'lg' });

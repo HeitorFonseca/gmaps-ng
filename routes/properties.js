@@ -36,9 +36,16 @@ router.put('/:name', function(req, res, next) {
   console.log(query);
 
   Property.findOneAndUpdate(query, req.body, function (err, post) {
-    if (err) return next(err);
-    res.json(post);
+       
+    if (err) {         
+      res.json({ success: false, message: 'Could not update property. Error: ', err }); // Return error if not related to validation              
+    } else {
+      res.json({ success: true, message: 'Property updated!' }); // Return success
+    }    
+
   });
+
+  
 });
 
 /* DELETE Property */
@@ -56,8 +63,7 @@ router.delete('/:name', function(req, res, next) {
 router.post('/register', requireAdmin, function(req, res, next) {
   console.log(req.body);
   Property.create(req.body, function (err, post) {
-    
-    
+        
     if (err) {
       // Check if error is an error indicating duplicate account
       if (err.code === 11000) {

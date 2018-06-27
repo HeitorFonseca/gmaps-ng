@@ -1,4 +1,3 @@
-<!-- <app-navbar></app-navbar> -->
 
 <!-- Template for confirme remove property modal -->
 <ng-template #removePropertyModal>
@@ -9,6 +8,28 @@
         <button class="btn btn-secondary mr-3" (click)="activeModal.close(true)">Excluir Propriedade</button>
     </div>
     <div class="modal-footer">
+    </div>
+</ng-template>
+
+<!-- Template for when click in sampling points -->
+
+<ng-template #modalContent let-close="close">
+    <div class="modal-header">
+        <h5 class="modal-title">Event action occurred</h5>
+        <button type="button" class="close" (click)="close()">
+        <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <div>
+        Action:        
+        </div>
+        <div>
+        Event:        
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" (click)="close()">OK</button>
     </div>
 </ng-template>
 
@@ -84,8 +105,9 @@
                                 </label>
                             </div>
                         </div>
-                    </div>
-                                   
+
+                        <input class="btn btn-secondary" (click)="onRequestAnalysisClick()" value="Confirmar" />
+                    </div>                                   
                 </div>
             </div>
 

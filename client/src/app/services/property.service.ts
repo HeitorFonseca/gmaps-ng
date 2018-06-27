@@ -27,7 +27,7 @@ export class PropertyService {
   // Function to register property
   editProperty(property:Property) {
     console.log("edit called", property);
-    return this.http.put(this.domain + 'property/name', property).map(res => res);
+    return this.http.put<any>(this.domain + 'property/name', property).map(res => res);
   }
 
   // Function to get properties

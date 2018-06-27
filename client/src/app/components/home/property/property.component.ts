@@ -248,6 +248,14 @@ export class PropertyComponent implements OnInit {
     else {
       this.propertyService.editProperty(this.property).subscribe(data => {
         console.log("edit property");
+        if(!data.success) {
+          this.messageClass = 'alert alert-danger';
+          this.message = data.message;
+          this.processingAdd = false;
+        } else {
+          this.messageClass = 'alert alert-success';
+          this.message = data.message;
+        }
         console.log(data);
       });
     }

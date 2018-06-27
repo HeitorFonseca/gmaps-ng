@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, TemplateRef, NgZone   } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { } from '@types/googlemaps';
 import { NguiMap,  DataLayer, DrawingManager} from '@ngui/map';
@@ -12,7 +12,12 @@ import { Property, Analysis } from '../../../models/property';
   templateUrl: './property-details.component.html',
   styleUrls: ['./property-details.component.css']
 })
+
 export class PropertyDetailsComponent implements OnInit {
+
+@ViewChild('clickInPointsModal') clickInPointsModal: TemplateRef<any>;
+@ViewChild('modalContent') modalContent: TemplateRef<any>;
+
 
 map:any;
 property:Property = new Property();
@@ -30,12 +35,14 @@ checkBoxBtn = {
 };
 
 propertyAnalyses;
+makerLabels: Array<any> = new Array<any>();
 
   constructor(private route: ActivatedRoute, 
               private router: Router,
               private propertyService:PropertyService,
               private activeModal: NgbActiveModal,
-              private modalService: NgbModal) { }
+              private modalService: NgbModal,
+              private zone: NgZone) { }
 
   ngOnInit() {
     var propName = this.route.snapshot.paramMap.get('propertyName');
@@ -45,6 +52,8 @@ propertyAnalyses;
       
       console.log("data res", this.property);     
     })
+
+    console.log("modalcontent2:", this.modalContent);
 
   }
 
@@ -82,12 +91,14 @@ propertyAnalyses;
         map: this.map,
         icon: {
           path: google.maps.SymbolPath.CIRCLE,
-          scale: 0
+          scale: 0,
+          
         },
         label: {
           text: areas.AreaName,
           color: 'white',
-        }
+        },
+        
       });     
     }
 
@@ -131,21 +142,43 @@ propertyAnalyses;
     console.log('passou');
   }
 
+  onRequestAnalysisClick() {
+    console.log("request analysis");
+  }
+
   selectedAnalysis(analysis:Analysis) {
     console.log("selectedAnalysis", analysis);
+
+    console.log("modalcontent3:", this.modalContent);
 
     this.propertyService.getPropertyAnalysisPoints(1, analysis.Date, analysis.AnalysisId).subscribe(data => {
         var points = data.Geometry;
       console.log(data);
         if (data.Geometry[0].Type == "Point") {
           for (let points of data.Geometry[0].Coordinates) {
-            console.log(points);
+            //console.log(points);
+
             var marker = new google.maps.Marker({
               //FIX TODO
               position: new google.maps.LatLng(points[1],points[0]),
               map: this.map,
+              icon: {
+                path: google.maps.SymbolPath.CIRCLE,
+                scale: 3,
+                strokeWeight: 1,
+              },
                          
             });
+
+            marker.addListener('click', function(){
+             
+                console.log(this.modalContent);
+                const modalRef = this.modalService.open(this.modalContent, { size: 'lg' });    
+                this.activeModal = modalRef; 
+            
+            }.bind(this));          
+
+            this.makerLabels.push(marker);
 
           }
         }
