@@ -29,6 +29,7 @@ import { PropertyDetailsComponent } from './components/home/property-details/pro
 import { Data } from './providers/data';
 import { FooterComponent } from './components/footer/footer.component';
 import { CalendarComponent } from './components/home/calendar/calendar.component';
+import { PointFormComponent } from './components/home/property-details/point-form/point-form.component';
 
 export function tokenGetter() {
   return localStorage.getItem('access_token');
@@ -45,7 +46,8 @@ export function tokenGetter() {
     PropertyComponent,
     PropertyDetailsComponent,
     FooterComponent,
-    CalendarComponent
+    CalendarComponent,
+    PointFormComponent
   ],
   imports: [
     BrowserModule,

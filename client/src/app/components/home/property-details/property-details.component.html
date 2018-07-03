@@ -15,22 +15,27 @@
 
 <ng-template #modalContent let-close="close">
     <div class="modal-header">
-        <h5 class="modal-title">Event action occurred</h5>
+        <!-- <h5 class="modal-title">Event action occurred</h5>
         <button type="button" class="close" (click)="close()">
         <span aria-hidden="true">&times;</span>
-        </button>
+        </button> -->
+        <h4 class="text-center">Relatório de recomendação</h4>
     </div>
     <div class="modal-body">
-        <div>
+        <!-- <div>
         Action:        
         </div>
         <div>
         Event:        
-        </div>
+        </div> -->
+        <app-point-form></app-point-form>
+
     </div>
     <div class="modal-footer">
         <button type="button" class="btn btn-outline-secondary" (click)="close()">OK</button>
     </div>
+
+
 </ng-template>
 
 <div class="row">

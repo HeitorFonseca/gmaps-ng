@@ -1,0 +1,135 @@
+<!-- main app container -->
+  <div class="container">
+      <div class="row">
+          <div class="col-md-8 offset-md-2">
+              <!-- <h2>Relatório de recomendação</h2> -->
+              <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+
+                <!-- Evaluación de Rastrojo / Cobertura -->
+                  <div class="form-group">
+                      <label>Fazenda</label>
+                      <input type="text" formControlName="propertyName" class="form-control" />                        
+                  </div>
+                  <div class="form-group">
+                      <label>Cliente</label>
+                      <input type="text" formControlName="clientName" class="form-control" />                        
+                  </div>
+                  
+                  <div class="form-group">
+                      <label>lote</label>
+                      <input type="text" formControlName="allotment" class="form-control" />                        
+                  </div>
+                  <div class="form-group">
+                      <label>Ponto</label>
+                      <input type="text" formControlName="pointNumber" class="form-control" />                        
+                  </div>
+                  
+                  <div class="form-group">
+                      <label>Coordenadas</label>
+                      <input type="text" formControlName="latitude" class="form-control" />   
+                      <input type="text" formControlName="longitude" class="form-control" />                                             
+                  </div>
+
+                  <div class="form-group">
+                      <label>Análise de solo</label>
+                      <input type="text" formControlName="soilAnalysis" class="form-control" />                        
+                  </div>
+
+                  <div class="form-group">
+                      <label>Compactação</label>
+                      <input type="text" formControlName="compaction" class="form-control" />                        
+                  </div>
+                  
+                  <div class="form-group">
+                      <label>Tipo de avaliação</label>
+                      <input type="text" formControlName="evaluationType" class="form-control" />                        
+                  </div>
+
+                  <div class="form-group">
+                      <label>Data</label>
+                      <input type="text" formControlName="date" class="form-control" />                        
+                  </div>
+
+                  <div class="form-group">
+                      <label>Material</label>
+                      <input type="text" formControlName="material" class="form-control" />                        
+                  </div>
+
+                  <div class="form-group">
+                      <label>Peso (kg) </label>
+                      <input type="text" formControlName="weight" class="form-control" />                        
+                  </div>
+                  <!-- Evaluación de Rastrojo / Cobertura -->
+
+                  <!-- Evaluación de Siembra / Plantio -->
+                  <div class="form-group">
+                      <label>Umidade do solo</label>
+                      <input type="text" formControlName="soilHumidity" class="form-control" />                        
+                  </div>
+
+                  <div class="form-group">
+                      <label>Dessecação</label>
+                      <input type="text" formControlName="desiccation" class="form-control" />                        
+                  </div>
+
+                  <div class="form-group">
+                      <label>Comentário Extra</label>
+                      <input type="text" formControlName="extraComments" class="form-control" />                        
+                  </div>
+
+                  <div class="form-group">
+                      <label>Velocidade da semeadura (Km/h)</label>
+                      <input type="text" formControlName="sowingData" class="form-control" />                        
+                  </div>
+
+                  <div class="form-group">
+                      <label>Semeador</label>
+                      <input type="text" formControlName="sower" class="form-control" />                        
+                  </div>
+
+                  <div class="form-group">
+                      <label>Profundidade (cm)</label>
+                      <input type="text" formControlName="depth" class="form-control" />                        
+                  </div>
+
+                  <div class="form-group">
+                      <label>Espaçamento (cm)</label>
+                      <input type="text" formControlName="spacing" class="form-control" />                        
+                  </div>
+
+                  <div class="form-group">
+                      <label>Cultivo/Variedade</label>
+                      <input type="text" formControlName="cultivation" class="form-control" />                        
+                  </div>
+
+                  <div class="form-group">
+                      <label>Germinação (%)</label>
+                      <input type="text" formControlName="germination" class="form-control" />                        
+                  </div>
+
+                  <!-- Evaluación de Siembra / Plantio -->
+
+
+                  <div class="form-group">
+                      <label>Email</label>
+                      <input type="text" formControlName="email" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.email.errors }" />
+                      <div *ngIf="submitted && f.email.errors" class="invalid-feedback">
+                          <div *ngIf="f.email.errors.required">Email is required</div>
+                          <div *ngIf="f.email.errors.email">Email must be a valid email address</div>
+                      </div>
+                  </div>
+                  <div class="form-group">
+                      <label>Password</label>
+                      <input type="password" formControlName="password" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.password.errors }" />
+                      <div *ngIf="submitted && f.password.errors" class="invalid-feedback">
+                          <div *ngIf="f.password.errors.required">Password is required</div>
+                          <div *ngIf="f.password.errors.minlength">Password must be at least 6 characters</div>
+                      </div>
+                  </div>
+                  <div class="form-group">
+                      <button [disabled]="loading" class="btn btn-primary">Register</button>
+                  </div>
+              </form>
+          </div>
+      </div>
+  </div>
