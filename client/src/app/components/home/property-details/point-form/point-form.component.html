@@ -1,9 +1,9 @@
 <!-- main app container -->
   <div class="container">
       <div class="row">
-          <div class="col-md-8 offset-md-2">
+          <div class="col-md-12 offset-md-0">
               <!-- <h2>Relatório de recomendação</h2> -->
-              <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+              <form [formGroup]="coverEvaluation" (ngSubmit)="onSubmit()">
 
                 <!-- Evaluación de Rastrojo / Cobertura -->
                   <div class="form-group">
@@ -59,11 +59,13 @@
                       <label>Peso (kg) </label>
                       <input type="text" formControlName="weight" class="form-control" />                        
                   </div>
-                  <!-- Evaluación de Rastrojo / Cobertura -->
+                </form>
+                <!-- Evaluación de Rastrojo / Cobertura -->
 
-                  <!-- Evaluación de Siembra / Plantio -->
+                <!-- Evaluación de Siembra / Plantio -->
+                <form [formGroup]="sowingEvaluation" (ngSubmit)="onSubmit()">
                   <div class="form-group">
-                      <label>Umidade do solo</label>
+                      <label>Humidade do solo</label>
                       <input type="text" formControlName="soilHumidity" class="form-control" />                        
                   </div>
 
@@ -107,7 +109,78 @@
                       <input type="text" formControlName="germination" class="form-control" />                        
                   </div>
 
+                  <label>Distribuição de sementes - Lote ponto x</label>
+                  <!-- <form class="form-inline">
+                    <div class="form-group" *ngFor="let p of line1Points; let i = index">
+                      <input type="text" class="form-control" placeholder="Input 1" [(ngModel)]=p.point [ngModelOptions]="{standalone: true}" name="l{{i}}" (click)="clickInLine1(i)"/>
+                    </div>
+
+                    <div class="form-group" *ngFor="let p of line2Points; let i = index">
+                      <input type="text" class="form-control" placeholder="Input 2" [(ngModel)]=p.point [ngModelOptions]="{standalone: true}" name="l2{{i}}"/>
+                    </div>
+                  </form> -->
+
+                  <form class="form-inline">
+                      <div class="form-group" *ngFor="let p of points; let i = index">
+                        <div *ngIf="p.line1">
+                          <input type="text" class="form-control" placeholder="Input 1" [(ngModel)]=p.line1 [ngModelOptions]="{standalone: true}" name="l{{i}}" (click)="clickInLine1(i)"/>
+                        </div>
+                        <div *ngIf="p.line2">
+                          <input type="text" class="form-control" placeholder="Input 2" [(ngModel)]=p.line2 [ngModelOptions]="{standalone: true}" name="l2{{i}}" (click)="clickInLine2(i)"/>
+                        </div>
+                      </div>                       
+
+                    </form>
+
+                  <div class="form-group">
+                      <label>Total de sementes em 4 metros</label>
+                      <input type="text" formControlName="totalSeedsIn4Meters" class="form-control" />                        
+                  </div>
+
+                  <div class="form-group">
+                      <label>Comentários extras:</label>
+                      <input type="text" formControlName="extraComments2" class="form-control" />                        
+                  </div>                               
+                  
                   <!-- Evaluación de Siembra / Plantio -->
+                </form>
+
+                <!-- Evaluación de Plantas -->
+                <form [formGroup]="plantEvaluation" (ngSubmit)="onSubmit()">
+                  
+                  <div class="form-group">
+                      <label>Fazenda</label>
+                      <input type="text" formControlName="propertyName" class="form-control" />                        
+                  </div>
+                  <div class="form-group">
+                      <label>Lote</label>
+                      <input type="text" formControlName="allotment" class="form-control" />                        
+                  </div>
+
+                  <div class="form-group">
+                      <label>Coordenadas</label>
+                      <input type="text" formControlName="latitude" class="form-control" />   
+                      <input type="text" formControlName="longitude" class="form-control" />                                             
+                  </div>
+
+                  <div class="form-group">
+                      <label>Estado da planta</label>
+                      <input type="text" formControlName="plantStage" class="form-control" />                        
+                  </div>
+                  
+                  <div class="form-group">
+                      <label>Data</label>
+                      <input type="text" formControlName="date" class="form-control" />                        
+                  </div>
+                  
+                  <label>Distribuição das plantas - Lote __ - ponto x</label>
+
+                  <div class="form-group">
+                      <label>Total de plantas em 10 metros</label>
+                      <input type="text" formControlName="totalPlantsIn10Meters" class="form-control" />                        
+                  </div>
+
+                <!-- Evaluación de Plantas -->
 
 
                   <div class="form-group">

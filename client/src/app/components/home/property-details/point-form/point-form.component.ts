@@ -8,12 +8,28 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 })
 export class PointFormComponent implements OnInit {
 
-  registerForm: FormGroup;
+  coverEvaluation: FormGroup;
+  sowingEvaluation:FormGroup;
+  plantEvaluation:FormGroup;
   submitted = false;
+
+  points:Array<any> = [
+    {
+      line1: ' ',
+      line2: ' ',
+    },
+    {
+      line1: ' ',
+      line2: '',
+    }
+  ] 
+
+  line1Points:Array<any> = [ {point:''}, {point:''}];
+  line2Points:Array<any> = [ {point:''}, {point:''}];
 
   constructor(private formBuilder: FormBuilder) {
 
-    this.registerForm = this.formBuilder.group({
+    this.coverEvaluation = this.formBuilder.group({
       propertyName: ['', Validators.required],
       clientName: ['', Validators.required],
       allotment: ['', Validators.required],
@@ -26,25 +42,61 @@ export class PointFormComponent implements OnInit {
       date: ['', Validators.required],     
       material: ['', Validators.required],     
       weight: ['', Validators.required],     
-      soilHumidity: ['', Validators.required],     
-      desiccation: ['', Validators.required],     
-      extraComments: ['', Validators.required],     
-      sowingData: ['', Validators.required],     
-      sower: ['', Validators.required],     
-      depth: ['', Validators.required],     
-      spacing: ['', Validators.required],     
-      cultivation: ['', Validators.required],     
-      germination: ['', Validators.required],     
-
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]]
+      
   });
 
-   }
+  this.sowingEvaluation = this.formBuilder.group({    
+    soilHumidity: ['', Validators.required],     
+    desiccation: ['', Validators.required],     
+    extraComments: ['', Validators.required],     
+    sowingData: ['', Validators.required],     
+    sower: ['', Validators.required],     
+    depth: ['', Validators.required],     
+    spacing: ['', Validators.required],     
+    cultivation: ['', Validators.required],     
+    germination: ['', Validators.required],     
+    totalSeedsIn4Meters: ['', Validators.required],     
+    extraComments2: ['', Validators.required],     
+
+    email: ['', [Validators.required, Validators.email]],
+    password: ['', [Validators.required, Validators.minLength(6)]]
+  });
+
+  this.plantEvaluation = this.formBuilder.group({ 
+    propertyName: ['', Validators.required],  
+    allotment: ['', Validators.required],
+    latitude: ['', Validators.required],
+    longitude: ['', Validators.required],  
+    plantStage: ['', Validators.required],     
+    date: ['', Validators.required],     
+    totalPlantsIn10Meters: ['', Validators.required],     
+
+    email: ['', [Validators.required, Validators.email]],
+    password: ['', [Validators.required, Validators.minLength(6)]]
+  });
+}
 
   ngOnInit() {
   }
 
   // convenience getter for easy access to form fields
-  get f() { return this.registerForm.controls; }
+  get f() { return this.coverEvaluation.controls; }
+
+
+  clickInLine1(index) {
+    console.log("click in line point ", index);
+    if (index == this.line1Points.length - 1)
+      this.line1Points.push({point:''});
+
+    console.log(this.points);
+
+  }
+
+  clickInLine2(index) {
+    console.log("click in line point ", index);
+    if (index == this.line1Points.length - 1)
+      this.line1Points.push({point:''});
+
+    console.log(this.points);
+  }
 }
