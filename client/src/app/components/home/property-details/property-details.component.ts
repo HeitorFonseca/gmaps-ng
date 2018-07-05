@@ -1,7 +1,7 @@
-import { Component, OnInit, ViewChild, TemplateRef, NgZone   } from '@angular/core';
+import { Component, OnInit, ViewChild, TemplateRef, NgZone } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { } from '@types/googlemaps';
-import { NguiMap,  DataLayer, DrawingManager} from '@ngui/map';
+import { NguiMap, DataLayer, DrawingManager } from '@ngui/map';
 import { NgbModal, NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { PropertyService } from '../../../services/property.service';
@@ -15,45 +15,44 @@ import { Property, Analysis } from '../../../models/property';
 
 export class PropertyDetailsComponent implements OnInit {
 
-@ViewChild('clickInPointsModal') clickInPointsModal: TemplateRef<any>;
-@ViewChild('modalContent') modalContent: TemplateRef<any>;
+  @ViewChild('clickInPointsModal') clickInPointsModal: TemplateRef<any>;
+  @ViewChild('modalContent') modalContent: TemplateRef<any>;
 
 
-map:any;
-property:Property = new Property();
+  map: any;
+  property: Property = new Property();
 
-mapProps: any = {
-  center: 'Recife',
-  zoom: 12,
-  drawingMode: '',
-};
+  mapProps: any = {
+    center: 'Recife',
+    zoom: 12,
+    drawingMode: '',
+  };
 
-checkBoxBtn = {
-  NDVI: true,
-  NDWI: true,
-  Produtividade: true
-};
+  checkBoxBtn = {
+    NDVI: true,
+    NDWI: true,
+    Produtividade: true
+  };
 
-propertyAnalyses;
-makerLabels: Array<any> = new Array<any>();
+  propertyAnalyses;
+  makerLabels: Array<any> = new Array<any>();
 
-  constructor(private route: ActivatedRoute, 
-              private router: Router,
-              private propertyService:PropertyService,
-              private activeModal: NgbActiveModal,
-              private modalService: NgbModal,
-              private zone: NgZone) { }
+  constructor(private route: ActivatedRoute,
+    private router: Router,
+    private propertyService: PropertyService,
+    private activeModal: NgbActiveModal,
+    private modalService: NgbModal,
+    private zone: NgZone) { }
 
   ngOnInit() {
     var propName = this.route.snapshot.paramMap.get('propertyName');
 
     this.propertyService.getPropertyByName(propName).subscribe(data => {
       this.property = data[0];
-      
-      console.log("data res", this.property);     
+
+      console.log("data res", this.property);
     })
 
-    console.log("modalcontent2:", this.modalContent);
 
   }
 
@@ -75,7 +74,7 @@ makerLabels: Array<any> = new Array<any>();
         coords.push({ lat: lat, lng: lng });
       }
 
-      var bermudaTriangle = new google.maps.Polygon({
+      var newPolygon = new google.maps.Polygon({
         paths: coords,
         strokeColor: '#FF0000',
         strokeOpacity: 0.8,
@@ -84,7 +83,7 @@ makerLabels: Array<any> = new Array<any>();
         fillOpacity: 0.35
       });
 
-      bermudaTriangle.setMap(this.map);
+      newPolygon.setMap(this.map);
 
       var marker = new google.maps.Marker({
         position: bounds.getCenter(),
@@ -92,14 +91,14 @@ makerLabels: Array<any> = new Array<any>();
         icon: {
           path: google.maps.SymbolPath.CIRCLE,
           scale: 0,
-          
+
         },
         label: {
           text: areas.AreaName,
           color: 'white',
         },
-        
-      });     
+
+      });
     }
 
     this.mapProps.center = new google.maps.LatLng(globalBounds.getCenter().lat(), globalBounds.getCenter().lng());
@@ -107,8 +106,7 @@ makerLabels: Array<any> = new Array<any>();
     this.map.fitBounds(globalBounds);
   }
 
-  onMapReady(event)
-  {
+  onMapReady(event) {
     this.map = event;
 
     this.drawPolygonsAndLabels();
@@ -124,20 +122,19 @@ makerLabels: Array<any> = new Array<any>();
   onRemoveProperty(modal) {
     console.log("onRemoveProperty");
 
-    const modalRef = this.modalService.open(modal);    
+    const modalRef = this.modalService.open(modal);
     this.activeModal = modalRef;
-    
+
     modalRef.result.then((userResponse) => {
       console.log("lelele:", userResponse);
 
-      if(userResponse) {
-        this.propertyService.deletePropertyByName(this.property.PropertyName).subscribe(data =>
-        {
+      if (userResponse) {
+        this.propertyService.deletePropertyByName(this.property.PropertyName).subscribe(data => {
           console.log(data);
           this.router.navigate(['/home']);
         });
       }
-    }).catch(() => {});    
+    }).catch(() => { });
 
     console.log('passou');
   }
@@ -146,42 +143,62 @@ makerLabels: Array<any> = new Array<any>();
     console.log("request analysis");
   }
 
-  selectedAnalysis(analysis:Analysis) {
+  selectedAnalysis(analysis: Analysis) {
     console.log("selectedAnalysis", analysis);
 
-    console.log("modalcontent3:", this.modalContent);
+    console.log("Requesting sampling points:");
 
     this.propertyService.getPropertyAnalysisPoints(1, analysis.Date, analysis.AnalysisId).subscribe(data => {
-        var points = data.Geometry;
+      var points = data.Geometry;
       console.log(data);
-        if (data.Geometry[0].Type == "Point") {
-          for (let points of data.Geometry[0].Coordinates) {
-            //console.log(points);
 
-            var marker = new google.maps.Marker({
-              //FIX TODO
-              position: new google.maps.LatLng(points[1],points[0]),
-              map: this.map,
-              icon: {
-                path: google.maps.SymbolPath.CIRCLE,
-                scale: 3,
-                strokeWeight: 1,
-              },
-                         
-            });
+      let pCounter = 1;
+      if (data.Geometry[0].Type == "Point") {
+        for (let points of data.Geometry[0].Coordinates) {
 
-            marker.addListener('click', function(){
-             
-                console.log(this.modalContent);
-                const modalRef = this.modalService.open(this.modalContent, { size: 'lg' });    
-                this.activeModal = modalRef; 
-            
-            }.bind(this));          
+          var marker = new google.maps.Marker({
+            //FIX TODO
+            position: new google.maps.LatLng(points[1], points[0]),
+            map: this.map,
+            icon: {
+              path: google.maps.SymbolPath.CIRCLE,
+              scale: 3,
+              strokeWeight: 1,
+            },
+            label: {
+              text: pCounter.toString(),
+              color: 'white',
+            },
 
-            this.makerLabels.push(marker);
+          });
+          
+          // marker.addListener('click', function (localMarker,i) {
 
-          }
+          //   console.log("this marker was clicked:", localMarker );
+          //   const modalRef = this.modalService.open(this.modalContent, { size: 'lg' });
+          //   this.activeModal = modalRef;
+
+          // }.bind(this));
+
+          let self = this;
+
+          google.maps.event.addListener(marker, 'click', function(evt){
+            console.log(this);
+            console.log(evt);
+            console.log("this marker was clicked:" );
+            console.log("label:", this.label.text );
+
+            const modalRef = self.modalService.open(self.modalContent, { size: 'lg' });
+            self.activeModal = modalRef;
+          });
+
+          pCounter++;
+          this.makerLabels.push(marker);
+
         }
+      }
     });
   }
+
+
 }

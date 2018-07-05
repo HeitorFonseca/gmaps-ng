@@ -420,7 +420,7 @@ export class PropertyComponent implements OnInit {
         coords.push({ lat: lat, lng: lng });
       }
 
-      var bermudaTriangle = new google.maps.Polygon({
+      var newPolygon = new google.maps.Polygon({
         paths: coords,
         strokeColor: '#FF0000',
         strokeOpacity: 0.8,
@@ -429,9 +429,9 @@ export class PropertyComponent implements OnInit {
         fillOpacity: 0.35
       });
 
-      bermudaTriangle.setMap(this.currentMap);
+      newPolygon.setMap(this.currentMap);
 
-      this.overlayAreas.push(bermudaTriangle);
+      this.overlayAreas.push(newPolygon);
 
       var marker = new google.maps.Marker({
         position: bounds.getCenter(),
