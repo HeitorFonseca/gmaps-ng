@@ -28,13 +28,9 @@
         <div>
         Event:        
         </div> -->
-        <app-point-form></app-point-form>
+        <app-point-form (techReportForm)="receiverTechReportForm($event)"></app-point-form>
 
-    </div>
-    <div class="modal-footer">
-        <button type="button" class="btn btn-outline-secondary" (click)="close()">OK</button>
-    </div>
-
+    </div>   
 
 </ng-template>
 

@@ -200,5 +200,13 @@ export class PropertyDetailsComponent implements OnInit {
     });
   }
 
+  receiverTechReportForm(techReport) {
+    console.log('Foi emitido o evento e chegou no pai >>>> ', techReport);
+
+    this.propertyService.registerTechReport(techReport).subscribe(data =>{
+      console.log("Register tech report");
+      console.log(data);
+    })
+  }
 
 }

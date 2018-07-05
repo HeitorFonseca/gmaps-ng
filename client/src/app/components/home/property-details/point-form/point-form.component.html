@@ -59,6 +59,11 @@
                       <label>Peso (kg) </label>
                       <input type="text" formControlName="weight" class="form-control" />                        
                   </div>
+
+                  <div class="form-group">
+                      <label>Comentarios extras </label>
+                      <input type="text" formControlName="extraComments" class="form-control" />                        
+                  </div>
                 </form>
                 <!-- Evaluación de Rastrojo / Cobertura -->
 
@@ -123,13 +128,12 @@
                   <form class="form-inline">
                       <div class="form-group" *ngFor="let p of points; let i = index">
                         <div *ngIf="p.line1">
-                          <input type="text" class="form-control" placeholder="Input 1" [(ngModel)]=p.line1 [ngModelOptions]="{standalone: true}" name="l{{i}}" (click)="clickInLine1(i)"/>
+                          <input type="text" class="form-control" style="width: 50px;" placeholder="Input 1" [(ngModel)]=p.line1 [ngModelOptions]="{standalone: true}" name="l{{i}}" (click)="clickInLine1(i)"/>
                         </div>
                         <div *ngIf="p.line2">
-                          <input type="text" class="form-control" placeholder="Input 2" [(ngModel)]=p.line2 [ngModelOptions]="{standalone: true}" name="l2{{i}}" (click)="clickInLine2(i)"/>
+                          <input type="text" class="form-control" style="width: 50px;" placeholder="Input 2" [(ngModel)]=p.line2 [ngModelOptions]="{standalone: true}" name="l2{{i}}" (click)="clickInLine2(i)"/>
                         </div>
                       </div>                       
-
                     </form>
 
                   <div class="form-group">
@@ -183,7 +187,7 @@
                 <!-- Evaluación de Plantas -->
 
 
-                  <div class="form-group">
+                  <!-- <div class="form-group">
                       <label>Email</label>
                       <input type="text" formControlName="email" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.email.errors }" />
                       <div *ngIf="submitted && f.email.errors" class="invalid-feedback">
@@ -198,9 +202,10 @@
                           <div *ngIf="f.password.errors.required">Password is required</div>
                           <div *ngIf="f.password.errors.minlength">Password must be at least 6 characters</div>
                       </div>
-                  </div>
+                  </div> -->
+
                   <div class="form-group">
-                      <button [disabled]="loading" class="btn btn-primary">Register</button>
+                      <input class="btn btn-primary" (click)="onRegisterClick()" value="Registrar" />
                   </div>
               </form>
           </div>

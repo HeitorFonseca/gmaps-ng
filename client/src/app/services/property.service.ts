@@ -24,7 +24,7 @@ export class PropertyService {
     return this.http.post<any>(this.domain + 'property/register', property).map(res => res);
   }
 
-  // Function to register property
+  // Function to edit property
   editProperty(property:Property) {
     console.log("edit called", property);
     return this.http.put<any>(this.domain + 'property/name', property).map(res => res);
@@ -60,6 +60,13 @@ export class PropertyService {
     params = params.append('analysisId', analysisId);
 
     return this.http.get<SamplingPoints>(this.domain + 'points/propertyId/date/analysisId', {params: params}).map(res => res);
+  }
+
+
+  registerTechReport(techReport) {
+
+    return this.http.post<any>(this.domain + 'points/registerTechReport', techReport).map(res => res);
+
   }
 
 }
