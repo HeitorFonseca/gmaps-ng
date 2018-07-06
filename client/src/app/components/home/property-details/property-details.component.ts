@@ -7,6 +7,8 @@ import { NgbModal, NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { PropertyService } from '../../../services/property.service';
 import { Property, Analysis } from '../../../models/property';
 
+import { TechReport } from './../../../models/techReport'
+
 @Component({
   selector: 'app-property-details',
   templateUrl: './property-details.component.html',
@@ -21,6 +23,8 @@ export class PropertyDetailsComponent implements OnInit {
 
   map: any;
   property: Property = new Property();
+  reports: Array<TechReport>;
+  selectedReport: TechReport;
 
   mapProps: any = {
     center: 'Recife',
@@ -36,6 +40,7 @@ export class PropertyDetailsComponent implements OnInit {
 
   propertyAnalyses;
   makerLabels: Array<any> = new Array<any>();
+  selectedPointLabel: number;
 
   constructor(private route: ActivatedRoute,
     private router: Router,
@@ -154,6 +159,9 @@ export class PropertyDetailsComponent implements OnInit {
 
       let pCounter = 1;
       if (data.Geometry[0].Type == "Point") {
+
+        this.reports = new Array<TechReport>(data.Geometry[0].Coordinates.length);
+
         for (let points of data.Geometry[0].Coordinates) {
 
           var marker = new google.maps.Marker({
@@ -190,11 +198,15 @@ export class PropertyDetailsComponent implements OnInit {
 
             const modalRef = self.modalService.open(self.modalContent, { size: 'lg' });
             self.activeModal = modalRef;
+            self.selectedPointLabel = +this.label.text;
+
+            self.selectedReport = self.reports[self.selectedPointLabel - 1];
+
           });
 
           pCounter++;
           this.makerLabels.push(marker);
-
+          //this.reports.push(null);
         }
       }
     });
@@ -202,6 +214,13 @@ export class PropertyDetailsComponent implements OnInit {
 
   receiverTechReportForm(techReport) {
     console.log('Foi emitido o evento e chegou no pai >>>> ', techReport);
+
+    console.log(this.reports);
+    
+    this.reports[this.selectedPointLabel - 1] = techReport;
+    this.selectedReport = techReport;
+       
+    //console.log(this.reports);
 
     this.propertyService.registerTechReport(techReport).subscribe(data =>{
       console.log("Register tech report");

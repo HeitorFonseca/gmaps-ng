@@ -1,4 +1,3 @@
-
 <!-- Template for confirme remove property modal -->
 <ng-template #removePropertyModal>
     <div class="modal-header">
@@ -28,14 +27,12 @@
         <div>
         Event:        
         </div> -->
-        <app-point-form (techReportForm)="receiverTechReportForm($event)"></app-point-form>
-
-    </div>   
+        <app-point-form [currentReport]="selectedReport" (techReportForm)="receiverTechReportForm($event)"></app-point-form>
+    </div>
 
 </ng-template>
 
 <div class="row">
-
     <div class="col-xl-6 text-xs-center">
         <div class="card card-default">
             <div class="card-header">
@@ -69,48 +66,48 @@
             <ul class="nav nav-tabs">
                 <li class="nav-item">
                     <a class="nav-link active" data-toggle="tab" href="#analises">Análises</a>
-                </li>   
+                </li>
                 <li class="nav-item" *ngxPermissionsOnly="'ADMIN'">
                     <a class="nav-link" data-toggle="tab" href="#novaAnalise">Nova Análise</a>
-                </li>                             
+                </li>
             </ul>
         </div>
         <div class="container-fluid">
-                <div class="tab-content">
-                    <div id="analises" class="tab-pane fade show active">
-                        <br>
-                        <app-calendar [analyses]=property.Analyses (selectedAnalysis)="selectedAnalysis($event)"></app-calendar>
-                        <br>
-                    </div>     
-                    <div id="novaAnalise" class="tab-pane fade ">
-                        <h5 align="center"> Análises disponíveis </h5>
-                        <p align="center">Escolha as análises do seu interesse </p> 
-                        <div class="row mt-4 d-flex justify-content-center">
-                            <div class="btn-group " data-toggle="buttons">
-                                <label class="btn btn-primary " [class.active]="checkBoxBtn.NDVI">
-                                    <input type="checkbox" [(ngModel)]="checkBoxBtn.NDVI" autocomplete="off"> Mapa de produção
-                                </label>
-                            </div>
+            <div class="tab-content">
+                <div id="analises" class="tab-pane fade show active">
+                    <br>
+                    <app-calendar [analyses]=property.Analyses (selectedAnalysis)="selectedAnalysis($event)"></app-calendar>
+                    <br>
+                </div>
+                <div id="novaAnalise" class="tab-pane fade ">
+                    <h5 align="center"> Análises disponíveis </h5>
+                    <p align="center">Escolha as análises do seu interesse </p>
+                    <div class="row mt-4 d-flex justify-content-center">
+                        <div class="btn-group " data-toggle="buttons">
+                            <label class="btn btn-primary " [class.active]="checkBoxBtn.NDVI">
+                                <input type="checkbox" [(ngModel)]="checkBoxBtn.NDVI" autocomplete="off"> Mapa de produção
+                            </label>
                         </div>
-                        <div class="row d-flex justify-content-center">
-                            <div class="btn-group" data-toggle="buttons">
-                                <label class="btn btn-danger " [class.active]="checkBoxBtn.NDWI">
-                                    <input type="checkbox" [(ngModel)]="checkBoxBtn.NDWI" autocomplete="off"> Indice de biomassa
-                                </label>
-                            </div>
+                    </div>
+                    <div class="row d-flex justify-content-center">
+                        <div class="btn-group" data-toggle="buttons">
+                            <label class="btn btn-danger " [class.active]="checkBoxBtn.NDWI">
+                                <input type="checkbox" [(ngModel)]="checkBoxBtn.NDWI" autocomplete="off"> Indice de biomassa
+                            </label>
                         </div>
-                        <div class="row d-flex justify-content-center">
-                            <div class="btn-group" data-toggle="buttons">
-                                <label class="btn btn-success " [class.active]="checkBoxBtn.Produtividade">
-                                    <input type="checkbox" [(ngModel)]="checkBoxBtn.Produtividade" autocomplete="off"> Previsão de produtividade
-                                </label>
-                            </div>
+                    </div>
+                    <div class="row d-flex justify-content-center">
+                        <div class="btn-group" data-toggle="buttons">
+                            <label class="btn btn-success " [class.active]="checkBoxBtn.Produtividade">
+                                <input type="checkbox" [(ngModel)]="checkBoxBtn.Produtividade" autocomplete="off"> Previsão de produtividade
+                            </label>
                         </div>
+                    </div>
 
-                        <input class="btn btn-secondary" (click)="onRequestAnalysisClick()" value="Confirmar" />
-                    </div>                                   
+                    <input class="btn btn-secondary" (click)="onRequestAnalysisClick()" value="Confirmar" />
                 </div>
             </div>
+        </div>
 
     </div>
     <div class="col-xl-6 text-xs-center">
