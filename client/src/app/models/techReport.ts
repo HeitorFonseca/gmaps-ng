@@ -1,4 +1,5 @@
 export class TechReport {
+    SamplingPointId: number;
     CoverEvaluation: {
         PropertyName: string,
         ClientName: string,
