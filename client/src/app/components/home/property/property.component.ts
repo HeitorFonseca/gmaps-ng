@@ -374,12 +374,12 @@ export class PropertyComponent implements OnInit {
 
   clickZoomIn() {
     this.currentMap.setZoom(this.currentMap.getZoom() + 1);
-    this.ref.detectChanges();
+    //this.ref.detectChanges();
   }
 
   clickZoomOut() {
     this.currentMap.setZoom(this.currentMap.getZoom() - 1);
-    this.ref.detectChanges();
+    //this.ref.detectChanges();
   }
 
   onMapReady(event) {

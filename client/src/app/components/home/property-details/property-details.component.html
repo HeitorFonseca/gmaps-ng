@@ -33,7 +33,7 @@
 </ng-template>
 
 <div class="row">
-    <div class="col-xl-6 text-xs-center">
+    <div class="col-12 col-xl-6 col-lg-6 col-md-6 col-sm-6 text-xs-center">
         <div class="card card-default">
             <div class="card-header">
                 Areas da propriedade
@@ -76,7 +76,7 @@
             <div class="tab-content">
                 <div id="analises" class="tab-pane fade show active">
                     <br>
-                    <app-calendar [analyses]=property.Analyses (selectedAnalysis)="selectedAnalysis($event)"></app-calendar>
+                    <app-calendar [analyses]=property.Analyses (selectedAnalysis)="requestAnalysis($event)"></app-calendar>
                     <br>
                 </div>
                 <div id="novaAnalise" class="tab-pane fade ">
@@ -110,9 +110,56 @@
         </div>
 
     </div>
-    <div class="col-xl-6 text-xs-center">
+    <div class="col-12 col-xl-6 col-lg-6 col-md-6 col-sm-6 text-xs-center">
         <div class="card card-default">
             <div class="card-body">
+
+                <nav class="navbar navbar-expand-sm navbar-light bg-light">
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent2" aria-controls="navbarSupportedContent2"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+
+                    <div class="collapse navbar-collapse" id="navbarSupportedContent2">
+                        <ul class="navbar-nav mr-auto">
+                            <li class="nav-item">
+                                <a class="nav-link" (click)="clickInitLocation()">
+                                    <i class="fas fa-home"></i>
+                                </a>
+                            </li>                                                    
+                            <li class="nav-item">
+                                <a class="nav-link" (click)="clickZoomIn()">
+                                    <i class="fas fa-plus-square"></i>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" (click)="clickZoomOut()">
+                                    <i class="fas fa-minus-square"></i>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" ngbPopover="Vivamus sagittis lacus vel augue laoreet rutrum faucibus." placement="bottom">
+                                    <i class="fas fa-question"></i>
+                                </a>
+                            </li>
+                        </ul>
+                        <div class="navbar-nav ml-auto">
+                            <li class="nav-item" *ngIf="drawnPoints && requestedAnalysis">
+                                <a class="nav-link" (click)="clearSamplingPoints()" >
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                            </li>
+                            <li class="nav-item" *ngIf="!drawnPoints && requestedAnalysis">
+                                <a class="nav-link" (click)="requestSamplingPoints()">
+                                    <i class="fas fa-eye-slash"></i>
+                                </a>
+                            </li>
+                        </div>
+
+
+                    </div>
+                </nav>
+
                 <ngui-map zoom="{{mapProps.zoom}}" style="height: 400px" disableDefaultUI="true" [center]="mapProps.center" mapTypeId="satellite"
                     (mapReady$)="onMapReady($event)">
                     <data-layer>

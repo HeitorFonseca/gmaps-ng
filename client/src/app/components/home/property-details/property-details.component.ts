@@ -25,6 +25,8 @@ export class PropertyDetailsComponent implements OnInit {
   property: Property = new Property();
   reports: Array<TechReport>;
   selectedReport: TechReport;
+  selectedAnalysis: any;
+  selectedPointLabel: number;
 
   mapProps: any = {
     center: 'Recife',
@@ -38,9 +40,14 @@ export class PropertyDetailsComponent implements OnInit {
     Produtividade: true
   };
 
+  globalBounds:any;
   propertyAnalyses;
   makerLabels: Array<any> = new Array<any>();
-  selectedPointLabel: number;
+  samplingPoints: any;
+
+  /* Booleans */
+  drawnPoints = false;
+  requestedAnalysis = false;
 
   constructor(private route: ActivatedRoute,
     private router: Router,
@@ -54,16 +61,14 @@ export class PropertyDetailsComponent implements OnInit {
 
     this.propertyService.getPropertyByName(propName).subscribe(data => {
       this.property = data[0];
-
       console.log("data res", this.property);
     })
-
-
   }
 
+  // Function to draw the Polygons in map
   drawPolygonsAndLabels() {
 
-    var globalBounds = new google.maps.LatLngBounds();
+    this.globalBounds = new google.maps.LatLngBounds();
 
     for (let areas of this.property.AreasOverlay) {
       var coords = new Array<any>();
@@ -75,7 +80,7 @@ export class PropertyDetailsComponent implements OnInit {
         let lng = coordinate[1];
 
         bounds.extend(new google.maps.LatLng(lat, lng));
-        globalBounds.extend(new google.maps.LatLng(lat, lng));
+        this.globalBounds.extend(new google.maps.LatLng(lat, lng));
         coords.push({ lat: lat, lng: lng });
       }
 
@@ -96,7 +101,6 @@ export class PropertyDetailsComponent implements OnInit {
         icon: {
           path: google.maps.SymbolPath.CIRCLE,
           scale: 0,
-
         },
         label: {
           text: areas.AreaName,
@@ -106,9 +110,8 @@ export class PropertyDetailsComponent implements OnInit {
       });
     }
 
-    this.mapProps.center = new google.maps.LatLng(globalBounds.getCenter().lat(), globalBounds.getCenter().lng());
-    //this.mapProps.zoom = 17;
-    this.map.fitBounds(globalBounds);
+    this.mapProps.center = new google.maps.LatLng(this.globalBounds.getCenter().lat(), this.globalBounds.getCenter().lng());
+    this.map.fitBounds(this.globalBounds);
   }
 
   onMapReady(event) {
@@ -119,11 +122,13 @@ export class PropertyDetailsComponent implements OnInit {
   }
 
 
+  // On Edit property click -> router to map with selected property data
   onEditPropertyClick() {
     console.log("edit property");
     this.router.navigate(['/map', this.property.PropertyName]);
   }
 
+  // On remove property click
   onRemoveProperty(modal) {
     console.log("onRemoveProperty");
 
@@ -131,8 +136,6 @@ export class PropertyDetailsComponent implements OnInit {
     this.activeModal = modalRef;
 
     modalRef.result.then((userResponse) => {
-      console.log("lelele:", userResponse);
-
       if (userResponse) {
         this.propertyService.deletePropertyByName(this.property.PropertyName).subscribe(data => {
           console.log(data);
@@ -144,18 +147,27 @@ export class PropertyDetailsComponent implements OnInit {
     console.log('passou');
   }
 
+
   onRequestAnalysisClick() {
     console.log("request analysis");
   }
 
-  selectedAnalysis(analysis: Analysis) {
-    console.log("selectedAnalysis", analysis);
+  requestAnalysis(analysis: Analysis) {
+    this.selectedAnalysis = analysis;
+
+    this.requestedAnalysis = true;
+
+  }
+
+  requestSamplingPoints() {
+    
+    this.drawnPoints = true;
+    console.log("evento selectedAnalysis emitido", this.selectedAnalysis);
 
     console.log("Requesting sampling points:");
 
-    this.propertyService.getPropertyAnalysisPoints(1, analysis.Date, analysis.AnalysisId).subscribe(data => {
-      var points = data.Geometry;
-      console.log(data);
+    this.propertyService.getPropertyAnalysisPoints(1, this.selectedAnalysis.Date, this.selectedAnalysis.AnalysisId).subscribe(data => {
+      this.samplingPoints = data;
 
       let pCounter = 1;
       if (data.Geometry[0].Type == "Point") {
@@ -164,6 +176,7 @@ export class PropertyDetailsComponent implements OnInit {
 
         for (let points of data.Geometry[0].Coordinates) {
 
+          // Add sampling points as markers
           var marker = new google.maps.Marker({
             //FIX TODO
             position: new google.maps.LatLng(points[1], points[0]),
@@ -179,22 +192,11 @@ export class PropertyDetailsComponent implements OnInit {
             },
 
           });
-          
-          // marker.addListener('click', function (localMarker,i) {
 
-          //   console.log("this marker was clicked:", localMarker );
-          //   const modalRef = this.modalService.open(this.modalContent, { size: 'lg' });
-          //   this.activeModal = modalRef;
-
-          // }.bind(this));
-
+          // When click in marker, open modal
           let self = this;
-
-          google.maps.event.addListener(marker, 'click', function(evt){
-            console.log(this);
-            console.log(evt);
-            console.log("this marker was clicked:" );
-            console.log("label:", this.label.text );
+          google.maps.event.addListener(marker, 'click', function (evt) {
+            console.log("label:", this.label.text);
 
             const modalRef = self.modalService.open(self.modalContent, { size: 'lg' });
             self.activeModal = modalRef;
@@ -202,30 +204,86 @@ export class PropertyDetailsComponent implements OnInit {
 
             self.selectedReport = self.reports[self.selectedPointLabel - 1];
 
+            self.selectedReport = self.fillTechReportWithDefaultData(self.selectedReport, self.selectedPointLabel);
           });
 
           pCounter++;
           this.makerLabels.push(marker);
-          //this.reports.push(null);
         }
       }
     });
+
   }
 
-  receiverTechReportForm(techReport) {
+  clearSamplingPoints() {
+    this.drawnPoints = false;
+
+    for (let i = 0; i < this.makerLabels.length; i++) {
+      this.makerLabels[i].setMap(null);
+    }
+
+    this.makerLabels = [];  
+  }
+
+  // When click in register tech form (from point component)
+  receiverTechReportForm(techReport: TechReport) {
     console.log('Foi emitido o evento e chegou no pai >>>> ', techReport);
 
     console.log(this.reports);
-    
+
+    techReport.SamplingPointId = this.samplingPoints.Id;
     this.reports[this.selectedPointLabel - 1] = techReport;
     this.selectedReport = techReport;
-       
-    //console.log(this.reports);
 
-    this.propertyService.registerTechReport(techReport).subscribe(data =>{
+    this.propertyService.registerTechReport(techReport).subscribe(data => {
       console.log("Register tech report");
       console.log(data);
     })
   }
 
+
+  fillTechReportWithDefaultData(techReport: TechReport, pointLabel) {
+
+    if (!techReport) {
+      techReport = new TechReport();
+      console.log("create techreport", techReport);
+    }
+
+    techReport.CoverEvaluation = {
+      ClientName: this.property.OwnerId, Allotment: this.property.AreasOverlay[0].AreaName, Compaction: '',
+      Date: this.property.AreasOverlay[0].HarvestDate, EvaluationType: this.property.AreasOverlay[0].HarvestType,
+      ExtraComments: '', Latitude: '', Longitude: '', Material: '', PointNumber: pointLabel, PropertyName: this.property.PropertyName,
+      SoilAnalysis: '', Weight: ''
+    }
+
+    techReport.PlantEvaluation = {
+      Allotment: this.property.AreasOverlay[0].AreaName, Date: '', Latitude: '', Longitude: '',
+      PlantDistribution: { Linea1: [{ P1: '', P2: '' }], Linea2: [{ P1: '', P2: '' }], }, PlantStage: '',
+      PropertyName: '', TotalPlantsIn10Meters: ''
+    }
+
+    techReport.SowingEvaluation = {
+
+      Cultivation: '', Depth: '', Desiccation: '', ExtraComments: '', ExtraComments2: '', Germination: '',
+      SeedDistribution: { Linea1: [{ P1: '', P2: '' }], Linea2: [{ P1: '', P2: '' }], }, SoilHumidity: '',
+      Sower: '', SowingData: '', Spacing: '', TotalSeedsIn4Meters: '',
+    }
+
+    return techReport;
+  }
+
+  clickInitLocation() {
+    this.mapProps.center = new google.maps.LatLng(this.globalBounds.getCenter().lat(), this.globalBounds.getCenter().lng());
+    this.map.fitBounds(this.globalBounds);
+  }
+
+  clickZoomIn() {
+    this.map.setZoom(this.map.getZoom() + 1);
+    //this.ref.detectChanges();
+  }
+
+  clickZoomOut() {
+    this.map.setZoom(this.map.getZoom() - 1);
+    //this.ref.detectChanges();
+  }
 }

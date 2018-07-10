@@ -103,7 +103,7 @@ export function tokenGetter() {
       },
       {
         path: '**', 
-        component: HomeComponent
+        component: AboutComponent
       }
 
     ]),
