@@ -1,40 +1,34 @@
 var express = require('express');
 var router = express.Router();
-var auth = require('authorized');
 
-var SamplingPoints = require('../models/samplingPoints');
-var TechReport = require('../models/techReport');
+var Analysis = require('../models/analysis');
 
-/* GET ALL PROPERTIES */
-router.get('/:propertyId/:date/:analysisId', function (req, res, next) {
-    console.log("get all points", req.params);
-    console.log("get all points", req.query);
+/* Get analyses by property */
+router.get('/:propertyId', function (req, res, next) {
 
-    var query = { PropertyId: req.query.propertyId, Date: req.query.date };
-    console.log("query:", query);
-    SamplingPoints.findOne(query, function (err, post) {
+    var query = { PropertyId: req.query.propertyId };
+    console.log("get analysis by property query:", query);
+    Analysis.find(query, function (err, post) {
         if (err) return next(err);
         console.log(post);
         res.json(post);
     });
-
-
 });
 
-/* Save Technical report */
-router.post('/registerTechReport', function (req, res, next) {
-    console.log("register tech report");
+/* Fake request analyses */
+router.post('/registerAnalysis', function (req, res, next) {
+    console.log("register analysis");
     console.log(req.body);
-    TechReport.create(req.body, function (err, post) {
+    Analysis.create(req.body, function (err, post) {
 
         if (err) {
             console.log(err);
-            res.json({ success: false, message: 'Não foi possivel salvar o relatório. Error: ', err }); // Return error if not related to validation
+            res.json({ success: false, message: 'Não foi possivel salvar a analise. Error: ', err }); // Return error if not related to validation
 
         } else {
-            res.json({ success: true, message: 'Relatório registrado!' }); // Return success
+            console.log(post);
+            res.json({ success: true, message: 'Analise registrada!', analysis: post }); // Return success
         }
-
     });
 });
 

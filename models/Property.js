@@ -12,15 +12,7 @@ var PropertySchema = new mongoose.Schema({
       AreaName: String,
       Area: Number,
       Coordinates: [ mongoose.Schema.Types.Mixed ],
-    }],
-    Analyses: [{
-      AnalysisId: {type: String, required: true},
-      PropertyId: {type: String, required: true},
-      AreaId: { type: String, required: true },      
-      Type: { type: String, required: true },
-      Date: { type: String, required: true },
-    }],
-    
+    }]   
   });
 
   PropertySchema.plugin(AutoIncrement, {inc_field: 'id'});

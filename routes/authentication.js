@@ -6,23 +6,29 @@ const config = require('../config/database')
 const jwt = require('jsonwebtoken'); // Compact, URL-safe means of representing claims to be transferred between two parties.
 
 router.post('/register', (req, res) => {
-    // Check if email was provided
-    if (!req.body.email) {
-      res.json({ success: false, message: 'You must provide an e-mail' }); // Return error
+  // Check if email was provided
+  if (!req.body.email) {
+    res.json({ success: false, message: 'You must provide an e-mail' }); // Return error
+  } else {
+    // Check if username was provided
+    if (!req.body.username) {
+      res.json({ success: false, message: 'You must provide a username' }); // Return error
     } else {
-      // Check if username was provided
-      if (!req.body.username) {
-        res.json({ success: false, message: 'You must provide a username' }); // Return error
+      // Check if password was provided
+      if (!req.body.password) {
+        res.json({ success: false, message: 'You must provide a password' }); // Return error
       } else {
-        // Check if password was provided
-        if (!req.body.password) {
-          res.json({ success: false, message: 'You must provide a password' }); // Return error
-        } else {
+
+        if (!req.body.roles) {
+          res.json({ success: false, message: 'You must provide a role' }); // Return error
+        }
+        else {
           // Create new user object and apply user input
           let user = new User({
             email: req.body.email.toLowerCase(),
             username: req.body.username.toLowerCase(),
-            password: req.body.password
+            password: req.body.password,
+            roles: req.body.roles
           });
           // Save user to database
           user.save((err) => {
@@ -61,44 +67,45 @@ router.post('/register', (req, res) => {
         }
       }
     }
-  });
+  }
+});
 
 router.post('/login', (req, res) => {
-    
 
-    res.header('Access-Control-Allow-Methods', '*');
-    res.header('Access-Control-Allow-Methods: GET, POST, PATCH, PUT, DELETE, OPTIONS');
-    res.header('Access-Control-Allow-Headers: Origin, Content-Type, X-Auth-Token');
 
-    if (!req.body.username) {
-        res.json({success: false, message: 'No username was provided'});
+  res.header('Access-Control-Allow-Methods', '*');
+  res.header('Access-Control-Allow-Methods: GET, POST, PATCH, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers: Origin, Content-Type, X-Auth-Token');
+
+  if (!req.body.username) {
+    res.json({ success: false, message: 'No username was provided' });
+  }
+  else {
+    if (!req.body.password) {
+      res.json({ success: false, message: 'No password was provided' });
     }
     else {
-        if (!req.body.password) {
-            res.json({ success: false, message: 'No password was provided'});
-        }
-        else {
-            User.findOne({username: req.body.username.toLowerCase() }, (err, user) => {
-                if (err) {
-                    res.json({ success: false, message: err});
-                } else {
-                    if (!user) {
-                        res.json( { success: false, message: 'Username not found'});
-                    } else {
-                        const validPassword = user.comparePassword(req.body.password);
-                        if (!validPassword) {
-                            res.json( {success: false, message: 'Password invalid'});
-                        } else {
+      User.findOne({ username: req.body.username.toLowerCase() }, (err, user) => {
+        if (err) {
+          res.json({ success: false, message: err });
+        } else {
+          if (!user) {
+            res.json({ success: false, message: 'Username not found' });
+          } else {
+            const validPassword = user.comparePassword(req.body.password);
+            if (!validPassword) {
+              res.json({ success: false, message: 'Password invalid' });
+            } else {
 
-                            const token = jwt.sign({OwnerId: user._id}, config.secret, {expiresIn: '24h'});
+              const token = jwt.sign({ OwnerId: user._id }, config.secret, { expiresIn: '24h' });
 
-                            res.json( {success: true, message: 'Success!', token: token, user: {username: user.username, OwnerId: user._id, roles: user.roles}});
-                        }
-                    }
-                }
-            } );
+              res.json({ success: true, message: 'Success!', token: token, user: { username: user.username, OwnerId: user._id, roles: user.roles } });
+            }
+          }
         }
+      });
     }
+  }
 });
 
 

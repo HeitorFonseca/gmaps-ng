@@ -10,6 +10,7 @@ var cors = require('cors');
 var propertyRouter = require('./routes/properties');
 var authRouter = require('./routes/authentication');
 var samplingPoints = require('./routes/samplingPoints');
+var analyses = require('./routes/analyses');
 
 var app = express();
 
@@ -24,6 +25,7 @@ app.use('/', express.static(path.join(__dirname, 'dist/gmaps-ng5')));
 app.use('/api/property', propertyRouter);
 app.use('/api/authentication', authRouter);
 app.use('/api/points', samplingPoints);
+app.use('/api/analyses', analyses);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

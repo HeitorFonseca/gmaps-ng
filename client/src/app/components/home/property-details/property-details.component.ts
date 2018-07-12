@@ -36,7 +36,7 @@ export class PropertyDetailsComponent implements OnInit {
   };
 
   checkBoxBtn = {
-    NDVI: true,
+    NDVI: false,
     NDWI: true,
     Produtividade: true
   };
@@ -161,6 +161,8 @@ export class PropertyDetailsComponent implements OnInit {
   onRequestAnalysisClick() {
     console.log("request analysis");
 
+    console.log(this.checkBoxBtn);
+
     let dt = new Date().toISOString().split('T')[0]
 
     let analysis = {
@@ -169,16 +171,16 @@ export class PropertyDetailsComponent implements OnInit {
       Date: dt,
     }
 
-    this.propertyService.registerPropertyAnalysis(analysis).subscribe(data => {
+    // this.propertyService.registerPropertyAnalysis(analysis).subscribe(data => {
 
-      if (data.success) {
-        console.log("colocou");
-        this.analyses.push(data.analysis);
-        this.analyses = this.analyses;
-      }
+    //   if (data.success) {
+    //     console.log("colocou");
+    //     this.analyses.push(data.analysis);
+    //     this.analyses = this.analyses;
+    //   }
 
-      console.log("pega ", data);
-    });
+    //   console.log("pega ", data);
+    // });
 
   }
 

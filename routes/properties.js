@@ -14,9 +14,23 @@ router.get('/', function(req, res, next) {
 });
 
 /* GET SINGLE PROPERTY BY NAME */
-router.get('/:name', function(req, res, next) { 
+router.get('/:userId', function(req, res, next) { 
+  console.log("get property by id");
+  var query = { OwnerId: req.query.userId };
+  console.log(query);
+  Property.find(query, function(err, properties) {
+      if (err) {
+          res.json(err);
+      }
+      console.log(properties);
+      res.json(properties);
+  });
+}); 
+
+/* GET SINGLE PROPERTY BY NAME */
+router.get('/:userId/:name', function(req, res, next) { 
   console.log("get property by name");
-  var query = { PropertyName: req.query.name };
+  var query = { OwnerId: req.query.userId, PropertyName: req.query.name };
   console.log(query);
   Property.find(query, function(err, properties) {
       if (err) {
@@ -73,33 +87,30 @@ router.post('/register', requireAdmin, function(req, res, next) {
         }      
     } else {
       res.json({ success: true, message: 'Property registered!' }); // Return success
-    }    
-    // if (err)  return next(err);
-    // res.json(post);
+    }       
   });
 });
 
 /*______________________________________________Analysis____________________________________________________*/
 
-/* Get analysis by property */
+// /* Get analysis by property */
 
-router.get("/:name", function(req, res, next) { 
-  console.log("get property by name");
-  var query = { PropertyName: req.query.name };
-  console.log(query);
-  Property.find(query, function(err, properties) {
-      if (err) {
-          res.json(err);
-      }
+// router.get("/:name", function(req, res, next) { 
+//   console.log("get property by name");
+//   var query = { PropertyName: req.query.name };
+//   console.log(query);
+//   Property.findOne(query, function(err, properties) {
+//       if (err) {
+//           res.json(err);
+//       }
 
-      console.log(properties);
-      res.json(properties);
-  });
-}); 
+//       console.log(properties);
+//       res.json(properties);
+//   });
+// }); 
 
 
 function requireAdmin(request, response, next) {
-  //console.log("request body is: ",request.body);
 
   User.findById({_id: request.body.OwnerId}, (err, user) => {
     if (err) {
@@ -108,7 +119,7 @@ function requireAdmin(request, response, next) {
       response.json({ success: false, message: err});
     } else {
       if (!user) {
-        console.log("usernamenotfound:");
+        console.log("username not found:");
 
         response.json( { success: false, message: 'Username not found'});
       } else {
