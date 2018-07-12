@@ -76,7 +76,7 @@
             <div class="tab-content">
                 <div id="analises" class="tab-pane fade show active">
                     <br>
-                    <app-calendar [analyses]=property.Analyses (selectedAnalysis)="requestAnalysis($event)"></app-calendar>
+                    <app-calendar [analyses]="{trackBy: analyses.length, analyses: analyses}" (selectedAnalysis)="requestDrawAnalysis($event)"></app-calendar>
                     <br>
                 </div>
                 <div id="novaAnalise" class="tab-pane fade ">
@@ -160,7 +160,7 @@
                     </div>
                 </nav>
 
-                <ngui-map zoom="{{mapProps.zoom}}" style="height: 400px" disableDefaultUI="true" [center]="mapProps.center" mapTypeId="satellite"
+                <ngui-map zoom="{{mapProps.zoom}}" style="height: 600px" disableDefaultUI="true" [center]="mapProps.center" mapTypeId="satellite"
                     (mapReady$)="onMapReady($event)">
                     <data-layer>
                     </data-layer>

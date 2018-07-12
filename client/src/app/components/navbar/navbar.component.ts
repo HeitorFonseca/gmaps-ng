@@ -27,7 +27,7 @@ export class NavbarComponent implements OnInit, AfterViewInit {
   // Function to logout user
   onLogoutClick() {
     this.authService.logout(); // Logout user
-    this.flashMessagesService.show('You are logged out', { cssClass: 'alert-info' }); // Set custom flash message
+    //this.flashMessagesService.show('You are logged out', { cssClass: 'alert-info' }); // Set custom flash message
     //this.router.navigate(['/']); // Navigate back to home page
   }
 

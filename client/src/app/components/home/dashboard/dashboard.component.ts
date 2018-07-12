@@ -20,7 +20,10 @@ export class DashboardComponent implements OnInit {
               private router: Router) { }
 
   ngOnInit() {
-    this.propertyService.getProperties().subscribe ( data => {
+
+    let usr = JSON.parse(localStorage.getItem('user'));  
+
+    this.propertyService.getPropertiesByUser(usr.OwnerId).subscribe ( data => {
       this.propeties = data;
       console.log(this.propeties);
       this.propData.propertyData = this.propeties;

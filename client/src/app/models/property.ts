@@ -1,5 +1,5 @@
 export class Property {
-    Id: number;
+    _id: number;
     PropertyName: string;
     OwnerId: string;
     AreasOverlay: Array<AreasOverlay> = new Array<AreasOverlay>();    
@@ -15,8 +15,9 @@ export class AreasOverlay {
 }
 
 export class Analysis {
-    AnalysisId: string;     // BD analysis Id
-    AreaId: string;
+    _id: string;
+    Id: string;
+    PropertyId: string;
     Type: string;           // Analysis Type
     Date: string;           // Analysis Date    
 }
@@ -26,7 +27,7 @@ export class SamplingPoints {
     AnalysisId: string;
     Date: string;
     PropertyId: string;
-
+    Geometry: Geometry;
 }
 
 export class Geometry {

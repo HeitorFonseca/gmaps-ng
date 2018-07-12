@@ -35,12 +35,21 @@ export class PropertyService {
     return this.http.get(this.domain + 'property/').map(res => res);
   }
 
-  // Function to get properties by name
-  getPropertyByName(name): Observable<Property> {
+  // Function to get properties
+  getPropertiesByUser(id) {
     let params = new HttpParams();
+    params = params.append('userId', id);
+
+    return this.http.get(this.domain + 'property/:userId', {params: params}).map(res => res);
+  }
+
+  // Function to get properties by name
+  getPropertyByName(id, name): Observable<Property> {
+    let params = new HttpParams();
+    params = params.append('userId', id);
     params = params.append('name', name);
 
-    return this.http.get<Property>(this.domain + 'property/name', {params: params}).map(res => res);
+    return this.http.get<Property>(this.domain + 'property/:userId/:name', {params: params}).map(res => res);
   }
 
    // Function to get properties by name
@@ -52,8 +61,22 @@ export class PropertyService {
     return this.http.delete(this.domain + 'property/name', {params: params}).map(res => res);
   }
 
-  getPropertyAnalysisPoints(propertyId, date, analysisId) {
+  // TODO: ONLY FOR TEST - REMOVE
+  registerPropertyAnalysis(analysis) {    
+    console.log(analysis);
+    return this.http.post<any>(this.domain + 'analyses/registerAnalysis', analysis).map(res => res);
+  }
 
+  getPropertyAnalyses(propertyId) {
+
+    let params = new HttpParams();
+    params = params.append('propertyId', propertyId);
+
+    return this.http.get<SamplingPoints>(this.domain + 'analyses/:propertyId', {params: params}).map(res => res);
+  }
+
+  getPropertyAnalysisPoints(propertyId, date, analysisId) {
+    console.log("get property analysis points", propertyId, date, analysisId);
     let params = new HttpParams();
     params = params.append('propertyId', propertyId);
     params = params.append('date', date);
@@ -61,7 +84,6 @@ export class PropertyService {
 
     return this.http.get<SamplingPoints>(this.domain + 'points/propertyId/date/analysisId', {params: params}).map(res => res);
   }
-
 
   registerTechReport(techReport) {
 

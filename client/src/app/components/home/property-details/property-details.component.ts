@@ -23,6 +23,7 @@ export class PropertyDetailsComponent implements OnInit {
 
   map: any;
   property: Property = new Property();
+  analyses: Array<Analysis> = new Array<Analysis>();
   reports: Array<TechReport>;
   selectedReport: TechReport;
   selectedAnalysis: any;
@@ -40,9 +41,10 @@ export class PropertyDetailsComponent implements OnInit {
     Produtividade: true
   };
 
-  globalBounds:any;
+  globalBounds: any;
   propertyAnalyses;
-  makerLabels: Array<any> = new Array<any>();
+  areaNameLabels: Array<any> = new Array<any>();
+  samplingPointsLabels: Array<any> = new Array<any>();
   samplingPoints: any;
 
   /* Booleans */
@@ -58,11 +60,18 @@ export class PropertyDetailsComponent implements OnInit {
 
   ngOnInit() {
     var propName = this.route.snapshot.paramMap.get('propertyName');
+    let usr = JSON.parse(localStorage.getItem('user'));
 
-    this.propertyService.getPropertyByName(propName).subscribe(data => {
+    this.propertyService.getPropertyByName(usr.OwnerId, propName).subscribe(data => {
       this.property = data[0];
-      console.log("data res", this.property);
-    })
+      console.log("property res", this.property);
+
+      this.propertyService.getPropertyAnalyses(this.property._id).subscribe(data => {
+        this.analyses = data
+        console.log("analysis res", this.analyses);
+
+      });
+    });
   }
 
   // Function to draw the Polygons in map
@@ -97,7 +106,6 @@ export class PropertyDetailsComponent implements OnInit {
 
       var marker = new google.maps.Marker({
         position: bounds.getCenter(),
-        map: this.map,
         icon: {
           path: google.maps.SymbolPath.CIRCLE,
           scale: 0,
@@ -109,6 +117,10 @@ export class PropertyDetailsComponent implements OnInit {
 
       });
     }
+
+    marker.setMap(this.map);
+
+    this.areaNameLabels.push(marker);
 
     this.mapProps.center = new google.maps.LatLng(this.globalBounds.getCenter().lat(), this.globalBounds.getCenter().lng());
     this.map.fitBounds(this.globalBounds);
@@ -143,89 +155,115 @@ export class PropertyDetailsComponent implements OnInit {
         });
       }
     }).catch(() => { });
-
-    console.log('passou');
   }
 
-
+  // When click in Confirmar Button in html 
   onRequestAnalysisClick() {
     console.log("request analysis");
-  }
 
-  requestAnalysis(analysis: Analysis) {
-    this.selectedAnalysis = analysis;
+    let dt = new Date().toISOString().split('T')[0]
 
-    this.requestedAnalysis = true;
+    let analysis = {
+      PropertyId: this.property._id,
+      Type: 3,
+      Date: dt,
+    }
 
-  }
+    this.propertyService.registerPropertyAnalysis(analysis).subscribe(data => {
 
-  requestSamplingPoints() {
-    
-    this.drawnPoints = true;
-    console.log("evento selectedAnalysis emitido", this.selectedAnalysis);
-
-    console.log("Requesting sampling points:");
-
-    this.propertyService.getPropertyAnalysisPoints(1, this.selectedAnalysis.Date, this.selectedAnalysis.AnalysisId).subscribe(data => {
-      this.samplingPoints = data;
-
-      let pCounter = 1;
-      if (data.Geometry[0].Type == "Point") {
-
-        this.reports = new Array<TechReport>(data.Geometry[0].Coordinates.length);
-
-        for (let points of data.Geometry[0].Coordinates) {
-
-          // Add sampling points as markers
-          var marker = new google.maps.Marker({
-            //FIX TODO
-            position: new google.maps.LatLng(points[1], points[0]),
-            map: this.map,
-            icon: {
-              path: google.maps.SymbolPath.CIRCLE,
-              scale: 3,
-              strokeWeight: 1,
-            },
-            label: {
-              text: pCounter.toString(),
-              color: 'white',
-            },
-
-          });
-
-          // When click in marker, open modal
-          let self = this;
-          google.maps.event.addListener(marker, 'click', function (evt) {
-            console.log("label:", this.label.text);
-
-            const modalRef = self.modalService.open(self.modalContent, { size: 'lg' });
-            self.activeModal = modalRef;
-            self.selectedPointLabel = +this.label.text;
-
-            self.selectedReport = self.reports[self.selectedPointLabel - 1];
-
-            self.selectedReport = self.fillTechReportWithDefaultData(self.selectedReport, self.selectedPointLabel);
-          });
-
-          pCounter++;
-          this.makerLabels.push(marker);
-        }
+      if (data.success) {
+        console.log("colocou");
+        this.analyses.push(data.analysis);
+        this.analyses = this.analyses;
       }
+
+      console.log("pega ", data);
     });
 
   }
 
-  clearSamplingPoints() {
-    this.drawnPoints = false;
+  // Event from calendar when click to view Analysis
+  requestDrawAnalysis(analysis: Analysis) {
+    this.selectedAnalysis = analysis;
 
-    for (let i = 0; i < this.makerLabels.length; i++) {
-      this.makerLabels[i].setMap(null);
-    }
 
-    this.makerLabels = [];  
+    this.requestedAnalysis = true;
+    
+    this.drawAreaNameMarker();
+    this.clearSamplingPoints();
   }
 
-  // When click in register tech form (from point component)
+  requestSamplingPoints() {
+    
+
+    console.log("Requesting sampling points:");
+
+    this.propertyService.getPropertyAnalysisPoints(this.property._id, this.selectedAnalysis.Date, this.selectedAnalysis._id).subscribe(data => {
+
+      if (data) {
+
+        this.clearAreaNameMarker();
+
+        this.drawnPoints = true;
+
+        this.samplingPoints = data;
+
+        let pCounter = 1;
+        if (data.Geometry[0].Type == "Point") {
+
+          this.reports = new Array<TechReport>(data.Geometry[0].Coordinates.length);
+
+          for (let points of data.Geometry[0].Coordinates) {
+
+            // Add sampling points as markers
+            var marker = new google.maps.Marker({
+              //FIX TODO
+              position: new google.maps.LatLng(points[1], points[0]),
+              map: this.map,
+              icon: {
+                path: google.maps.SymbolPath.CIRCLE,
+                scale: 5,
+                strokeWeight: 1,
+                strokeOpacity: 0,
+              },
+              label: {
+                text: pCounter.toString(),
+                color: 'white',
+              },
+
+            });
+
+            // When click in marker, open modal
+            let self = this;
+            google.maps.event.addListener(marker, 'click', function (evt) {
+              console.log("label:", this.label.text);
+
+              const modalRef = self.modalService.open(self.modalContent, { size: 'lg' });
+              self.activeModal = modalRef;
+              self.selectedPointLabel = +this.label.text;
+
+              self.selectedReport = self.reports[self.selectedPointLabel - 1];
+
+              self.selectedReport = self.fillTechReportWithDefaultData(self.selectedReport, self.selectedPointLabel);
+            });
+
+            pCounter++;
+            this.samplingPointsLabels.push(marker);
+          }
+        }
+
+        console.log(this.samplingPointsLabels[0]);
+
+      }
+      else {
+        console.log("Empty points");
+      }
+
+
+    });
+  }
+
+  // When click in register tech form button (from point component)
   receiverTechReportForm(techReport: TechReport) {
     console.log('Foi emitido o evento e chegou no pai >>>> ', techReport);
 
@@ -235,12 +273,48 @@ export class PropertyDetailsComponent implements OnInit {
     this.reports[this.selectedPointLabel - 1] = techReport;
     this.selectedReport = techReport;
 
-    this.propertyService.registerTechReport(techReport).subscribe(data => {
-      console.log("Register tech report");
-      console.log(data);
-    })
+    // this.propertyService.registerTechReport(techReport).subscribe(data => {
+    //   console.log("Register tech report");
+    //   console.log(data);
+    // })
+
+    this.changeSamplingPointLabelColor(this.selectedPointLabel);
   }
 
+  // When click in eye button - clear sampling points from map
+  clearSamplingPoints() {
+    this.drawnPoints = false;
+
+    for (let i = 0; i < this.samplingPointsLabels.length; i++) {
+      this.samplingPointsLabels[i].setMap(null);
+    }
+
+    this.samplingPointsLabels = [];
+
+    this.drawAreaNameMarker();
+  }
+
+  changeSamplingPointLabelColor(index) {
+    console.log("mudou cor", this.samplingPointsLabels[index - 1].label);
+    this.samplingPointsLabels[index - 1].label.color = "yellow";
+    console.log("mudou cor", this.samplingPointsLabels[index - 1].label);
+    this.samplingPointsLabels[index - 1].setMap(this.map);
+
+  }
+
+  // When click in eye button - clear area name label
+  clearAreaNameMarker() {
+    for (let i = 0; i < this.areaNameLabels.length; i++) {
+      this.areaNameLabels[i].setMap(null);
+    }
+  }
+
+  // When click in eye button - Add area name label
+  drawAreaNameMarker() {
+    for (let i = 0; i < this.areaNameLabels.length; i++) {
+      this.areaNameLabels[i].setMap(this.map);
+    }
+  }
 
   fillTechReportWithDefaultData(techReport: TechReport, pointLabel) {
 

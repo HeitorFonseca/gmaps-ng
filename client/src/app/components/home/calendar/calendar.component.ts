@@ -72,7 +72,7 @@ export class CalendarComponent implements OnInit, OnChanges {
     console.log("changes:", changes);
     if (changes['analyses']) {
       let varChange = changes['analyses'];
-      this.analyses = varChange.currentValue;
+      this.analyses = varChange.currentValue.analyses;
       this.addCalendarEvents(this.analyses);
     }
   }
@@ -83,6 +83,8 @@ export class CalendarComponent implements OnInit, OnChanges {
     var title;
     var color;
     let index = 0;
+    this.events = [];
+    
     for (let analysis of analyses) {
       if (analysis.Type == '1') {
         title = "Mapa de Produção"; color = colors.blue;
@@ -123,9 +125,7 @@ export class CalendarComponent implements OnInit, OnChanges {
 
       // let dt = event.start.toJSON().split('T')[0]; // Json returns yyyy-mm-dd-T-hh-mm
      
-      this.selectedAnalysis.emit(this.analyses[index]);
-
-      
+      this.selectedAnalysis.emit(this.analyses[index]);      
     }
     else if (this.modalData.action != "Deleted") {
       this.modal.open(this.modalContent, { size: 'lg' });
