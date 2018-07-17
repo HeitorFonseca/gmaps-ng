@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
-import { AuthService } from '../../services/auth.service'
 import { Router } from '@angular/router';
 import { NgxPermissionsService, NgxRolesService } from 'ngx-permissions'
+
+import { AuthService } from '../../services/auth.service'
 
 import {User} from "./../../models/user.model";
 
@@ -111,6 +112,7 @@ export class LoginComponent implements OnInit {
         else if (role == "TECHNICIAN") {
           perm = this.usrData.getTechnicianPermissions();
         }  
+        
         console.log("setou data permissions and role");
         
         localStorage.setItem('role', role);

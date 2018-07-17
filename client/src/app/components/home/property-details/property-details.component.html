@@ -83,29 +83,29 @@
                     <h5 align="center"> Análises disponíveis </h5>
                     <p align="center">Escolha as análises do seu interesse </p>
                     <div class="row mt-4 d-flex justify-content-center">
-                        <div class="btn-group " data-toggle="buttons">
-                            <label class="btn btn-primary " [class.active]="checkBoxBtn.NDVI">
-                                <input type="checkbox" [(ngModel)]="checkBoxBtn.NDVI" autocomplete="off"> Mapa de produção
+                        <div class="btn-group btn-group-toggle">
+                            <label class="btn btn-primary" [class.active]="checkBoxBtn.NDVI">
+                                <input type="checkbox" [(ngModel)]="checkBoxBtn.NDVI" > Mapa de produção
                             </label>
                         </div>
                     </div>
                     <div class="row d-flex justify-content-center">
-                        <div class="btn-group" data-toggle="buttons">
-                            <label class="btn btn-danger " [class.active]="checkBoxBtn.NDWI">
+                        <div class="btn-group btn-group-toggle">
+                            <label class="btn btn-danger" [class.active]="checkBoxBtn.NDWI">
                                 <input type="checkbox" [(ngModel)]="checkBoxBtn.NDWI" autocomplete="off"> Indice de biomassa
                             </label>
                         </div>
                     </div>
                     <div class="row d-flex justify-content-center">
-                        <div class="btn-group" data-toggle="buttons">
-                            <label class="btn btn-success " [class.active]="checkBoxBtn.Produtividade">
+                        <div class="btn-group btn-group-toggle">
+                            <label class="btn btn-success" [class.active]="checkBoxBtn.Produtividade">
                                 <input type="checkbox" [(ngModel)]="checkBoxBtn.Produtividade" autocomplete="off"> Previsão de produtividade
                             </label>
                         </div>
                     </div>
 
                     <input class="btn btn-secondary" (click)="onRequestAnalysisClick()" value="Confirmar" />
-                </div>
+                </div>                
             </div>
         </div>
 

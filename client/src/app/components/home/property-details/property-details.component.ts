@@ -19,8 +19,10 @@ export class PropertyDetailsComponent implements OnInit {
 
   @ViewChild('clickInPointsModal') clickInPointsModal: TemplateRef<any>;
   @ViewChild('modalContent') modalContent: TemplateRef<any>;
+  @ViewChild(DataLayer) dataLayer: DataLayer;
 
 
+  newPolygons: Array<any> = new Array<any>();
   map: any;
   property: Property = new Property();
   analyses: Array<Analysis> = new Array<Analysis>();
@@ -28,6 +30,7 @@ export class PropertyDetailsComponent implements OnInit {
   selectedReport: TechReport;
   selectedAnalysis: any;
   selectedPointLabel: number;
+  geoJsonObject: any;
 
   mapProps: any = {
     center: 'Recife',
@@ -37,8 +40,8 @@ export class PropertyDetailsComponent implements OnInit {
 
   checkBoxBtn = {
     NDVI: false,
-    NDWI: true,
-    Produtividade: true
+    NDWI: false,
+    Produtividade: false
   };
 
   globalBounds: any;
@@ -50,6 +53,8 @@ export class PropertyDetailsComponent implements OnInit {
   /* Booleans */
   drawnPoints = false;
   requestedAnalysis = false;
+
+  stateLayer:any;
 
   constructor(private route: ActivatedRoute,
     private router: Router,
@@ -104,6 +109,8 @@ export class PropertyDetailsComponent implements OnInit {
 
       newPolygon.setMap(this.map);
 
+      this.newPolygons.push(newPolygon);
+
       var marker = new google.maps.Marker({
         position: bounds.getCenter(),
         icon: {
@@ -126,8 +133,27 @@ export class PropertyDetailsComponent implements OnInit {
     this.map.fitBounds(this.globalBounds);
   }
 
+  clearPolygons() {
+    console.log(this.newPolygons);
+    for(let i=0; i < this.newPolygons.length; i++) {
+      this.newPolygons[i].setMap(null);
+    }
+  }
+
   onMapReady(event) {
     this.map = event;
+
+    //var path = '{"type":"FeatureCollection","features":[{"type":"Feature","properties":{},"geometry":{"type":"Polygon","coordinates":[[[-34.87013339996337,-8.048734091115579],[-34.889960289001465,-8.049498957184937],[-34.887986183166504,-8.071934385576592],[-34.87013339996337,-8.048734091115579]]]}},{"type":"Feature","properties":{"stroke":"#555555","stroke-width":0,"stroke-opacity":1,"fill":"#238741","fill-opacity":1},"geometry":{"type":"Polygon","coordinates":[[[-34.88532543182373,-8.056892588056478],[-34.88064765930175,-8.056892588056478],[-34.88064765930175,-8.052430930406018],[-34.88532543182373,-8.052430930406018],[-34.88532543182373,-8.056892588056478]]]}}]}';
+    var path = '{"type":"FeatureCollection","features":[{"type":"Feature","properties":{"stroke": "#2c4a7e","stroke-opacity":1,"fill":"#2c4a7e","fill-opacity":0.95},"geometry":{"type":"MultiPolygon","coordinates":[[[[-34.89333518759463,-8.084607456024665],[-34.89335664526675,-8.084397146995938],[-34.89330300108645,-8.084284481399724],[-34.893190348307826,-8.084254437235414],[-34.89308305994723,-8.084261948276689],[-34.892617439858554,-8.084435481726352],[-34.89229289256775,-8.084533125208315],[-34.892207061879276,-8.084574435905122],[-34.89206222259247,-8.084615746597692],[-34.891976391903995,-8.084668323836665],[-34.89190129005158,-8.084668323836665],[-34.89179936610901,-8.084747189682274],[-34.891616975896,-8.084788500357147],[-34.891504323117374,-8.084837322058359],[-34.89142385684693,-8.084863610664232],[-34.89138094150269,-8.084908676841804],[-34.89128438197815,-8.084942476471651],[-34.89126828872406,-8.084968765070718],[-34.89117977582657,-8.084983787126538],[-34.89111808501923,-8.08507391944975],[-34.89117172919953,-8.08509269701455],[-34.89122269117081,-8.085122741116407],[-34.891498958699344,-8.08516029624058],[-34.891641115777134,-8.0851753182893],[-34.89169475995743,-8.085156540728352],[-34.891949569813846,-8.085231650966904],[-34.892075633637546,-8.085261695058415],[-34.89218023978913,-8.085269206080937],[-34.892233883969425,-8.085227895455326],[-34.8923197146579,-8.085280472614478],[-34.89241090976441,-8.08530676119151],[-34.89252356254303,-8.085303005680606],[-34.89268181287491,-8.085254184035767],[-34.8928051944896,-8.08519034033741],[-34.89308682643616,-8.085062652910445],[-34.89316729270661,-8.08501007572287],[-34.89322898351395,-8.084923698899864],[-34.893263852231144,-8.084852344119051],[-34.89331481420243,-8.084739678649983],[-34.89333518759463,-8.084607456024665]],[[-34.89259958267212,-8.084617500019943],[-34.89263713359833,-8.084646711088103],[-34.892586171627045,-8.084678577705512],[-34.89253789186478,-8.08463343333011],[-34.89259958267212,-8.084617500019943]]]]}},{"type":"Feature","properties":{"stroke":"#24616B","stroke-opacity":1,"fill":"#24616B","fill-opacity":0.95},"geometry":{"type":"MultiPolygon","coordinates":[[[[-34.89259958267212,-8.084617500019943],[-34.89263713359833,-8.084646711088103],[-34.892586171627045,-8.084678577705512],[-34.89253789186478,-8.08463343333011],[-34.89259958267212,-8.084617500019943]]]]}}]}'
+
+    var geojson = JSON.parse(path);
+
+    this.geoJsonObject = geojson; 
+
+    this.dataLayer['initialized$'].subscribe( dl =>
+    {    
+      this.stateLayer = new google.maps.Data();
+    })
 
     this.drawPolygonsAndLabels();
     console.log(this.map);
@@ -165,23 +191,24 @@ export class PropertyDetailsComponent implements OnInit {
 
     let dt = new Date().toISOString().split('T')[0]
 
-    let analysis = {
-      PropertyId: this.property._id,
-      Type: 3,
-      Date: dt,
+    if (this.checkBoxBtn.NDVI || this.checkBoxBtn.NDWI || this.checkBoxBtn.Produtividade ) {
+      let analysis = {
+        PropertyId: this.property._id,
+        Type: (this.checkBoxBtn.NDVI ? '1': (this.checkBoxBtn.NDWI ? '2' : '3')),
+        Date: dt,
+      }
+  
+      this.propertyService.registerPropertyAnalysis(analysis).subscribe(data => {
+
+        if (data.success) {
+          console.log("colocou");
+          this.analyses.push(data.analysis);
+          this.analyses = this.analyses;
+        }
+
+        console.log("pega ", data);
+      });
     }
-
-    // this.propertyService.registerPropertyAnalysis(analysis).subscribe(data => {
-
-    //   if (data.success) {
-    //     console.log("colocou");
-    //     this.analyses.push(data.analysis);
-    //     this.analyses = this.analyses;
-    //   }
-
-    //   console.log("pega ", data);
-    // });
-
   }
 
   // Event from calendar when click to view Analysis
@@ -189,8 +216,27 @@ export class PropertyDetailsComponent implements OnInit {
     this.selectedAnalysis = analysis;
 
 
+    this.stateLayer.addGeoJson(this.geoJsonObject);
+    this.stateLayer.setStyle(function(feature) {
+      var ascii = feature.getProperty('ascii');
+      var color = feature.getProperty('fill');
+      var fillOpacity = feature.getProperty('fill-opacity');
+      var stroke = feature.getProperty('stroke');
+      var stroke_opacity = feature.getProperty('stroke-opacity');
+      console.log(stroke)
+      return {
+        fillColor: color,
+        strokeWeight: 1,
+        fillOpacity: fillOpacity,
+        strokeColor: stroke,
+        stroke_opacity: stroke_opacity
+        
+      };
+    });  
+    this.stateLayer.setMap(this.map);
+
     this.requestedAnalysis = true;
-    
+    this.clearPolygons();
     this.drawAreaNameMarker();
     this.clearSamplingPoints();
   }
@@ -361,5 +407,15 @@ export class PropertyDetailsComponent implements OnInit {
   clickZoomOut() {
     this.map.setZoom(this.map.getZoom() - 1);
     //this.ref.detectChanges();
+  }
+
+
+  /* GeoJson functions */
+
+  styleFunc(feature) {
+    return {
+      fillColor: feature.properties.color.toString(),
+      strokeWeight: 1
+    };
   }
 }
