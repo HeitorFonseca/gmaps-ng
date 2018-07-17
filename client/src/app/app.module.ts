@@ -1,6 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule, APP_INITIALIZER  } from '@angular/core';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS  } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 import { NgbModule, NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms'
@@ -30,6 +30,12 @@ import { Data } from './providers/data';
 import { FooterComponent } from './components/footer/footer.component';
 import { CalendarComponent } from './components/home/calendar/calendar.component';
 import { PointFormComponent } from './components/home/property-details/point-form/point-form.component';
+import { ProfileComponent } from './components/home/profile/profile.component';
+import { Profile } from 'selenium-webdriver/firefox';
+
+
+import { TokenInterceptor } from './services/token-interceptor'
+
 
 export function tokenGetter() {
   return localStorage.getItem('access_token');
@@ -47,7 +53,8 @@ export function tokenGetter() {
     PropertyDetailsComponent,
     FooterComponent,
     CalendarComponent,
-    PointFormComponent
+    PointFormComponent,
+    ProfileComponent
   ],
   imports: [
     BrowserModule,
@@ -97,6 +104,11 @@ export function tokenGetter() {
         canActivate: [AuthGuard]
       },
       {
+        path: "profile",
+        component: ProfileComponent,
+        canActivate: [AuthGuard]
+      },
+      {
         path: "",
          redirectTo: '/home', 
          pathMatch: 'full' ,
@@ -115,6 +127,11 @@ export function tokenGetter() {
           AuthGuard, 
           Data, 
           NgbActiveModal,
+          {
+            provide: HTTP_INTERCEPTORS, 
+            useClass: TokenInterceptor, 
+            multi: true 
+          },
           {
             provide: APP_INITIALIZER,
             useFactory: (dt: Data, ps:NgxPermissionsService) => function()

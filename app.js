@@ -11,6 +11,7 @@ var propertyRouter = require('./routes/properties');
 var authRouter = require('./routes/authentication');
 var samplingPoints = require('./routes/samplingPoints');
 var analyses = require('./routes/analyses');
+var users = require('./routes/users');
 
 var app = express();
 
@@ -26,6 +27,7 @@ app.use('/api/property', propertyRouter);
 app.use('/api/authentication', authRouter);
 app.use('/api/points', samplingPoints);
 app.use('/api/analyses', analyses);
+app.use('/api/users', users);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
