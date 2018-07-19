@@ -27,7 +27,7 @@ export class PropertyService {
   // Function to edit property
   editProperty(property:Property) {
     console.log("edit called", property);
-    return this.http.put<any>(this.domain + 'property/name', property).map(res => res);
+    return this.http.put<any>(this.domain + 'property/:id', property).map(res => res);
   }
 
   // Function to get properties
@@ -62,7 +62,7 @@ export class PropertyService {
   }
 
   // TODO: ONLY FOR TEST - REMOVE
-  registerPropertyAnalysis(analysis) {    
+    registerPropertyAnalysis(analysis) {    
     console.log(analysis);
     return this.http.post<any>(this.domain + 'analyses/registerAnalysis', analysis).map(res => res);
   }

@@ -18,7 +18,9 @@ export class NavbarComponent implements OnInit, AfterViewInit {
     public authService: AuthService,
     private router: Router,
     private flashMessagesService: FlashMessagesService
-  ) {}
+  ) {
+    console.log("nav constructor");
+  }
 
   // Function to logout user
   onLogoutClick() {

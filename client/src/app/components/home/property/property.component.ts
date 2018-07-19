@@ -105,7 +105,6 @@ export class PropertyComponent implements OnInit {
             }
           }
         });
-
       } else {
         for (let prop of properties) {
           if (prop.PropertyName == this.propNameParameter) {
@@ -229,11 +228,13 @@ export class PropertyComponent implements OnInit {
 
     let usr = JSON.parse(localStorage.getItem('user'));
     
-    this.property.OwnerId = usr.OwnerId;
+    this.property.OwnerId = usr.OwnerId;  
+    this.property.PropertyName = this.form.controls['propertyName'].value;
 
+    // If register
     if (!this.propNameParameter) {
       this.propertyService.registerProperty(this.property).subscribe(data => {
-
+        console.log("register");
         if (!data.success) {
           this.messageClass = 'alert alert-danger';
           this.message = data.message;
@@ -245,7 +246,7 @@ export class PropertyComponent implements OnInit {
         console.log(data);
       });
     }
-    else {
+    else { //Edit
       this.propertyService.editProperty(this.property).subscribe(data => {
         console.log("edit property");
         if(!data.success) {
@@ -383,6 +384,13 @@ export class PropertyComponent implements OnInit {
   }
 
   onMapReady(event) {
+
+    if (this.propData.clientPosition) {
+      console.log("client position");
+      this.mapProps.center = new google.maps.LatLng(this.propData.clientPosition.coords.latitude, this.propData.clientPosition.coords.longitude);
+    }
+
+
     this.currentMap = event;
 
     for (let coord of this.polygonsCoord) {

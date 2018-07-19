@@ -27,7 +27,7 @@ router.get('/:userId', function(req, res, next) {
   });
 }); 
 
-/* GET SINGLE PROPERTY BY NAME */
+/* Get single property by name */
 router.get('/:userId/:name', function(req, res, next) { 
   console.log("get property by name");
   var query = { OwnerId: req.query.userId, PropertyName: req.query.name };
@@ -41,25 +41,21 @@ router.get('/:userId/:name', function(req, res, next) {
   });
 }); 
 
-/* UPDATE Property */
-router.put('/:name', function(req, res, next) {
+/* Update Property */
+router.put('/:id', function(req, res, next) {
 
-  console.log("edit by name:", req.params, " ", req.body   );
+  //console.log("edit by id:", req.params, " ", req.body   );
 
-  var query = { PropertyName: req.body.PropertyName };
-  console.log(query);
+  var query = { _id: req.body._id };
+  console.log("query:", query);
 
   Property.findOneAndUpdate(query, req.body, function (err, post) {
-       
     if (err) {         
       res.json({ success: false, message: 'Could not update property. Error: ', err }); // Return error if not related to validation              
     } else {
       res.json({ success: true, message: 'Property updated!' }); // Return success
     }    
-
   });
-
-  
 });
 
 /* DELETE Property */

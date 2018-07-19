@@ -14,7 +14,7 @@ export class UserService {
 
   // Function to get properties
   getUser() {
-    return this.http.get(this.domain + 'users/me').map(res => res);
+    return this.http.get<any>(this.domain + 'users/me').map(res => res);
   }
 
 }

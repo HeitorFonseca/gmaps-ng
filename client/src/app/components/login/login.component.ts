@@ -89,7 +89,7 @@ export class LoginComponent implements OnInit {
 
         setTimeout(() => {
           this.router.navigate(['']);
-        }, 2000);
+        }, 1500);
       }
     });
     
@@ -97,7 +97,7 @@ export class LoginComponent implements OnInit {
 
   setUserPermissionsAndRole(data:any) {
     var permissions = this.usrData.getPropertyOwnerPermissions();
-    this.permissionsService.loadPermissions(permissions);
+    //this.permissionsService.loadPermissions(permissions);
 
     if (data.user.roles) {
       let roles = data.user.roles;
@@ -113,11 +113,15 @@ export class LoginComponent implements OnInit {
           perm = this.usrData.getTechnicianPermissions();
         }  
         
-        console.log("setou data permissions and role");
+        console.log("setou data permissions and role", role);
         
         localStorage.setItem('role', role);
 
-        this.rolesService.addRole(role, perm)
+        var arr = new Array<any>();
+        arr.push(role);
+        this.permissionsService.loadPermissions(arr);
+
+        //this.rolesService.addRole(role, perm)
       }
     }
   }

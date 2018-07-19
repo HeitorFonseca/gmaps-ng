@@ -19,10 +19,28 @@
     <!-- Tab panes -->
     <div class="tab-content">
       <div class="tab-pane container active" id="home">
-        ...
+
+        <form [formGroup]="formUserData" class="form-inline">
+          <label for="inlineFormInput">Nome</label>
+          <input type="text" class="form-control mr-sm-2 mb-sm-0 ml-2" id="inlineFormInput" formControlName="name">
+
+          <label for="inlineFormInput2">Email</label>
+          <input type="text" class="form-control mr-sm-2 mb-sm-0 ml-2" id="inlineFormInput2" formControlName="email">       
+        </form>
+
       </div>
       <div class="tab-pane container fade" id="menu1">
-        ...
+          <form [formGroup]="formPassword" class="form">
+              <label for="currentPassword">Senha atual</label>
+              <input type="password" class="form-control mr-sm-2 mb-sm-0" id="currentPassword" formControlName="currentPassword">
+              <br>
+              <label for="newPassword">Nova Senha</label>
+              <input type="password" class="form-control mr-sm-2 mb-sm-0" id="newPassword" formControlName="newPassword">     
+              
+              <br>
+              <input class="btn btn-primary" type="submit" value="Mudar Senha" />
+
+            </form>
       </div>
       <div class="tab-pane container fade" id="menu2">
         ...

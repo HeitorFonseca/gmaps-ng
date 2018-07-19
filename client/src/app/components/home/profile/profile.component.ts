@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { FormGroup, FormBuilder } from '@angular/forms';
 
 import { UserService } from '../../../services/user.service'
 
@@ -9,13 +10,34 @@ import { UserService } from '../../../services/user.service'
 })
 export class ProfileComponent implements OnInit {
 
-  constructor(private userService: UserService) { }
+  formUserData: FormGroup;
+  formPassword: FormGroup;
+
+  constructor(private formBuilder: FormBuilder,
+              private userService: UserService) {
+
+                this.formUserData = this.formBuilder.group({
+                  name: [''],
+                  email: ['']
+                });
+
+                this.formPassword = this.formBuilder.group({
+                  currentPassword: [''],
+                  newPassword: ['']
+                })
+               }
 
   ngOnInit() {
 
     this.userService.getUser().subscribe( data => {
-
       console.log("user: ", data);
+
+      this.formUserData.setValue({
+        name: data.user.username,
+        email: data.user.email
+      });
+
+
     })
   }
 

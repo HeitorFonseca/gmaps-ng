@@ -7,7 +7,8 @@ export class Data {
   propertyData: any; 
   permissions: string[];
   role: string;
-
+  clientPosition: any;
+   
   getPropertyOwnerPermissions() {
     return ["createProperty","removeProperty","editProperty","viewProperty","requestAnalysis","viewAnalysis"]
   }

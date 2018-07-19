@@ -33,7 +33,7 @@ export class PropertyDetailsComponent implements OnInit {
   geoJsonObject: any;
 
   mapProps: any = {
-    center: 'Recife',
+    center: 'Sao Paulo',
     zoom: 12,
     drawingMode: '',
   };
@@ -70,6 +70,9 @@ export class PropertyDetailsComponent implements OnInit {
     this.propertyService.getPropertyByName(usr.OwnerId, propName).subscribe(data => {
       this.property = data[0];
       console.log("property res", this.property);
+
+      //this.mapProps.center = new google.maps.LatLng(this.property.AreasOverlay[0].Coordinates[0][0], this.property.AreasOverlay[0].Coordinates[0][1]);
+
 
       this.propertyService.getPropertyAnalyses(this.property._id).subscribe(data => {
         this.analyses = data
@@ -129,6 +132,7 @@ export class PropertyDetailsComponent implements OnInit {
 
     this.areaNameLabels.push(marker);
 
+    console.log("Setou center");
     this.mapProps.center = new google.maps.LatLng(this.globalBounds.getCenter().lat(), this.globalBounds.getCenter().lng());
     this.map.fitBounds(this.globalBounds);
   }
@@ -223,7 +227,6 @@ export class PropertyDetailsComponent implements OnInit {
       var fillOpacity = feature.getProperty('fill-opacity');
       var stroke = feature.getProperty('stroke');
       var stroke_opacity = feature.getProperty('stroke-opacity');
-      console.log(stroke)
       return {
         fillColor: color,
         strokeWeight: 1,
