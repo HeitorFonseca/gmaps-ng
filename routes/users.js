@@ -6,27 +6,78 @@ const config = require('../config/database')
 const jwt = require('jsonwebtoken'); // Compact, URL-safe means of representing claims to be transferred between two parties.
 
 
-router.get('/me', function (req, res) {
+router.get('/', function (req, res) {
     var token = req.headers['x-access-token'];
 
-    if (!token) return res.status(401).send({ auth: false, message: 'No token provided.' });
+    if (!token) return res.status(401).send({ auth: false, message: 'Nenhum token fornecido.' });
     console.log("get user", token);
 
     jwt.verify(token, config.secret, function (err, decoded) {
         if (err) {
             console.log(err);
-            return res.status(500).send({ auth: false, message: 'Failed to authenticate token.' });
+            return res.status(500).send({ auth: false, message: 'Falha na autenticação do token.' });
         }
 
-        //res.status(200).send(decoded);
+        User.findById(decoded.id, { senha: 0 }, function (err, user) {
+            if (err) return res.status(500).send("Encontramos problema ao encontrar o usuário.");
+            if (!user) return res.status(404).send("Nenhum usuário encontrado.");
+            //res.status(200).send(user); //Comment this out!
+            res.json({ user: { nome: user.nome, email: user.email, tipo: user.tipo, hectaresContratados: user.hectaresContratados } })
+            //next(user); // add this line
+        });
+    });
+});
 
-        User.findById(decoded.OwnerId, { password: 0 }, function (err, user) {
-                if (err) return res.status(500).send("There was a problem finding the user.");
-                if (!user) return res.status(404).send("No user found.");
-                //res.status(200).send(user); //Comment this out!
-                res.json({user: { username: user.username, email: user.email }})
-                //next(user); // add this line
+router.put('/', function (req, res) {
+    var token = req.headers['x-access-token'];
+
+    if (!token) return res.status(401).send({ auth: false, message: 'Nenhum token fornecido.' });
+    console.log("put user", token);
+
+    jwt.verify(token, config.secret, function (err, decoded) {
+        if (err) {
+            console.log(err);
+            return res.status(500).send({ auth: false, message: 'Falha no token.' });
+        }        
+
+        User.findByIdAndUpdate(decoded.id, req.body, function (err, post) {
+            if (err) {
+                res.json({ success: false, message: 'Não foi possivel editar o usuário: ', err }); // Return error if not related to validation              
+            } else {
+                res.json({ success: true, message: 'Usuário editado!' }); // Return success
+            }
+        });
+    });
+});
+
+router.patch('/senha', function (req, res) {
+    var token = req.headers['x-access-token'];
+
+    if (!token) return res.status(401).send({ auth: false, message: 'Nenhum token fornecido.' });
+    console.log("patch usuario senha", token);
+
+    jwt.verify(token, config.secret, function (err, decoded) {
+        if (err) {
+            console.log(err);
+            return res.status(500).send({ auth: false, message: 'Falha no token.' });
+        }
+
+        const validPassword = user.comparePassword(req.body.senhaAtual);
+        if (!validPassword) {
+            res.json({ success: false, message: 'Senha e senha atual são diferentes' });
+        } 
+
+        bcrypt.hash(newPassword, (hash) => {
+            req.body.senhaNova = newPassword;
+
+            User.findByIdAndUpdate(decoded.userId, req.body, function (err, post) {
+                if (err) {
+                    res.json({ success: false, message: 'Não foi possivel alterar a senha: ', err }); // Return error if not related to validation              
+                } else {
+                    res.json({ success: true, message: 'Senha alterada!' }); // Return success
+                }
             });
+        });        
     });
 });
 

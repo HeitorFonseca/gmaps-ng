@@ -12,7 +12,7 @@ import { FlashMessagesService } from 'angular2-flash-messages';
 
 export class NavbarComponent implements OnInit, AfterViewInit {
 
-  username:string;
+  username: string;
 
   constructor(
     public authService: AuthService,
@@ -22,18 +22,11 @@ export class NavbarComponent implements OnInit, AfterViewInit {
     console.log("nav constructor");
   }
 
-  // Function to logout user
-  onLogoutClick() {
-    this.authService.logout(); // Logout user
-    //this.flashMessagesService.show('You are logged out', { cssClass: 'alert-info' }); // Set custom flash message
-    this.router.navigate(['/login']); // Navigate back to home page
-  }
-
   ngOnInit() {
     let obj = JSON.parse(localStorage.getItem('user'));
     console.log(obj);
     if (obj) {
-      this.username = obj.username;
+      this.username = obj.nome;
     }
 
     this.authService.getLoggedInName.subscribe(name => this.username = name);
@@ -41,10 +34,15 @@ export class NavbarComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit() {
     let obj = JSON.parse(localStorage.getItem('user'));
-    console.log("after:",obj);
+    console.log("after:", obj);
     if (obj) {
-      this.username = obj.username;
+      this.username = obj.nome;
     }
   }
 
+  // Function to logout user
+  onLogoutClick() {
+    this.authService.logout(); // Logout user
+    this.router.navigate(['/login']); // Navigate back to home page
+  }
 }

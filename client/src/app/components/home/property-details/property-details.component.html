@@ -40,12 +40,12 @@
             </div>
             <div class="card-body">
                 <div class="card-deck">
-                    <div *ngFor="let areas of property.AreasOverlay" class="col-5 card">
+                    <div *ngFor="let areas of areas" class="col-5 card">
                         <div class="card-body">
-                            <h6> {{areas.AreaName}} </h6>
+                            <h6> {{areas.nome}} </h6>
                             <p>
-                                <span class="small-5 float-left"> {{areas.Area}} ha </span>
-                                <span class="small-7 float-right">{{areas.HarvestType}}</span>
+                                <span class="small-5 float-left"> {{areas.areaTotal}} ha </span>
+                                <span class="small-7 float-right">{{areas.plantio}}</span>
                             </p>
                         </div>
                     </div>
@@ -53,7 +53,7 @@
             </div>
         </div>
 
-        <div *ngxPermissionsOnly="'ADMIN'">
+        <div *ngxPermissionsOnly="'produtor'">
             <br>
             <h6> Ações </h6>
             <input class="btn btn-primary mr-2" (click)="onEditPropertyClick()" value="Editar Propriedade" />
@@ -67,7 +67,7 @@
                 <li class="nav-item">
                     <a class="nav-link active" data-toggle="tab" href="#analises">Análises</a>
                 </li>
-                <li class="nav-item" *ngxPermissionsOnly="'ADMIN'">
+                <li class="nav-item" *ngxPermissionsOnly="'produtor'">
                     <a class="nav-link" data-toggle="tab" href="#novaAnalise">Nova Análise</a>
                 </li>
             </ul>

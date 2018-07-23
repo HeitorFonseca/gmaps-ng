@@ -21,35 +21,34 @@ export class PropertyService {
 
   // Function to register property
   registerProperty(property:Property) {
-    return this.http.post<any>(this.domain + 'property/register', property).map(res => res);
+    return this.http.post<any>(this.domain + 'propriedades/register', property).map(res => res);
   }
 
   // Function to edit property
   editProperty(property:Property) {
     console.log("edit called", property);
-    return this.http.put<any>(this.domain + 'property/:id', property).map(res => res);
+    return this.http.put<any>(this.domain + 'propriedades/:id', property).map(res => res);
   }
 
   // Function to get properties
   getProperties() {
-    return this.http.get(this.domain + 'property/').map(res => res);
+    return this.http.get(this.domain + 'propriedades/').map(res => res);
   }
 
-  // Function to get properties
+  // Function to get properties by user id
   getPropertiesByUser(id) {
     let params = new HttpParams();
-    params = params.append('userId', id);
+    params = params.append('id', id);
 
-    return this.http.get(this.domain + 'property/:userId', {params: params}).map(res => res);
+    return this.http.get<any>(this.domain + 'propriedades/user', {params: params}).map(res => res);
   }
 
-  // Function to get properties by name
-  getPropertyByName(id, name): Observable<Property> {
+  // Function to get properties by id
+  getPropertyById(propId): Observable<Property> {
     let params = new HttpParams();
-    params = params.append('userId', id);
-    params = params.append('name', name);
+    params = params.append('id', propId);
 
-    return this.http.get<Property>(this.domain + 'property/:userId/:name', {params: params}).map(res => res);
+    return this.http.get<Property>(this.domain + 'propriedades/' + propId, {params: params}).map(res => res);
   }
 
    // Function to get properties by name
@@ -58,8 +57,20 @@ export class PropertyService {
     let params = new HttpParams();
     params = params.append('name', name);
 
-    return this.http.delete(this.domain + 'property/name', {params: params}).map(res => res);
+    return this.http.delete(this.domain + 'propriedades/name', {params: params}).map(res => res);
   }
+
+  getAreasByProperty(propertyId) {
+    let params = new HttpParams();
+    params = params.append('propriedadeId', propertyId);
+
+    return this.http.get<Property>(this.domain + 'propriedades/' + propertyId + "/areas", {params: params}).map(res => res);
+  }
+
+  registerArea(propertyId, area) {
+    return this.http.post<any>(this.domain + 'propriedades/' + propertyId + "/areas", area).map(res => res);
+  }
+
 
   // TODO: ONLY FOR TEST - REMOVE
     registerPropertyAnalysis(analysis) {    

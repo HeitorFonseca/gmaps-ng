@@ -151,7 +151,7 @@ export function tokenGetter() {
               var role = localStorage.getItem('role');
               if (role) {                  
                 console.log(role);
-                if (role == "ADMIN") {
+                if (role == "produtor") {
                   return rs.addRole(role, dt.getPropertyOwnerPermissions())
                 } else if (role == "TECHNICIAN") {
                   return rs.addRole(role, dt.getTechnicianPermissions())

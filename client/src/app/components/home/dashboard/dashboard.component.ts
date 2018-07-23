@@ -14,7 +14,7 @@ import { Data } from '../../../providers/data';
 
 export class DashboardComponent implements OnInit {
 
-  propeties: any;
+  propeties: Array<Property>;
   geolocationPosition: any;
   location: any;
 
@@ -26,9 +26,10 @@ export class DashboardComponent implements OnInit {
 
     let usr = JSON.parse(localStorage.getItem('user'));
 
-    if (usr.roles[0] == "ADMIN") {
-      this.propertyService.getPropertiesByUser(usr.OwnerId).subscribe(data => {
-        this.propeties = data;
+    if (usr.tipo == "produtor") {
+      console.log("requesting properties by user", usr.id);
+      this.propertyService.getPropertiesByUser(usr.id).subscribe(data => {
+        this.propeties = data as Array<Property>;
         console.log(this.propeties);
         this.propData.propertyData = this.propeties;
 
@@ -39,9 +40,9 @@ export class DashboardComponent implements OnInit {
   }
 
 
-  selectProperty(propertyName: any) {
-    console.log("propertyName:", propertyName);
-    this.router.navigate(['/propertyDetails', propertyName]);
+  selectProperty(id: string) {
+    console.log("propertyId:", id);
+    this.router.navigate(['/propertyDetails', id]);
 
   }
 

@@ -5,7 +5,7 @@ import { NguiMap, DataLayer, DrawingManager } from '@ngui/map';
 import { NgbModal, NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { PropertyService } from '../../../services/property.service';
-import { Property, Analysis } from '../../../models/property';
+import { Property, Analysis, Area } from '../../../models/property';
 
 import { TechReport } from './../../../models/techReport'
 
@@ -56,6 +56,11 @@ export class PropertyDetailsComponent implements OnInit {
 
   stateLayer:any;
 
+  /**********************************************variables*****************************************/
+
+  areas: Array<Area> = new Array<Area>();
+  alreadyDrawnPolygonsAndLabels = false;
+
   constructor(private route: ActivatedRoute,
     private router: Router,
     private propertyService: PropertyService,
@@ -64,21 +69,28 @@ export class PropertyDetailsComponent implements OnInit {
     private zone: NgZone) { }
 
   ngOnInit() {
-    var propName = this.route.snapshot.paramMap.get('propertyName');
+    var propId = this.route.snapshot.paramMap.get('propertyName');
     let usr = JSON.parse(localStorage.getItem('user'));
 
-    this.propertyService.getPropertyByName(usr.OwnerId, propName).subscribe(data => {
-      this.property = data[0];
-      console.log("property res", this.property);
+    console.log("prop id route", propId);
+    this.propertyService.getPropertyById(propId).subscribe(data => {
+      this.property = data as Property;
+      console.log("property res", data);
 
-      //this.mapProps.center = new google.maps.LatLng(this.property.AreasOverlay[0].Coordinates[0][0], this.property.AreasOverlay[0].Coordinates[0][1]);
+      this.propertyService.getAreasByProperty(this.property.id).subscribe( data => {
+        console.log("areas:", data);
+        this.areas = data as Array<Area>;
 
-
-      this.propertyService.getPropertyAnalyses(this.property._id).subscribe(data => {
-        this.analyses = data
-        console.log("analysis res", this.analyses);
-
+        if (!this.alreadyDrawnPolygonsAndLabels && this.map) {
+          this.drawPolygonsAndLabels();
+        }
       });
+      
+      //this.mapProps.center = new google.maps.LatLng(this.property.AreasOverlay[0].Coordinates[0][0], this.property.AreasOverlay[0].Coordinates[0][1]);
+      // this.propertyService.getPropertyAnalyses(this.property._id).subscribe(data => {
+      //   this.analyses = data
+      //   console.log("analysis res", this.analyses);
+      // });
     });
   }
 
@@ -87,12 +99,14 @@ export class PropertyDetailsComponent implements OnInit {
 
     this.globalBounds = new google.maps.LatLngBounds();
 
-    for (let areas of this.property.AreasOverlay) {
+    for (let areas of this.areas) {
+      this.alreadyDrawnPolygonsAndLabels = true;
+
       var coords = new Array<any>();
       var bounds = new google.maps.LatLngBounds();
 
-      for (let i = 0; i < areas.Coordinates.length; i++) {
-        let coordinate = areas.Coordinates[i];
+      for (let i = 0; i < areas.area.length; i++) {
+        let coordinate = areas.area[i];
         let lat = coordinate[0];
         let lng = coordinate[1];
 
@@ -121,20 +135,23 @@ export class PropertyDetailsComponent implements OnInit {
           scale: 0,
         },
         label: {
-          text: areas.AreaName,
+          text: areas.nome,
           color: 'white',
         },
 
       });
+  
+      marker.setMap(this.map);
+      this.areaNameLabels.push(marker);
+     
     }
 
-    marker.setMap(this.map);
-
-    this.areaNameLabels.push(marker);
-
-    console.log("Setou center");
-    this.mapProps.center = new google.maps.LatLng(this.globalBounds.getCenter().lat(), this.globalBounds.getCenter().lng());
-    this.map.fitBounds(this.globalBounds);
+    if (this.globalBounds) {
+      console.log("Setou center");
+      this.mapProps.center = new google.maps.LatLng(this.globalBounds.getCenter().lat(), this.globalBounds.getCenter().lng());
+      this.map.fitBounds(this.globalBounds);
+    }
+   
   }
 
   clearPolygons() {
@@ -159,7 +176,10 @@ export class PropertyDetailsComponent implements OnInit {
       this.stateLayer = new google.maps.Data();
     })
 
-    this.drawPolygonsAndLabels();
+    if (!this.alreadyDrawnPolygonsAndLabels) {
+      this.drawPolygonsAndLabels();
+    }
+
     console.log(this.map);
   }
 
@@ -167,7 +187,7 @@ export class PropertyDetailsComponent implements OnInit {
   // On Edit property click -> router to map with selected property data
   onEditPropertyClick() {
     console.log("edit property");
-    this.router.navigate(['/map', this.property.PropertyName]);
+    this.router.navigate(['/map', this.property.nome]);
   }
 
   // On remove property click
@@ -179,7 +199,7 @@ export class PropertyDetailsComponent implements OnInit {
 
     modalRef.result.then((userResponse) => {
       if (userResponse) {
-        this.propertyService.deletePropertyByName(this.property.PropertyName).subscribe(data => {
+        this.propertyService.deletePropertyByName(this.property.nome).subscribe(data => {
           console.log(data);
           this.router.navigate(['/home']);
         });
@@ -197,7 +217,7 @@ export class PropertyDetailsComponent implements OnInit {
 
     if (this.checkBoxBtn.NDVI || this.checkBoxBtn.NDWI || this.checkBoxBtn.Produtividade ) {
       let analysis = {
-        PropertyId: this.property._id,
+        PropertyId: this.property.id,
         Type: (this.checkBoxBtn.NDVI ? '1': (this.checkBoxBtn.NDWI ? '2' : '3')),
         Date: dt,
       }
@@ -249,7 +269,7 @@ export class PropertyDetailsComponent implements OnInit {
 
     console.log("Requesting sampling points:");
 
-    this.propertyService.getPropertyAnalysisPoints(this.property._id, this.selectedAnalysis.Date, this.selectedAnalysis._id).subscribe(data => {
+    this.propertyService.getPropertyAnalysisPoints(this.property.id, this.selectedAnalysis.Date, this.selectedAnalysis._id).subscribe(data => {
 
       if (data) {
 
@@ -375,14 +395,14 @@ export class PropertyDetailsComponent implements OnInit {
     }
 
     techReport.CoverEvaluation = {
-      ClientName: this.property.OwnerId, Allotment: this.property.AreasOverlay[0].AreaName, Compaction: '',
-      Date: this.property.AreasOverlay[0].HarvestDate, EvaluationType: this.property.AreasOverlay[0].HarvestType,
-      ExtraComments: '', Latitude: '', Longitude: '', Material: '', PointNumber: pointLabel, PropertyName: this.property.PropertyName,
+      ClientName: this.property.nome, Allotment: "this.property.AreasOverlay[0].AreaName", Compaction: '',
+      Date: "this.property.AreasOverlay[0].HarvestDate", EvaluationType: "this.property.AreasOverlay[0].HarvestType",
+      ExtraComments: '', Latitude: '', Longitude: '', Material: '', PointNumber: pointLabel, PropertyName: "this.property.PropertyName",
       SoilAnalysis: '', Weight: ''
     }
 
     techReport.PlantEvaluation = {
-      Allotment: this.property.AreasOverlay[0].AreaName, Date: '', Latitude: '', Longitude: '',
+      Allotment: "this.property.AreasOverlay[0].AreaName", Date: '', Latitude: '', Longitude: '',
       PlantDistribution: { Linea1: [{ P1: '', P2: '' }], Linea2: [{ P1: '', P2: '' }], }, PlantStage: '',
       PropertyName: '', TotalPlantsIn10Meters: ''
     }

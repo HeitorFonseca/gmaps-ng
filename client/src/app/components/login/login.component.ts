@@ -5,7 +5,7 @@ import { NgxPermissionsService, NgxRolesService } from 'ngx-permissions'
 
 import { AuthService } from '../../services/auth.service'
 
-import {User} from "./../../models/user.model";
+import {User} from "./../../models/user";
 
 import { Data } from "./../../providers/data";
 
@@ -21,6 +21,8 @@ export class LoginComponent implements OnInit {
   message;
   processing = false;
   form: FormGroup;
+
+  user: User = new User();
 
   constructor( private formBuilder: FormBuilder, 
                private authService: AuthService, 
@@ -42,21 +44,21 @@ export class LoginComponent implements OnInit {
   createForm()
   {
     this.form = this.formBuilder.group({
-      username: ['', Validators.required],
-      password: ['', Validators.required]
+      email: ['', Validators.required],
+      senha: ['', Validators.required]
     });
   }
 
   disableForm()
   {
-    this.form.controls['username'].disable();
-    this.form.controls['password'].disable();
+    this.form.controls['email'].disable();
+    this.form.controls['senha'].disable();
   }
 
   enableForm()
   {
-    this.form.controls['username'].enable();
-    this.form.controls['password'].enable();
+    this.form.controls['email'].enable();
+    this.form.controls['senha'].enable();
   }
 
   onLoginSubmit()
@@ -65,14 +67,14 @@ export class LoginComponent implements OnInit {
     this.disableForm();     // Disable form while being process
     
     // Create user object from user's input
-    const user = {
-      username: this.form.get('username').value, // Username input field
-      password: this.form.get('password').value // Password input field
+    const reqUser = {
+      email: this.form.get('email').value, // Username input field
+      senha: this.form.get('senha').value // Password input field
     }
     
-    console.log(user);
+    console.log(reqUser);
 
-    this.authService.login(user).subscribe(data => {
+    this.authService.login(reqUser).subscribe(data => {
       
       console.log(data);
       if (!data.success) {
@@ -83,9 +85,12 @@ export class LoginComponent implements OnInit {
       } else {
         this.messageClass = 'alert alert-success';
         this.message = data.message;
+
+        this.user = data.user as User;
+
         this.authService.storeUserData(data.token, data.user);        
 
-        this.setUserPermissionsAndRole(data);
+        this.setUserPermissionsAndRole(this.user);
 
         setTimeout(() => {
           this.router.navigate(['']);
@@ -95,34 +100,16 @@ export class LoginComponent implements OnInit {
     
   }
 
-  setUserPermissionsAndRole(data:any) {
-    var permissions = this.usrData.getPropertyOwnerPermissions();
-    //this.permissionsService.loadPermissions(permissions);
+  setUserPermissionsAndRole(user:User) {
 
-    if (data.user.roles) {
-      let roles = data.user.roles;
+    if (user.tipo) {
 
-      for (let role of roles) {
-        var perm:string[] = [""];
 
-        if (role == "ADMIN") {
-          perm = this.usrData.getPropertyOwnerPermissions();
-          console.log("entrou", perm);
-        }
-        else if (role == "TECHNICIAN") {
-          perm = this.usrData.getTechnicianPermissions();
-        }  
-        
-        console.log("setou data permissions and role", role);
-        
-        localStorage.setItem('role', role);
-
-        var arr = new Array<any>();
-        arr.push(role);
-        this.permissionsService.loadPermissions(arr);
-
-        //this.rolesService.addRole(role, perm)
-      }
+      var arr = new Array<any>();
+      arr.push(user.tipo);
+      this.permissionsService.loadPermissions(arr);
+      console.log("Setou permissao para:", user.tipo);
+      
     }
   }
 }

@@ -14,7 +14,11 @@ export class UserService {
 
   // Function to get properties
   getUser() {
-    return this.http.get<any>(this.domain + 'users/me').map(res => res);
+    return this.http.get<any>(this.domain + 'usuario/').map(res => res);
+  }
+
+  changePassword(newPassword) {
+    return this.http.patch<any>(this.domain + 'usuario/', newPassword).map(res => res);
   }
 
 }

@@ -95,12 +95,12 @@
 
                         <div class="col-lg-12">
                             <div class="row" *ngIf="property">                               
-                                <div *ngFor="let area of property.AreasOverlay" class="col-4 card">
+                                <div *ngFor="let area of areas" class="col-4 card">
                                     <div class="card-block">
                                         <a (click)="onRemoveOverlayClick(area)">
                                             <i class="far fa-times-circle"></i>
                                         </a>
-                                        {{area.AreaName}}
+                                        {{area.nome}}
                                     </div>
                                 </div>                                
                             </div>

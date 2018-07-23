@@ -23,11 +23,11 @@ app.use(bodyParser.json()); // parse application/json
 app.use(cors());
 app.use(express.static(path.join(__dirname, 'dist/gmaps-ng5')));
 app.use('/', express.static(path.join(__dirname, 'dist/gmaps-ng5')));
-app.use('/api/property', propertyRouter);
+app.use('/api/propriedades', propertyRouter);
 app.use('/api/authentication', authRouter);
 app.use('/api/points', samplingPoints);
 app.use('/api/analyses', analyses);
-app.use('/api/users', users);
+app.use('/api/usuario', users);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

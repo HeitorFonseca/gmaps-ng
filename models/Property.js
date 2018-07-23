@@ -1,20 +1,30 @@
 var mongoose = require('mongoose');
-const AutoIncrement = require('mongoose-sequence')(mongoose);
 
 mongoose.Promise = global.Promise;
 
 var PropertySchema = new mongoose.Schema({    
-    PropertyName: {type: String, required: true},
-    OwnerId: {type: String, required: true},
-    AreasOverlay: [{
-      HarvestDate: String,
-      HarvestType: String,
-      AreaName: String,
-      Area: Number,
-      Coordinates: [ mongoose.Schema.Types.Mixed ],
-    }]   
+    nome: {type: String, required: true},
+    areaTotal: {type: String, required: true},
+    usuarioId: {type : mongoose.Schema.Types.ObjectId, ref : 'user'},
+
+    // AreasOverlay: [{
+    //   HarvestDate: String,
+    //   HarvestType: String,
+    //   AreaName: String,
+    //   Area: Number,
+    //   Coordinates: [ mongoose.Schema.Types.Mixed ],
+    // }]   
   });
 
-  PropertySchema.plugin(AutoIncrement, {inc_field: 'id'});
+  PropertySchema.set('toJSON', {
+    transform: function(doc, ret, options) {
+        var retJson = {
+            id: ret._id,
+            nome: ret.nome,
+            areaTotal: ret.areaTotal
+        };
+        return retJson;
+    }
+  });
 
   module.exports = mongoose.model('property', PropertySchema);

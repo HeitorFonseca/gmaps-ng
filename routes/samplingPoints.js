@@ -17,8 +17,6 @@ router.get('/:propertyId/:date/:analysisId', function (req, res, next) {
         console.log(post);
         res.json(post);
     });
-
-
 });
 
 /* Save Technical report */
@@ -40,7 +38,7 @@ router.post('/registerTechReport', function (req, res, next) {
 
 function requireAdmin(request, response, next) {
 
-    User.findById({ _id: request.body.OwnerId }, (err, user) => {
+    User.findById({ _id: request.body.userId }, (err, user) => {
         if (err) {
             console.log("err");
 
@@ -51,8 +49,8 @@ function requireAdmin(request, response, next) {
 
                 response.json({ success: false, message: 'Username not found' });
             } else {
-                console.log("role:", user.roles);
-                if (user.roles[0] != 'ADMIN') {
+                console.log("role:", user.tipo);
+                if (user.roles[0] != 'produtor') {
                     response.json({ message: 'Permission denied.' });
                 } else {
                     next();

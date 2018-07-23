@@ -34,7 +34,7 @@ router.post('/registerAnalysis', function (req, res, next) {
 
 function requireAdmin(request, response, next) {
 
-    User.findById({ _id: request.body.OwnerId }, (err, user) => {
+    User.findById({ _id: request.body.userId }, (err, user) => {
         if (err) {
             console.log("err");
 
@@ -46,7 +46,7 @@ function requireAdmin(request, response, next) {
                 response.json({ success: false, message: 'Username not found' });
             } else {
                 console.log("role:", user.roles);
-                if (user.roles[0] != 'ADMIN') {
+                if (user.roles[0] != 'produtor') {
                     response.json({ message: 'Permission denied.' });
                 } else {
                     next();

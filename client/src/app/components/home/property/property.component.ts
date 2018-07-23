@@ -7,7 +7,7 @@ import { NguiMap, DataLayer, DrawingManager, NguiMapComponent } from '@ngui/map'
 import { zip } from 'rxjs';
 
 import { PropertyService } from '../../../services/property.service';
-import { Property, AreasOverlay } from '../../../models/property';
+import { Property, Area } from '../../../models/property';
 
 import { Data } from './../../../providers/data';
 
@@ -50,7 +50,7 @@ export class PropertyComponent implements OnInit {
   processingCancel;
 
   /* auxiliar */
-  auxOverlay:any;
+  // drawnArea:any;
   message: string;
   messageClass;
 
@@ -60,11 +60,14 @@ export class PropertyComponent implements OnInit {
     Produtividade: true
   };
 
-  /* remove */
-  areas =  new FormArray([]);
 
 
   /*********************************************** Variable Declarations ***********************************************/
+
+  areas: Array<Area> = new Array<Area>();;
+
+  /* auxiliar */
+  drawnArea:Area;
 
   constructor(private route: ActivatedRoute, 
               private propData: Data,
@@ -84,36 +87,36 @@ export class PropertyComponent implements OnInit {
 
     // If has a property name is because the user is editing the property
     if (this.propNameParameter) {
-      // Get the property
-      var properties = this.propData.propertyData;
+      // // Get the property
+      // var properties = this.propData.propertyData;
 
-      // If property does not exist
-      if (!properties) {
-        // Request all property
-        this.propertyService.getProperties().subscribe(data => {
+      // // If property does not exist
+      // if (!properties) {
+      //   // Request all property
+      //   this.propertyService.getProperties().subscribe(data => {
 
-          properties = data;
-          // Store all properties
-          this.propData.propertyData = properties;
+      //     properties = data;
+      //     // Store all properties
+      //     this.propData.propertyData = properties;
 
-          // Check the property that has the same name as propName
-          for (let prop of properties) {
-            if (prop.PropertyName == this.propNameParameter) {              
-              this.property = prop;                                              // Save the property
-              this.form.get('propertyName').setValue(this.property.PropertyName);// Set property name     
-              this.drawPolygons(this.property)                                   // Draw polygons from property
-            }
-          }
-        });
-      } else {
-        for (let prop of properties) {
-          if (prop.PropertyName == this.propNameParameter) {
-            this.property = prop;                                               // Save the property
-            this.form.get('propertyName').setValue(this.property.PropertyName); // Set property name         
-            this.drawPolygons(this.property)                                    // Draw polygons from property
-          } 
-        }
-      }        
+      //     // Check the property that has the same name as propName
+      //     for (let prop of properties) {
+      //       if (prop.PropertyName == this.propNameParameter) {              
+      //         this.property = prop;                                              // Save the property
+      //         this.form.get('propertyName').setValue(this.property.PropertyName);// Set property name     
+      //         this.drawPolygons(this.property)                                   // Draw polygons from property
+      //       }
+      //     }
+      //   });
+      // } else {
+      //   for (let prop of properties) {
+      //     if (prop.PropertyName == this.propNameParameter) {
+      //       this.property = prop;                                               // Save the property
+      //       this.form.get('propertyName').setValue(this.property.PropertyName); // Set property name         
+      //       this.drawPolygons(this.property)                                    // Draw polygons from property
+      //     } 
+      //   }
+      // }        
     } else {
       this.property = new Property();
     }
@@ -141,22 +144,21 @@ export class PropertyComponent implements OnInit {
           var areaHa = this.SquareMetersToHectare(areaM2)                             // Convert to Hectare
           this.mapProps.drawingMode = '';                                             // Stop drawing mode 
 
-          var areasOverlay: AreasOverlay = new AreasOverlay;
+          var areasOverlay: Area = new Area();
           
-          areasOverlay.Area = areaHa.toString();          
+          areasOverlay.areaTotal = areaHa;//.toString();          
 
           for (let coord of overlay.getPath().getArray()) {
             let lat = coord.lat();
             let lng = coord.lng();
-            areasOverlay.Coordinates.push(new Array<number>(lat, lng));
-            //areasOverlay.Lngs.push(lng.toString());
+            areasOverlay.area.push(new Array<number>(lat, lng));
           }
 
-          this.auxOverlay = areasOverlay;
-          this.fillPropertyArea(areasOverlay);
+          this.drawnArea = areasOverlay;
+          this.fillPropertyArea(areasOverlay);  //Put total area in forms
 
-          this.overlayAreas.push(overlay);
-          console.log(this.overlayAreas);
+          this.overlayAreas.push(overlay);      //Add overlay to array of overlays
+          console.log(this.overlayAreas); 
 
           this.processingCancel = false;
         }
@@ -190,21 +192,35 @@ export class PropertyComponent implements OnInit {
   }
 
   onAddPropertyClick() {
+    console.log(this.drawnArea);
+    console.log(this.property);
     this.processingAdd = true;
 
-    this.property.AreasOverlay.push(this.auxOverlay);
+    let dt = this.form.controls['date'].value
 
-    // Property Name
-    this.property.PropertyName = this.form.controls['propertyName'].value
-    // Area in Hectare
-    this.property.AreasOverlay[this.property.AreasOverlay.length-1].Area = this.form.controls['propertyArea'].value
-    // Date
-    let dt = this.form.controls['date'].value;
-    this.property.AreasOverlay[this.property.AreasOverlay.length-1].HarvestDate = dt.year + "-" + dt.month + "-" + dt.day;
-    // Harvest Type
-    this.property.AreasOverlay[this.property.AreasOverlay.length-1].HarvestType =  this.form.controls['havestType'].value;
-    // Area Name
-    this.property.AreasOverlay[this.property.AreasOverlay.length-1].AreaName = this.form.controls['areaName'].value;
+    this.drawnArea.dataColheita = dt.day + "/" + dt.month + "/" + dt.year;
+    this.drawnArea.plantio =  this.form.controls['havestType'].value;
+    this.drawnArea.nome = this.form.controls['areaName'].value;
+    this.areas.push(this.drawnArea);
+
+    this.property.nome = this.form.controls['propertyName'].value;
+    this.property.areaTotal += this.drawnArea.areaTotal;
+    
+
+
+    // this.property.AreasOverlay.push(this.auxOverlay);
+
+    // // Property Name
+    // this.property.PropertyName = this.form.controls['propertyName'].value
+    // // Area in Hectare
+    // this.property.AreasOverlay[this.property.AreasOverlay.length-1].Area = this.form.controls['propertyArea'].value
+    // // Date
+    // let dt = this.form.controls['date'].value;
+    // this.property.AreasOverlay[this.property.AreasOverlay.length-1].HarvestDate = dt.year + "-" + dt.month + "-" + dt.day;
+    // // Harvest Type
+    // this.property.AreasOverlay[this.property.AreasOverlay.length-1].HarvestType =  this.form.controls['havestType'].value;
+    // // Area Name
+    // this.property.AreasOverlay[this.property.AreasOverlay.length-1].AreaName = this.form.controls['areaName'].value;
 
     console.log("prp", this.property);
     
@@ -217,7 +233,7 @@ export class PropertyComponent implements OnInit {
     // Reset form
     this.createForm();
     // Set the same property name
-    this.form.get('propertyName').setValue(this.property.PropertyName);
+    this.form.get('propertyName').setValue(this.property.nome);
     this.processingAdd = false;
     this.processingCancel = true;
 
@@ -228,13 +244,13 @@ export class PropertyComponent implements OnInit {
 
     let usr = JSON.parse(localStorage.getItem('user'));
     
-    this.property.OwnerId = usr.OwnerId;  
-    this.property.PropertyName = this.form.controls['propertyName'].value;
+     this.property.usuarioId = usr.id;  
+     this.property.nome = this.form.controls['propertyName'].value;
 
     // If register
     if (!this.propNameParameter) {
       this.propertyService.registerProperty(this.property).subscribe(data => {
-        console.log("register");
+        console.log("register:", data);
         if (!data.success) {
           this.messageClass = 'alert alert-danger';
           this.message = data.message;
@@ -242,6 +258,24 @@ export class PropertyComponent implements OnInit {
         } else {
           this.messageClass = 'alert alert-success';
           this.message = data.message;
+
+        
+          this.property.id = data.propriedade.id;
+
+          for (let area of this.areas) {
+            let reqArea = {
+              nome: area.nome,
+              propriedadeId: this.property.id,
+              areaTotal: area.areaTotal,
+              plantio: area.plantio,
+              dataColheita: area.dataColheita,
+              area: area.area
+            }
+            this.propertyService.registerArea(this.property.id, reqArea).subscribe(data => {
+              console.log("register area:", data);
+            })
+          }
+          
         }
         console.log(data);
       });
@@ -262,17 +296,17 @@ export class PropertyComponent implements OnInit {
     }
   }
 
-  fillPropertyArea(data:AreasOverlay) {   
-    let num = new Number(+data.Area);
+  fillPropertyArea(data:Area) {   
+    let num = new Number(+data.areaTotal);
     this.form.get('propertyArea').setValue(num.toPrecision(1));
   }
 
   onRemoveOverlayClick(area) {
 
-    for (let i = 0; i < this.property.AreasOverlay.length; i++) {
-      if (this.property.AreasOverlay[i] == area) {
+    for (let i = 0; i < this.areas.length; i++) {
+      if (this.areas[i] == area) {
         console.log("achou i");
-        this.property.AreasOverlay.splice(i, 1);
+        this.areas.splice(i, 1);
         this.deleteSelectedOverlay(i);
         this.deleteSelectedMarker(i);
       }
@@ -337,6 +371,7 @@ export class PropertyComponent implements OnInit {
     }
   }
 
+  // Add area name in drawn area overlay
   addAreaName(areaField) {
     var obj = JSON.parse(areaField);
 
@@ -412,53 +447,53 @@ export class PropertyComponent implements OnInit {
 
   addPolygons(propert: Property) {
 
-    var globalBounds = new google.maps.LatLngBounds();
-    for (let areas of propert.AreasOverlay) {
+    // var globalBounds = new google.maps.LatLngBounds();
+    // for (let areas of propert.AreasOverlay) {
 
-      var bounds = new google.maps.LatLngBounds();
-      var coords = new Array<any>();
+    //   var bounds = new google.maps.LatLngBounds();
+    //   var coords = new Array<any>();
 
-      for (let i = 0; i < areas.Coordinates.length; i++) {
-        let coordinate = areas.Coordinates[i];
-        let lat = coordinate[0];
-        let lng = coordinate[1];
+    //   for (let i = 0; i < areas.Coordinates.length; i++) {
+    //     let coordinate = areas.Coordinates[i];
+    //     let lat = coordinate[0];
+    //     let lng = coordinate[1];
 
-        bounds.extend(new google.maps.LatLng(lat, lng));
-        globalBounds.extend(new google.maps.LatLng(lat, lng));
-        coords.push({ lat: lat, lng: lng });
-      }
+    //     bounds.extend(new google.maps.LatLng(lat, lng));
+    //     globalBounds.extend(new google.maps.LatLng(lat, lng));
+    //     coords.push({ lat: lat, lng: lng });
+    //   }
 
-      var newPolygon = new google.maps.Polygon({
-        paths: coords,
-        strokeColor: '#FF0000',
-        strokeOpacity: 0.8,
-        strokeWeight: 3,
-        fillColor: '#FF0000',
-        fillOpacity: 0.35
-      });
+    //   var newPolygon = new google.maps.Polygon({
+    //     paths: coords,
+    //     strokeColor: '#FF0000',
+    //     strokeOpacity: 0.8,
+    //     strokeWeight: 3,
+    //     fillColor: '#FF0000',
+    //     fillOpacity: 0.35
+    //   });
 
-      newPolygon.setMap(this.currentMap);
+    //   newPolygon.setMap(this.currentMap);
 
-      this.overlayAreas.push(newPolygon);
+    //   this.overlayAreas.push(newPolygon);
 
-      var marker = new google.maps.Marker({
-        position: bounds.getCenter(),
-        map: this.currentMap,
-        icon: {
-          path: google.maps.SymbolPath.CIRCLE,
-          scale: 0
-        },
-        label: {
-          text: areas.AreaName,
-          color: 'white',
-        }
-      });
+    //   var marker = new google.maps.Marker({
+    //     position: bounds.getCenter(),
+    //     map: this.currentMap,
+    //     icon: {
+    //       path: google.maps.SymbolPath.CIRCLE,
+    //       scale: 0
+    //     },
+    //     label: {
+    //       text: areas.AreaName,
+    //       color: 'white',
+    //     }
+    //   });
 
-      this.makerLabels.push(marker);
-    }
+    //   this.makerLabels.push(marker);
+    // }
 
-    this.mapProps.center = new google.maps.LatLng(globalBounds.getCenter().lat(), globalBounds.getCenter().lng());
-    this.currentMap.fitBounds(globalBounds);
+    // this.mapProps.center = new google.maps.LatLng(globalBounds.getCenter().lat(), globalBounds.getCenter().lng());
+    // this.currentMap.fitBounds(globalBounds);
 
   }
 
@@ -479,7 +514,7 @@ export class PropertyComponent implements OnInit {
 
   /*********************************************** Utilities ***********************************************/
 
-  SquareMetersToHectare(area: any): Number {
+  SquareMetersToHectare(area: any): number {
     return area / 10000;
   }
 }

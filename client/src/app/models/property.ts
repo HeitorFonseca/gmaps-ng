@@ -1,17 +1,22 @@
 export class Property {
-    _id: number;
-    PropertyName: string;
-    OwnerId: string;
-    AreasOverlay: Array<AreasOverlay> = new Array<AreasOverlay>();    
-    Analyses: Array<Analysis> = new Array<Analysis>();    
+    id: number;
+    nome: string;
+    areaTotal: number = 0;
+    usuarioId: string;
+    // AreasOverlay: Array<AreasOverlay> = new Array<AreasOverlay>();    
+    // Analyses: Array<Analysis> = new Array<Analysis>();    
 }
 
-export class AreasOverlay {
-    Area: string;
-    AreaName: string;
-    HarvestDate: string;
-    HarvestType: string;
-    Coordinates: Array<Array<number>> = new Array<Array<number>>();    
+export class Area {
+    id: string;
+    propriedadeId: string;
+    nome: string;
+    areaTotal: number = 0;
+    plantio: string;
+    dataColheita: string;
+    area: Array<Array<number>> = new Array<Array<number>>();    
+    imagem: string;    
+
 }
 
 export class Analysis {

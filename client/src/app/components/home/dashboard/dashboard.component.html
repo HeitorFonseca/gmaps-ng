@@ -3,8 +3,8 @@
         <div class="card mb-3">
             <div class="card-body">
                     <ul> 
-                        <li *ngFor="let property of propeties; let i = index" (click)="selectProperty(property.PropertyName)"> 
-                            {{ i + 1 }} - {{ property.PropertyName }} 
+                        <li *ngFor="let property of propeties; let i = index" (click)="selectProperty(property.id)"> 
+                            {{ i + 1 }} - {{ property.nome }} 
                         </li>
                     </ul>
             </div>
