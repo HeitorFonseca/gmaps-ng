@@ -59,7 +59,7 @@
                                 <label> Data da última colheita </label>
                                 <div [ngClass]="{'has-error': form.controls.date.errors && form.controls.date.dirty, 'has-success': form.controls.date.valid && form.controls.date.dirty }">
                                     <div class="input-group datepicker-input">
-                                        <input class="form-control" name="dp" ngbDatepicker #d="ngbDatepicker" placeholder="yyyy-mm-dd" name="date" formControlName="date"
+                                        <input class="form-control" name="dp" ngbDatepicker #d="ngbDatepicker" name="date" formControlName="date"
                                         />
                                         <button class="input-group-addon" (click)="d.toggle()" type="button">
                                             <span class="fa fa-calendar"></span>
@@ -100,7 +100,8 @@
                                         <a (click)="onRemoveOverlayClick(area)">
                                             <i class="far fa-times-circle"></i>
                                         </a>
-                                        {{area.nome}}
+                                        <button type="button" (click)="onEditAreaClick(area)" class="btn btn-secondary">{{area.nome}}</button>
+                                        
                                     </div>
                                 </div>                                
                             </div>

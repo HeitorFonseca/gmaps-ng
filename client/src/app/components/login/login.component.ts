@@ -100,11 +100,14 @@ export class LoginComponent implements OnInit {
     
   }
 
+  
+  onRegisterUser() {
+    
+  }
+  
   setUserPermissionsAndRole(user:User) {
 
     if (user.tipo) {
-
-
       var arr = new Array<any>();
       arr.push(user.tipo);
       this.permissionsService.loadPermissions(arr);

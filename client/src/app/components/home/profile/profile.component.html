@@ -30,7 +30,7 @@
 
       </div>
       <div class="tab-pane container fade" id="menu1">
-          <form [formGroup]="formPassword" class="form">
+          <form [formGroup]="formPassword" class="form" (submit)="onChangePasswordClick()">
               <label for="currentPassword">Senha atual</label>
               <input type="password" class="form-control mr-sm-2 mb-sm-0" id="currentPassword" formControlName="currentPassword">
               <br>

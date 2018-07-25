@@ -31,8 +31,8 @@ router.get('/user', function(req, res, next) {
 /* GET single property by id */
 router.get('/:id', function(req, res, next) { 
   console.log("get property by id");
-  console.log(req.query);
-  Property.findById(req.query.id, function(err, property) {
+  console.log(req.params);
+  Property.findById(req.params.id, function(err, property) {
       if (err) {
           res.json(err);
       }

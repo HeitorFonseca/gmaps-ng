@@ -24,7 +24,7 @@ export class PropertyComponent implements OnInit {
 
   property: Property;
 
-  propNameParameter;
+  propIdParameter: string;
   makerLabels: Array<any> = new Array<any>();
   overlayAreas: Array<any> = new Array<any>();
   polygonsCoord: Array<any> = new Array<any>();
@@ -67,62 +67,47 @@ export class PropertyComponent implements OnInit {
   areas: Array<Area> = new Array<Area>();;
 
   /* auxiliar */
-  drawnArea:Area;
+  drawnArea: Area;
 
-  constructor(private route: ActivatedRoute, 
-              private propData: Data,
-              private propertyService: PropertyService,
-              public activeModal: NgbActiveModal,
-              private modalService: NgbModal,
-              private ref: ChangeDetectorRef,
-              private formBuilder: FormBuilder) 
-  { 
+  constructor(private route: ActivatedRoute,
+    private propData: Data,
+    private propertyService: PropertyService,
+    public activeModal: NgbActiveModal,
+    private modalService: NgbModal,
+    private ref: ChangeDetectorRef,
+    private formBuilder: FormBuilder) {
     // Create Form
     this.createForm();
 
     // Get property name from router parameter
-    this.propNameParameter = this.route.snapshot.paramMap.get('name');
+    this.propIdParameter = this.route.snapshot.paramMap.get('name');
 
-    console.log("propName=", this.propNameParameter);
+    console.log("propId=", this.propIdParameter);
 
     // If has a property name is because the user is editing the property
-    if (this.propNameParameter) {
-      // // Get the property
-      // var properties = this.propData.propertyData;
+    if (this.propIdParameter) {
+           
+      // Request all property
+      this.propertyService.getPropertyById(this.propIdParameter).subscribe(data => {
+        console.log("properties:", data);
+      
+        this.property = data;                                             // Save the property
+        this.form.get('propertyName').setValue(this.property.nome);       // Set property name     
 
-      // // If property does not exist
-      // if (!properties) {
-      //   // Request all property
-      //   this.propertyService.getProperties().subscribe(data => {
+        this.propertyService.getAreasByProperty(this.property.id).subscribe( data => {
+          console.log("areas:", data);
+          this.areas = data as Array<Area>;
+          this.drawPolygons(this.areas);
+        });
 
-      //     properties = data;
-      //     // Store all properties
-      //     this.propData.propertyData = properties;
-
-      //     // Check the property that has the same name as propName
-      //     for (let prop of properties) {
-      //       if (prop.PropertyName == this.propNameParameter) {              
-      //         this.property = prop;                                              // Save the property
-      //         this.form.get('propertyName').setValue(this.property.PropertyName);// Set property name     
-      //         this.drawPolygons(this.property)                                   // Draw polygons from property
-      //       }
-      //     }
-      //   });
-      // } else {
-      //   for (let prop of properties) {
-      //     if (prop.PropertyName == this.propNameParameter) {
-      //       this.property = prop;                                               // Save the property
-      //       this.form.get('propertyName').setValue(this.property.PropertyName); // Set property name         
-      //       this.drawPolygons(this.property)                                    // Draw polygons from property
-      //     } 
-      //   }
-      // }        
+      });
+      
     } else {
       this.property = new Property();
     }
   }
 
-  ngOnInit() {    
+  ngOnInit() {
 
     this.processingCancel = true;
 
@@ -138,14 +123,14 @@ export class PropertyComponent implements OnInit {
             overlay.setEditable(true);
           });
 
-          overlay = event.overlay;          
-          
+          overlay = event.overlay;
+
           var areaM2 = google.maps.geometry.spherical.computeArea(overlay.getPath()); // Get area
           var areaHa = this.SquareMetersToHectare(areaM2)                             // Convert to Hectare
           this.mapProps.drawingMode = '';                                             // Stop drawing mode 
 
           var areasOverlay: Area = new Area();
-          
+
           areasOverlay.areaTotal = areaHa;//.toString();          
 
           for (let coord of overlay.getPath().getArray()) {
@@ -158,7 +143,7 @@ export class PropertyComponent implements OnInit {
           this.fillPropertyArea(areasOverlay);  //Put total area in forms
 
           this.overlayAreas.push(overlay);      //Add overlay to array of overlays
-          console.log(this.overlayAreas); 
+          console.log(this.overlayAreas);
 
           this.processingCancel = false;
         }
@@ -169,8 +154,7 @@ export class PropertyComponent implements OnInit {
 
   /*********************************************** Property Functions ***********************************************/
 
-  createForm()
-  {
+  createForm() {
     this.form = this.formBuilder.group({
       propertyName: ['', Validators.required],
       areaName: ['', Validators.required],
@@ -182,7 +166,7 @@ export class PropertyComponent implements OnInit {
 
   onResetClick() {
     console.log(this.overlayAreas.length);
-    let size = this.overlayAreas.length-1;
+    let size = this.overlayAreas.length - 1;
     this.deleteSelectedOverlay(size);
     this.deleteSelectedMarker(size);
 
@@ -197,37 +181,19 @@ export class PropertyComponent implements OnInit {
     this.processingAdd = true;
 
     let dt = this.form.controls['date'].value
-
+    console.log("DATE:", dt);
     this.drawnArea.dataColheita = dt.day + "/" + dt.month + "/" + dt.year;
-    this.drawnArea.plantio =  this.form.controls['havestType'].value;
+    this.drawnArea.plantio = this.form.controls['havestType'].value;
     this.drawnArea.nome = this.form.controls['areaName'].value;
     this.areas.push(this.drawnArea);
 
     this.property.nome = this.form.controls['propertyName'].value;
     this.property.areaTotal += this.drawnArea.areaTotal;
-    
-
-
-    // this.property.AreasOverlay.push(this.auxOverlay);
-
-    // // Property Name
-    // this.property.PropertyName = this.form.controls['propertyName'].value
-    // // Area in Hectare
-    // this.property.AreasOverlay[this.property.AreasOverlay.length-1].Area = this.form.controls['propertyArea'].value
-    // // Date
-    // let dt = this.form.controls['date'].value;
-    // this.property.AreasOverlay[this.property.AreasOverlay.length-1].HarvestDate = dt.year + "-" + dt.month + "-" + dt.day;
-    // // Harvest Type
-    // this.property.AreasOverlay[this.property.AreasOverlay.length-1].HarvestType =  this.form.controls['havestType'].value;
-    // // Area Name
-    // this.property.AreasOverlay[this.property.AreasOverlay.length-1].AreaName = this.form.controls['areaName'].value;
 
     console.log("prp", this.property);
-    
-    //this.areas.push(this.form);
 
     // Add area name in maps
-    var objStr = JSON.stringify({"id":this.overlayAreas.length-1, "areaName": this.form.controls['areaName'].value})
+    var objStr = JSON.stringify({ "id": this.overlayAreas.length - 1, "areaName": this.form.controls['areaName'].value })
     this.addAreaName(objStr);
 
     // Reset form
@@ -243,12 +209,12 @@ export class PropertyComponent implements OnInit {
     console.log("register property", this.property);
 
     let usr = JSON.parse(localStorage.getItem('user'));
-    
-     this.property.usuarioId = usr.id;  
-     this.property.nome = this.form.controls['propertyName'].value;
+
+    this.property.usuarioId = usr.id;
+    this.property.nome = this.form.controls['propertyName'].value;
 
     // If register
-    if (!this.propNameParameter) {
+    if (!this.propIdParameter) {
       this.propertyService.registerProperty(this.property).subscribe(data => {
         console.log("register:", data);
         if (!data.success) {
@@ -259,7 +225,7 @@ export class PropertyComponent implements OnInit {
           this.messageClass = 'alert alert-success';
           this.message = data.message;
 
-        
+
           this.property.id = data.propriedade.id;
 
           for (let area of this.areas) {
@@ -275,7 +241,7 @@ export class PropertyComponent implements OnInit {
               console.log("register area:", data);
             })
           }
-          
+
         }
         console.log(data);
       });
@@ -283,7 +249,7 @@ export class PropertyComponent implements OnInit {
     else { //Edit
       this.propertyService.editProperty(this.property).subscribe(data => {
         console.log("edit property");
-        if(!data.success) {
+        if (!data.success) {
           this.messageClass = 'alert alert-danger';
           this.message = data.message;
           this.processingAdd = false;
@@ -296,7 +262,7 @@ export class PropertyComponent implements OnInit {
     }
   }
 
-  fillPropertyArea(data:Area) {   
+  fillPropertyArea(data: Area) {
     let num = new Number(+data.areaTotal);
     this.form.get('propertyArea').setValue(num.toPrecision(1));
   }
@@ -310,9 +276,28 @@ export class PropertyComponent implements OnInit {
         this.deleteSelectedOverlay(i);
         this.deleteSelectedMarker(i);
       }
-    
+
     }
     console.log(area);
+  }
+
+  onEditAreaClick(area: Area) {
+
+    let date = area.dataColheita.split('/');
+    console.log(date);
+
+    let dt = {
+      year: +date[2],
+      month: +date[1],
+      day: +date[0]
+    }
+
+    console.log("dt:", dt);
+
+    this.form.controls['areaName'].setValue(area.nome);
+    this.form.controls['havestType'].setValue(area.plantio);
+    this.form.controls['date'].setValue(dt);
+    this.form.controls['propertyArea'].setValue(area.areaTotal);
   }
 
   /*********************************************** Maps Functions ***********************************************/
@@ -425,7 +410,6 @@ export class PropertyComponent implements OnInit {
       this.mapProps.center = new google.maps.LatLng(this.propData.clientPosition.coords.latitude, this.propData.clientPosition.coords.longitude);
     }
 
-
     this.currentMap = event;
 
     for (let coord of this.polygonsCoord) {
@@ -433,67 +417,68 @@ export class PropertyComponent implements OnInit {
     }
   }
 
-  drawPolygons(data) {
+  drawPolygons(areas: Array<Area>) {
 
-    var prop: Property = data;
 
     if (this.currentMap) {
-      this.addPolygons(prop);
+      this.addPolygons(areas);
     } else {
-      this.polygonsCoord.push(prop);
+      this.polygonsCoord.push(areas);
     }
 
   }
 
-  addPolygons(propert: Property) {
+  addPolygons(areas: Array<Area>) {
 
-    // var globalBounds = new google.maps.LatLngBounds();
-    // for (let areas of propert.AreasOverlay) {
+    var globalBounds = new google.maps.LatLngBounds();
 
-    //   var bounds = new google.maps.LatLngBounds();
-    //   var coords = new Array<any>();
+    for (let area of areas) {
 
-    //   for (let i = 0; i < areas.Coordinates.length; i++) {
-    //     let coordinate = areas.Coordinates[i];
-    //     let lat = coordinate[0];
-    //     let lng = coordinate[1];
+      var bounds = new google.maps.LatLngBounds();
+      var coords = new Array<any>();
 
-    //     bounds.extend(new google.maps.LatLng(lat, lng));
-    //     globalBounds.extend(new google.maps.LatLng(lat, lng));
-    //     coords.push({ lat: lat, lng: lng });
-    //   }
+      for (let i = 0; i < area.area.length; i++) {
+        let coordinate = area.area[i];
+        let lat = coordinate[0];
+        let lng = coordinate[1];
 
-    //   var newPolygon = new google.maps.Polygon({
-    //     paths: coords,
-    //     strokeColor: '#FF0000',
-    //     strokeOpacity: 0.8,
-    //     strokeWeight: 3,
-    //     fillColor: '#FF0000',
-    //     fillOpacity: 0.35
-    //   });
+        bounds.extend(new google.maps.LatLng(lat, lng));
+        globalBounds.extend(new google.maps.LatLng(lat, lng));
+        coords.push({ lat: lat, lng: lng });
+      }
 
-    //   newPolygon.setMap(this.currentMap);
+      var newPolygon = new google.maps.Polygon({
+        paths: coords,
+        strokeColor: '#FF0000',
+        strokeOpacity: 0.8,
+        strokeWeight: 3,
+        fillColor: '#FF0000',
+        fillOpacity: 0.35
+      });
 
-    //   this.overlayAreas.push(newPolygon);
+      newPolygon.setMap(this.currentMap);
 
-    //   var marker = new google.maps.Marker({
-    //     position: bounds.getCenter(),
-    //     map: this.currentMap,
-    //     icon: {
-    //       path: google.maps.SymbolPath.CIRCLE,
-    //       scale: 0
-    //     },
-    //     label: {
-    //       text: areas.AreaName,
-    //       color: 'white',
-    //     }
-    //   });
+      this.overlayAreas.push(newPolygon);
 
-    //   this.makerLabels.push(marker);
-    // }
+      var marker = new google.maps.Marker({
+        position: bounds.getCenter(),
+        map: this.currentMap,
+        icon: {
+          path: google.maps.SymbolPath.CIRCLE,
+          scale: 0
+        },
+        label: {
+          text: area.nome,
+          color: 'white',
+        }
+      });
 
-    // this.mapProps.center = new google.maps.LatLng(globalBounds.getCenter().lat(), globalBounds.getCenter().lng());
-    // this.currentMap.fitBounds(globalBounds);
+      this.makerLabels.push(marker);
+    }
+
+    console.log("setou center");
+    this.mapProps.center = new google.maps.LatLng(globalBounds.getCenter().lat(), globalBounds.getCenter().lng());
+    this.currentMap.fitBounds(globalBounds);
 
   }
 

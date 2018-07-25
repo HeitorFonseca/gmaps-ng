@@ -38,6 +38,9 @@ export class NavbarComponent implements OnInit, AfterViewInit {
     if (obj) {
       this.username = obj.nome;
     }
+
+    this.authService.getLoggedInName.subscribe(name => this.username = name);
+
   }
 
   // Function to logout user

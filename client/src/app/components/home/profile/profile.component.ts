@@ -14,31 +14,43 @@ export class ProfileComponent implements OnInit {
   formPassword: FormGroup;
 
   constructor(private formBuilder: FormBuilder,
-              private userService: UserService) {
+    private userService: UserService) {
 
-                this.formUserData = this.formBuilder.group({
-                  name: [''],
-                  email: ['']
-                });
+    this.formUserData = this.formBuilder.group({
+      name: [''],
+      email: ['']
+    });
 
-                this.formPassword = this.formBuilder.group({
-                  currentPassword: [''],
-                  newPassword: ['']
-                })
-               }
+    this.formPassword = this.formBuilder.group({
+      currentPassword: [''],
+      newPassword: ['']
+    });
+  }
 
   ngOnInit() {
 
-    this.userService.getUser().subscribe( data => {
+    this.userService.getUser().subscribe(data => {
       console.log("user: ", data);
 
       this.formUserData.setValue({
-        name: data.user.username,
+        name: data.user.nome,
         email: data.user.email
       });
-
-
     })
+  }
+
+  onChangePasswordClick() {
+
+    let reqPassword = {
+      senhaAtual: this.formPassword.controls["currentPassword"].value,
+      senhaNova: this.formPassword.controls["newPassword"].value
+
+    }
+    this.userService.changePassword(reqPassword).subscribe(data => {
+      
+      console.log("change password:", data);
+    });
+
   }
 
 }

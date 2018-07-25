@@ -45,10 +45,7 @@ export class PropertyService {
 
   // Function to get properties by id
   getPropertyById(propId): Observable<Property> {
-    let params = new HttpParams();
-    params = params.append('id', propId);
-
-    return this.http.get<Property>(this.domain + 'propriedades/' + propId, {params: params}).map(res => res);
+    return this.http.get<Property>(this.domain + 'propriedades/' + propId).map(res => res);
   }
 
    // Function to get properties by name

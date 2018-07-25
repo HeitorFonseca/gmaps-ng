@@ -136,31 +136,21 @@ export function tokenGetter() {
             provide: APP_INITIALIZER,
             useFactory: (dt: Data, ps:NgxPermissionsService) => function()
             { 
-              if (dt) {                  
-                console.log(ps);
-                return ps.loadPermissions(dt.getAllPermissions())                                     
-              }             
-            },
-            multi: true,
-            deps: [Data, NgxPermissionsService]
-          },
-          {
-            provide: APP_INITIALIZER,
-            useFactory: (dt: Data, rs:NgxRolesService) => function()
-            { 
-              var role = localStorage.getItem('role');
-              if (role) {                  
-                console.log(role);
-                if (role == "produtor") {
-                  return rs.addRole(role, dt.getPropertyOwnerPermissions())
-                } else if (role == "TECHNICIAN") {
-                  return rs.addRole(role, dt.getTechnicianPermissions())
-                }
+              
+              var userObj = JSON.parse(localStorage.getItem('user'));
+              console.log("GET ROLE:", userObj.tipo);
+
+              if (userObj.tipo && dt) {                  
+
+                var arr = new Array<any>();
+                arr.push(userObj.tipo);
+                                
+                return ps.loadPermissions(arr)
                 
               }             
             },
             multi: true,
-            deps: [Data, NgxRolesService]
+            deps: [Data, NgxPermissionsService]
           }],
   bootstrap: [AppComponent]
 })

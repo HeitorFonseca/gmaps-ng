@@ -187,7 +187,7 @@ export class PropertyDetailsComponent implements OnInit {
   // On Edit property click -> router to map with selected property data
   onEditPropertyClick() {
     console.log("edit property");
-    this.router.navigate(['/map', this.property.nome]);
+    this.router.navigate(['/map', this.property.id]);
   }
 
   // On remove property click

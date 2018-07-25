@@ -18,7 +18,7 @@ export class UserService {
   }
 
   changePassword(newPassword) {
-    return this.http.patch<any>(this.domain + 'usuario/', newPassword).map(res => res);
+    return this.http.patch<any>(this.domain + 'usuario/senha', newPassword).map(res => res);
   }
 
 }
