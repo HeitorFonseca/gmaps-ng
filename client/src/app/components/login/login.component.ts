@@ -102,9 +102,9 @@ export class LoginComponent implements OnInit {
 
   
   onRegisterUser() {
-    
+    this.router.navigate(['/register']);
   }
-  
+
   setUserPermissionsAndRole(user:User) {
 
     if (user.tipo) {
