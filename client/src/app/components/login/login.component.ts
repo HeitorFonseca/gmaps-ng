@@ -92,6 +92,8 @@ export class LoginComponent implements OnInit {
 
         this.setUserPermissionsAndRole(this.user);
 
+        this.authService.showNavBar.emit(true);
+        
         setTimeout(() => {
           this.router.navigate(['']);
         }, 1500);
