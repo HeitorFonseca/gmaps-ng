@@ -182,7 +182,7 @@ export class PropertyComponent implements OnInit {
 
     let dt = this.form.controls['date'].value
     console.log("DATE:", dt);
-    this.drawnArea.dataColheita = dt.day + "/" + dt.month + "/" + dt.year;
+    //this.drawnArea.dataColheita = dt.day + "/" + dt.month + "/" + dt.year;
     this.drawnArea.plantio = this.form.controls['havestType'].value;
     this.drawnArea.nome = this.form.controls['areaName'].value;
     this.areas.push(this.drawnArea);
@@ -234,7 +234,7 @@ export class PropertyComponent implements OnInit {
               propriedadeId: this.property.id,
               areaTotal: area.areaTotal,
               plantio: area.plantio,
-              dataColheita: area.dataColheita,
+              //dataColheita: area.dataColheita,
               area: area.area
             }
             this.propertyService.registerArea(this.property.id, reqArea).subscribe(data => {
@@ -283,20 +283,20 @@ export class PropertyComponent implements OnInit {
 
   onEditAreaClick(area: Area) {
 
-    let date = area.dataColheita.split('/');
-    console.log(date);
+    // let date = area.dataColheita.split('/');
+    // console.log(date);
 
-    let dt = {
-      year: +date[2],
-      month: +date[1],
-      day: +date[0]
-    }
+    // let dt = {
+    //   year: +date[2],
+    //   month: +date[1],
+    //   day: +date[0]
+    // }
 
-    console.log("dt:", dt);
+    // console.log("dt:", dt);
 
     this.form.controls['areaName'].setValue(area.nome);
     this.form.controls['havestType'].setValue(area.plantio);
-    this.form.controls['date'].setValue(dt);
+    //this.form.controls['date'].setValue(dt);
     this.form.controls['propertyArea'].setValue(area.areaTotal);
   }
 

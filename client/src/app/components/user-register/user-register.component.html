@@ -1,3 +1,56 @@
-<p>
-  user-register works!
-</p>
+
+<div class="register-page">
+
+    <!-- <img src="../../../assets/images/logo.png" width="300px"  /> -->
+    <h1>Register</h1>
+
+    <!-- Custom Success/Error Message -->
+    <div class="row show-hide-message">
+      <div [ngClass]="messageClass">
+        {{ message }}
+      </div>
+    </div>
+
+  <!-- Login Form -->
+  <form [formGroup]="form" (submit)="onRegisterSubmit()">
+
+    <!-- name Field -->
+    <div class="form-group">      
+      <div [ngClass]="{'has-error': form.controls.name.errors && form.controls.name.dirty, 'has-success': form.controls.name.valid && form.controls.name.dirty }">
+        <input class="form-control input-underline input-lg" type="text" placeholder="Nome Completo" name="name" formControlName="name" />
+        <!-- Validation -->
+        <ul class="help-block">
+          <li *ngIf="form.controls.name.errors?.required && form.controls.name.dirty">This field is required.</li>
+        </ul>
+      </div>
+    </div>
+
+     <!-- email Field -->
+    <div class="form-group">      
+      <div [ngClass]="{'has-error': form.controls.email.errors && form.controls.email.dirty, 'has-success': form.controls.email.valid && form.controls.email.dirty }">
+        <input class="form-control input-underline input-lg" type="text" placeholder="E-mail" name="email" formControlName="email" />
+        <!-- Validation -->
+        <ul class="help-block">
+          <li *ngIf="form.controls.email.errors?.required && form.controls.email.dirty">This field is required.</li>
+        </ul>
+      </div>
+    </div>
+
+
+    <!-- Password Field  -->
+    <div class="form-group">
+      <div [ngClass]="{'has-error': form.controls.senha.errors && form.controls.senha.dirty, 'has-success': form.controls.senha.valid && form.controls.senha.dirty }">
+        <input class="form-control input-underline input-lg" type="password" placeholder="senha" name="senha" formControlName="senha" />
+        <!-- Validation -->
+        <ul class="help-block">
+          <li *ngIf="form.controls.senha.errors?.required && form.controls.senha.dirty">This field is required.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Submit Button -->
+    <input [disabled]="!form.valid || processing" class="btn btn-primary" type="submit" value="Registrar" />
+
+  </form>
+
+</div>
