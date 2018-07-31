@@ -143,8 +143,8 @@ export function tokenGetter() {
             provide: APP_INITIALIZER,
             useFactory: (dt: Data, ps:NgxPermissionsService) => function()
             { 
-              
-              if (userObj && dt) { 
+              console.log("initialize", userObj, dt);
+              if (dt) { 
                 var userObj = JSON.parse(localStorage.getItem('user'));
                 console.log("GET ROLE:", userObj.tipo);                               
 
