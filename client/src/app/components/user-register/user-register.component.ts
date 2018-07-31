@@ -57,7 +57,10 @@ export class UserRegisterComponent implements OnInit {
     // Create user object from user's input
     const reqUser = {
       email: this.form.get('email').value, // Username input field
-      senha: this.form.get('senha').value // Password input field
+      senha: this.form.get('senha').value, // Password input field
+      nome: this.form.get('name').value,
+      tipo: 'produtor',
+      hectaresContratados: 0
     }
     
     console.log(reqUser);

@@ -9,18 +9,18 @@ router.post('/register', (req, res) => {
   console.log(req.body);
   // Check if email was provided
   if (!req.body.email) {
-    res.json({ success: false, message: 'You must provide an e-mail' }); // Return error
+    res.json({ success: false, message: 'Voce deve fornecer um e-mail' }); // Return error
   } else {
     // Check if nome was provided
     if (!req.body.nome) {
-      res.json({ success: false, message: 'You must provide a nome' }); // Return error
+      res.json({ success: false, message: 'Voce deve fornecer um nome' }); // Return error
     } else {
       // Check if password was provided
       if (!req.body.senha) {
-        res.json({ success: false, message: 'You must provide a password' }); // Return error
+        res.json({ success: false, message: 'Voce deve fornecer uma senha' }); // Return error
       } else {
         if (!req.body.tipo) {
-          res.json({ success: false, message: 'You must provide a role' }); // Return error
+          res.json({ success: false, message: 'Voce deve fornecer um tipo' }); // Return error
         }
         else {
           // Create new user object and apply user input

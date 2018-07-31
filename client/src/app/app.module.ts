@@ -34,7 +34,9 @@ import { ProfileComponent } from './components/home/profile/profile.component';
 import { Profile } from 'selenium-webdriver/firefox';
 
 
-import { TokenInterceptor } from './services/token-interceptor'
+import { TokenInterceptor } from './services/token-interceptor';
+import { UserRegisterComponent } from './components/user-register/user-register.component'
+
 
 
 export function tokenGetter() {
@@ -54,7 +56,8 @@ export function tokenGetter() {
     FooterComponent,
     CalendarComponent,
     PointFormComponent,
-    ProfileComponent
+    ProfileComponent,
+    UserRegisterComponent
   ],
   imports: [
     BrowserModule,
@@ -77,6 +80,10 @@ export function tokenGetter() {
       { 
         path: "login",
         component: LoginComponent
+      },
+      { 
+        path: "register",
+        component: UserRegisterComponent
       },
       { 
         path: "about",
@@ -137,10 +144,9 @@ export function tokenGetter() {
             useFactory: (dt: Data, ps:NgxPermissionsService) => function()
             { 
               
-              var userObj = JSON.parse(localStorage.getItem('user'));
-              console.log("GET ROLE:", userObj.tipo);
-
-              if (userObj.tipo && dt) {                  
+              if (userObj && dt) { 
+                var userObj = JSON.parse(localStorage.getItem('user'));
+                console.log("GET ROLE:", userObj.tipo);                               
 
                 var arr = new Array<any>();
                 arr.push(userObj.tipo);

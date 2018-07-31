@@ -188,7 +188,8 @@
                         <data-layer>
                         </data-layer>
 
-                        <drawing-manager [drawingMode]="mapProps.drawingMode" [drawingControl]="false" [drawingControlOptions]="{drawingModes: ['']}">
+                        <drawing-manager [drawingMode]="mapProps.drawingMode" [drawingControl]="false" [drawingControlOptions]="{drawingModes: ['']}"
+                                         [polygonOptions]="{strokeWeight: 0, fillOpacity: 0.45, editable: true}">
                         </drawing-manager>
 
                     </ngui-map>

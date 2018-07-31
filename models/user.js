@@ -13,7 +13,7 @@ const userSchema = new Schema({
   nome: { type: String, required: true, lowercase: true },
   senha: { type: String, required: true},
   tipo: { type: String, required: true},
-  hectaresContratados: { type: String, required: true}
+  hectaresContratados: { type: String}
 });
 
 // Schema Middleware to Encrypt Password

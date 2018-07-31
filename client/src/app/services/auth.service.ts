@@ -17,6 +17,7 @@ interface LoginData {
 
 export class AuthService {
 
+  showNavBar = new EventEmitter<boolean>();
   @Output() getLoggedInName: EventEmitter<any> = new EventEmitter();
 
   domain = "http://localhost:3000/api/";
@@ -28,7 +29,7 @@ export class AuthService {
 
   // Function to register user accounts
   registerUser(user) {
-    return this.http.post(this.domain + 'authentication/register', user).map(res => res);
+    return this.http.post<any>(this.domain + 'authentication/register', user).map(res => res);
   }
 
   // Function to check if username is taken
@@ -53,6 +54,8 @@ export class AuthService {
     localStorage.removeItem('user');
     localStorage.removeItem('token');
     localStorage.removeItem('role');
+    this.showNavBar.emit(false);
+
   }
 
   // Function to store user's data in client local storage
@@ -71,8 +74,7 @@ export class AuthService {
     };
 
     this.requestOptions.params.set('Content-Type', 'application/json');
-    this.requestOptions.params.set('authorization', this.authToken);
-    
+    this.requestOptions.params.set('authorization', this.authToken);  
   }
 
   loadToken() {
@@ -89,8 +91,11 @@ export class AuthService {
 
     if (!this.helper.isTokenExpired(this.authToken))
     {
+      this.showNavBar.emit(true);
+
       return true;
     }
+
     
     this.router.navigate(['/login']);
     return false;

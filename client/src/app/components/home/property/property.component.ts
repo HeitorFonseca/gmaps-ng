@@ -86,22 +86,22 @@ export class PropertyComponent implements OnInit {
 
     // If has a property name is because the user is editing the property
     if (this.propIdParameter) {
-           
+
       // Request all property
       this.propertyService.getPropertyById(this.propIdParameter).subscribe(data => {
         console.log("properties:", data);
-      
+
         this.property = data;                                             // Save the property
         this.form.get('propertyName').setValue(this.property.nome);       // Set property name     
 
-        this.propertyService.getAreasByProperty(this.property.id).subscribe( data => {
+        this.propertyService.getAreasByProperty(this.property.id).subscribe(data => {
           console.log("areas:", data);
           this.areas = data as Array<Area>;
           this.drawPolygons(this.areas);
         });
 
       });
-      
+
     } else {
       this.property = new Property();
     }
@@ -112,6 +112,14 @@ export class PropertyComponent implements OnInit {
     this.processingCancel = true;
 
     this.drawingManager['initialized$'].subscribe(dm => {
+
+      var polyline = new google.maps.Polyline({
+        editable: true
+      });
+
+      dm.setOptions({ polylineOptions: polyline });
+
+      console.log("dm:", dm);
 
       // Add listener for when user draw a polygon
       google.maps.event.addListener(dm, 'overlaycomplete', event => {
@@ -124,28 +132,37 @@ export class PropertyComponent implements OnInit {
           });
 
           overlay = event.overlay;
+          var self = this;
 
-          var areaM2 = google.maps.geometry.spherical.computeArea(overlay.getPath()); // Get area
-          var areaHa = this.SquareMetersToHectare(areaM2)                             // Convert to Hectare
-          this.mapProps.drawingMode = '';                                             // Stop drawing mode 
+          overlay.getPaths().forEach(function (path, index) {
 
-          var areasOverlay: Area = new Area();
+            google.maps.event.addListener(path, 'insert_at', function () {
+              console.log("New Point");
 
-          areasOverlay.areaTotal = areaHa;//.toString();          
+              for (let i = 0; i < self.overlayAreas.length; i++) {
 
-          for (let coord of overlay.getPath().getArray()) {
-            let lat = coord.lat();
-            let lng = coord.lng();
-            areasOverlay.area.push(new Array<number>(lat, lng));
-          }
+                if (self.overlayAreas[i].getPath() == path) {
+                  console.log("ACHOU i:", i);
+                  self.overlayAreas.splice(i, 1, overlay);
+                }
+              }
+              //self.overlayAreas.push(overlay);
+              self.calculateAndFillPropertyArea(overlay);
 
-          this.drawnArea = areasOverlay;
-          this.fillPropertyArea(areasOverlay);  //Put total area in forms
+            });
+
+            google.maps.event.addListener(path, 'set_at', function () {
+              //console.log("Point was moved", path, overlay);
+              ///self.calculateAndFillPropertyArea(overlay);
+
+            });
+
+          });
+
+          this.calculateAndFillPropertyArea(overlay);
 
           this.overlayAreas.push(overlay);      //Add overlay to array of overlays
-          console.log(this.overlayAreas);
 
-          this.processingCancel = false;
         }
       });
 
@@ -159,7 +176,7 @@ export class PropertyComponent implements OnInit {
       propertyName: ['', Validators.required],
       areaName: ['', Validators.required],
       havestType: ['', Validators.required],
-      date: ['', Validators.required],
+      //date: ['', Validators.required],
       propertyArea: ['', Validators.required]
     });
   }
@@ -180,8 +197,8 @@ export class PropertyComponent implements OnInit {
     console.log(this.property);
     this.processingAdd = true;
 
-    let dt = this.form.controls['date'].value
-    console.log("DATE:", dt);
+    //let dt = this.form.controls['date'].value
+    //console.log("DATE:", dt);
     //this.drawnArea.dataColheita = dt.day + "/" + dt.month + "/" + dt.year;
     this.drawnArea.plantio = this.form.controls['havestType'].value;
     this.drawnArea.nome = this.form.controls['areaName'].value;
@@ -192,9 +209,8 @@ export class PropertyComponent implements OnInit {
 
     console.log("prp", this.property);
 
-    // Add area name in maps
-    var objStr = JSON.stringify({ "id": this.overlayAreas.length - 1, "areaName": this.form.controls['areaName'].value })
-    this.addAreaName(objStr);
+
+    this.addAreaName(this.overlayAreas.length - 1, this.form.controls['areaName'].value);
 
     // Reset form
     this.createForm();
@@ -260,6 +276,29 @@ export class PropertyComponent implements OnInit {
         console.log(data);
       });
     }
+  }
+
+  calculateAndFillPropertyArea(overlay) {
+    var areaM2 = google.maps.geometry.spherical.computeArea(overlay.getPath()); // Get area
+    var areaHa = this.squareMetersToHectare(areaM2)                             // Convert to Hectare
+    this.mapProps.drawingMode = '';                                             // Stop drawing mode 
+    console.log("area:",areaHa);
+    var areasOverlay: Area = new Area();
+
+    areasOverlay.areaTotal = areaHa;//.toString();          
+
+    for (let coord of overlay.getPath().getArray()) {
+      let lat = coord.lat();
+      let lng = coord.lng();
+      areasOverlay.area.push(new Array<number>(lat, lng));
+    }
+
+    this.drawnArea = areasOverlay;
+    this.fillPropertyArea(areasOverlay);  //Put total area in forms
+
+    console.log(this.overlayAreas);
+
+    this.processingCancel = false;
   }
 
   fillPropertyArea(data: Area) {
@@ -357,14 +396,13 @@ export class PropertyComponent implements OnInit {
   }
 
   // Add area name in drawn area overlay
-  addAreaName(areaField) {
-    var obj = JSON.parse(areaField);
+  addAreaName(objId, areaName) {
 
-    if (this.overlayAreas[obj.id]) {
+    if (this.overlayAreas[objId]) {
 
       var bounds = new google.maps.LatLngBounds();
 
-      for (let coord of this.overlayAreas[obj.id].getPath().getArray()) {
+      for (let coord of this.overlayAreas[objId].getPath().getArray()) {
         bounds.extend(coord);
       }
 
@@ -376,7 +414,7 @@ export class PropertyComponent implements OnInit {
           scale: 0
         },
         label: {
-          text: obj.areaName,
+          text: areaName,
           color: 'white',
         }
       });
@@ -499,7 +537,7 @@ export class PropertyComponent implements OnInit {
 
   /*********************************************** Utilities ***********************************************/
 
-  SquareMetersToHectare(area: any): number {
+  squareMetersToHectare(area: any): number {
     return area / 10000;
   }
 }
