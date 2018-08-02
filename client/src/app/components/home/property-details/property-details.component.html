@@ -11,29 +11,32 @@
 </ng-template>
 
 <!-- Template for when click in sampling points -->
-
 <ng-template #modalContent let-close="close">
     <div class="modal-header">
-        <!-- <h5 class="modal-title">Event action occurred</h5>
-        <button type="button" class="close" (click)="close()">
-        <span aria-hidden="true">&times;</span>
-        </button> -->
         <h4 class="text-center">Relatório de recomendação</h4>
     </div>
     <div class="modal-body">
-        <!-- <div>
-        Action:        
-        </div>
-        <div>
-        Event:        
-        </div> -->
         <app-point-form [currentReport]="selectedReport" (techReportForm)="receiverTechReportForm($event)"></app-point-form>
     </div>
-
 </ng-template>
+
 
 <div class="row">
     <div class="col-12 col-xl-6 col-lg-6 col-md-6 col-sm-6 text-xs-center">
+
+        <div class="card card-default">
+            <div class="card-header">
+                Tecnico Responsável
+            </div>
+            <div class="card-body" *ngIf="technicians">
+                <div>
+                    <select>
+                        <option *ngFor="let technician of technicians" [value]="technician.id"> {{technician.nome}}</option>
+                    </select>
+                </div>               
+            </div>
+        </div>
+
         <div class="card card-default">
             <div class="card-header">
                 Areas da propriedade
@@ -85,7 +88,7 @@
                     <div class="row mt-4 d-flex justify-content-center">
                         <div class="btn-group btn-group-toggle">
                             <label class="btn btn-primary" [class.active]="checkBoxBtn.NDVI">
-                                <input type="checkbox" [(ngModel)]="checkBoxBtn.NDVI" > Mapa de produção
+                                <input type="checkbox" [(ngModel)]="checkBoxBtn.NDVI"> Mapa de produção
                             </label>
                         </div>
                     </div>
@@ -105,7 +108,7 @@
                     </div>
 
                     <input class="btn btn-secondary" (click)="onRequestAnalysisClick()" value="Confirmar" />
-                </div>                
+                </div>
             </div>
         </div>
 
@@ -126,7 +129,7 @@
                                 <a class="nav-link" (click)="clickInitLocation()">
                                     <i class="fas fa-home"></i>
                                 </a>
-                            </li>                                                    
+                            </li>
                             <li class="nav-item">
                                 <a class="nav-link" (click)="clickZoomIn()">
                                     <i class="fas fa-plus-square"></i>
@@ -145,7 +148,7 @@
                         </ul>
                         <div class="navbar-nav ml-auto">
                             <li class="nav-item" *ngIf="drawnPoints && requestedAnalysis">
-                                <a class="nav-link" (click)="clearSamplingPoints()" >
+                                <a class="nav-link" (click)="clearSamplingPoints()">
                                     <i class="fas fa-eye"></i>
                                 </a>
                             </li>

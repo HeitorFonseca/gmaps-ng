@@ -29,7 +29,8 @@ router.post('/register', (req, res) => {
             nome: req.body.nome.toLowerCase(),
             senha: req.body.senha,
             tipo: req.body.tipo,
-            hectaresContratados: req.body.hectaresContratados
+            hectaresContratados: req.body.hectaresContratados,
+            hectaresRestantes: req.body.hectaresContratados
           });
           // Save user to database
           user.save((err) => {

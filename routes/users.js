@@ -39,7 +39,7 @@ router.put('/', function (req, res) {
         if (err) {
             console.log(err);
             return res.status(500).send({ auth: false, message: 'Falha no token.' });
-        }        
+        }
 
         User.findByIdAndUpdate(decoded.userId, req.body, function (err, post) {
             if (err) {
@@ -63,12 +63,12 @@ router.patch('/senha', function (req, res) {
             return res.status(500).send({ auth: false, message: 'Falha no token.' });
         }
 
-        User.findById(decoded.userId, function(err, user) {
+        User.findById(decoded.userId, function (err, user) {
 
             const validPassword = user.comparePassword(req.body.senhaAtual);
             if (!validPassword) {
                 res.json({ success: false, message: 'Senha e senha atual são diferentes' });
-            } 
+            }
 
             user.senha = req.body.senhaNova;
 
@@ -80,27 +80,23 @@ router.patch('/senha', function (req, res) {
                 }
             })
         });
-
-        
-        // console.log("body", req.body);
-        // const validPassword = user.comparePassword(req.body.senhaAtual);
-        // if (!validPassword) {
-        //     res.json({ success: false, message: 'Senha e senha atual são diferentes' });
-        // } 
-
-        // bcrypt.hash(newPassword, (hash) => {
-        //     req.body.senhaNova = newPassword;
-
-        //     User.findByIdAndUpdate(decoded.userId, req.body, function (err, post) {
-        //         if (err) {
-        //             res.json({ success: false, message: 'Não foi possivel alterar a senha: ', err }); // Return error if not related to validation              
-        //         } else {
-        //             res.json({ success: true, message: 'Senha alterada!' }); // Return success
-        //         }
-        //     });
-        // });        
     });
 });
+
+router.get('/tecnicos/', function (req, res) {
+    console.log("Get technicians");
+
+    User.find({ tipo: "tecnico" }, function (err, user) {
+        console.log
+        if (err) {
+            res.json({ success: false, message: 'Não foi possivel encontrar os tecnicos' });
+        }
+        else {
+            res.json(user);
+        }
+    });
+});
+
 
 
 module.exports = router;

@@ -162,7 +162,6 @@ export class PropertyComponent implements OnInit {
           this.calculateAndFillPropertyArea(overlay);
 
           this.overlayAreas.push(overlay);      //Add overlay to array of overlays
-
         }
       });
 
@@ -255,7 +254,17 @@ export class PropertyComponent implements OnInit {
             }
             this.propertyService.registerArea(this.property.id, reqArea).subscribe(data => {
               console.log("register area:", data);
-            })
+
+              if (!data.success) {
+                this.messageClass = 'alert alert-danger';
+                this.message = data.message;
+                this.processingAdd = false;
+              }
+              else {
+                this.messageClass = 'alert alert-success';
+                this.message = data.message;
+              }
+            });
           }
 
         }
@@ -263,7 +272,7 @@ export class PropertyComponent implements OnInit {
       });
     }
     else { //Edit
-      this.propertyService.editProperty(this.property).subscribe(data => {
+      this.propertyService.updatePropertyById(this.property).subscribe(data => {
         console.log("edit property");
         if (!data.success) {
           this.messageClass = 'alert alert-danger';
@@ -272,6 +281,36 @@ export class PropertyComponent implements OnInit {
         } else {
           this.messageClass = 'alert alert-success';
           this.message = data.message;
+
+          for (let i = 0; i < this.areas.length; i++) {
+
+            if (this.areas[i].id) {
+            this.propertyService.updateAreaById(this.areas[i]).subscribe(data => {
+
+              console.log("update areas:", data);
+  
+            });
+          }
+          else {
+
+            let reqArea = {
+              nome: this.areas[i].nome,
+              propriedadeId: this.property.id,
+              areaTotal: this.areas[i].areaTotal,
+              plantio: this.areas[i].plantio,
+              //dataColheita: area.dataColheita,
+              area: this.areas[i].area
+            }
+
+            this.propertyService.registerArea(this.property.id, reqArea).subscribe(data => {
+
+              console.log("register area:", data);
+  
+            });
+          }
+        }
+          
+
         }
         console.log(data);
       });
@@ -311,9 +350,11 @@ export class PropertyComponent implements OnInit {
     for (let i = 0; i < this.areas.length; i++) {
       if (this.areas[i] == area) {
         console.log("achou i");
-        this.areas.splice(i, 1);
-        this.deleteSelectedOverlay(i);
-        this.deleteSelectedMarker(i);
+        this.propertyService.deleteAreaById(this.areas[i].id).subscribe( data => {
+          this.areas.splice(i, 1);
+          this.deleteSelectedOverlay(i);
+          this.deleteSelectedMarker(i);
+        });                
       }
 
     }

@@ -8,6 +8,8 @@ import { PropertyService } from '../../../services/property.service';
 import { Property, Analysis, Area } from '../../../models/property';
 
 import { TechReport } from './../../../models/techReport'
+import { UserService } from '../../../services/user.service';
+import { User } from '../../../models/user';
 
 @Component({
   selector: 'app-property-details',
@@ -21,9 +23,10 @@ export class PropertyDetailsComponent implements OnInit {
   @ViewChild('modalContent') modalContent: TemplateRef<any>;
   @ViewChild(DataLayer) dataLayer: DataLayer;
 
-
   newPolygons: Array<any> = new Array<any>();
   map: any;
+  
+  technicians: Array<User> = new Array<User>();;
   property: Property = new Property();
   analyses: Array<Analysis> = new Array<Analysis>();
   reports: Array<TechReport>;
@@ -64,6 +67,7 @@ export class PropertyDetailsComponent implements OnInit {
   constructor(private route: ActivatedRoute,
     private router: Router,
     private propertyService: PropertyService,
+    private userService: UserService,
     private activeModal: NgbActiveModal,
     private modalService: NgbModal,
     private zone: NgZone) { }
@@ -73,6 +77,17 @@ export class PropertyDetailsComponent implements OnInit {
     let usr = JSON.parse(localStorage.getItem('user'));
 
     console.log("prop id route", propId);
+
+    if (usr.tipo == "administrador") {
+      
+      this.userService.getTechnicians().subscribe(data => {
+
+        this.technicians = data as Array<User>;
+        console.log("get technicians:", data);
+      })
+
+    }
+
     this.propertyService.getPropertyById(propId).subscribe(data => {
       this.property = data as Property;
       console.log("property res", data);
@@ -92,6 +107,8 @@ export class PropertyDetailsComponent implements OnInit {
       //   console.log("analysis res", this.analyses);
       // });
     });
+
+
   }
 
   // Function to draw the Polygons in map
@@ -199,8 +216,8 @@ export class PropertyDetailsComponent implements OnInit {
 
     modalRef.result.then((userResponse) => {
       if (userResponse) {
-        this.propertyService.deletePropertyByName(this.property.nome).subscribe(data => {
-          console.log(data);
+        this.propertyService.deletePropertyById(this.property.id).subscribe(data => {
+          console.log("delete property:",data);
           this.router.navigate(['/home']);
         });
       }

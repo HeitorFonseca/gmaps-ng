@@ -6,6 +6,7 @@ mongoose.Promise = global.Promise; // Configure Mongoose Promises
 const Schema = mongoose.Schema; // Import Schema from Mongoose
 const bcrypt = require('bcrypt-nodejs'); // A native JS bcrypt library for NodeJS
 
+var Area = require('./area');
 
 // User Model Definition
 const userSchema = new Schema({
@@ -13,7 +14,8 @@ const userSchema = new Schema({
   nome: { type: String, required: true, lowercase: true },
   senha: { type: String, required: true},
   tipo: { type: String, required: true},
-  hectaresContratados: { type: String}
+  hectaresContratados: { type: Number, required: true},
+  hectaresRestantes:{ type: Number, required:true},    
 });
 
 // Schema Middleware to Encrypt Password

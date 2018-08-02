@@ -24,8 +24,10 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit() {
 
-    let usr = JSON.parse(localStorage.getItem('user'));
+    this.getClientLocalization();
 
+    let usr = JSON.parse(localStorage.getItem('user'));
+    console.log("tipo:", usr.tipo);
     if (usr.tipo == "produtor") {
       console.log("requesting properties by user", usr.id);
       this.propertyService.getPropertiesByUser(usr.id).subscribe(data => {
@@ -34,9 +36,22 @@ export class DashboardComponent implements OnInit {
         this.propData.propertyData = this.propeties;
 
       });
-    }
+    } else if (usr.tipo == "tecnico") {
+      this.propertyService.getPropertiesByTechnician(usr.id).subscribe(data => {
 
-    this.getClientLocalization();
+        console.log("get properties by tech", data);
+      });
+    }
+    else if (usr.tipo == "administrador") {
+      this.propertyService.getProperties().subscribe(data => {
+        this.propeties = data as Array<Property>;
+        console.log(this.propeties);
+        this.propData.propertyData = this.propeties;
+        console.log("get properties by admin", data);
+      });
+    }
+    
+
   }
 
 

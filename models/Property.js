@@ -1,4 +1,5 @@
 var mongoose = require('mongoose');
+var Area = require('./area');
 
 mongoose.Promise = global.Promise;
 
@@ -6,7 +7,7 @@ var PropertySchema = new mongoose.Schema({
     nome: {type: String, required: true},
     areaTotal: {type: String, required: true},
     usuarioId: {type : mongoose.Schema.Types.ObjectId, ref : 'user'},
-
+    tecnicoId: {type : mongoose.Schema.Types.ObjectId, ref : 'user'}
     // AreasOverlay: [{
     //   HarvestDate: String,
     //   HarvestType: String,
@@ -26,5 +27,14 @@ var PropertySchema = new mongoose.Schema({
         return retJson;
     }
   });
+
+  PropertySchema.pre('remove', function (next) {
+
+    console.log("removing area");
+    Area.remove({ propriedadeId: this._id }).exec();
+    next();
+  });
+  
+  
 
   module.exports = mongoose.model('property', PropertySchema);
