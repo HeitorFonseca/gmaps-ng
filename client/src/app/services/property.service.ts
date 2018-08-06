@@ -36,6 +36,11 @@ export class PropertyService {
     return this.http.get(this.domain + 'propriedades/').map(res => res);
   }
 
+  // Function to get properties by id
+  getPropertyById(propId): Observable<Property> {
+    return this.http.get<Property>(this.domain + 'propriedades/' + propId).map(res => res);
+  }
+
   // Function to get properties by user id
   getPropertiesByUser(id) {
     return this.http.get<any>(this.domain + 'propriedades/clientes/' + id).map(res => res);
@@ -44,11 +49,6 @@ export class PropertyService {
   // Function to get properties by user id
   getPropertiesByTechnician(id) {
     return this.http.get<any>(this.domain + 'propriedades/tecnicos/' + id).map(res => res);
-  }
-
-  // Function to get properties by id
-  getPropertyById(propId): Observable<Property> {
-    return this.http.get<Property>(this.domain + 'propriedades/' + propId).map(res => res);
   }
 
   // Function to get properties by name
@@ -75,6 +75,11 @@ export class PropertyService {
   deleteAreaById(id) {
     console.log("remove area called", id);
     return this.http.delete(this.domain + 'propriedades/areas/' + id).map(res => res);
+  }
+
+  // Function to change user password
+  registerTechnicianToProperty(propId, tecnicoId) {
+    return this.http.patch<any>(this.domain + 'propriedades/' + propId + '/tecnico', tecnicoId).map(res => res);
   }
 
   // TODO: ONLY FOR TEST - REMOVE
@@ -104,7 +109,6 @@ export class PropertyService {
   registerTechReport(techReport) {
 
     return this.http.post<any>(this.domain + 'points/registerTechReport', techReport).map(res => res);
-
   }
 
 }

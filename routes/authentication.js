@@ -98,8 +98,8 @@ router.post('/login', (req, res) => {
             if (!validPassword) {
               res.json({ success: false, message: 'Senha inválida' });
             } else {
-
-              const token = jwt.sign({ userId: user._id }, config.secret, { expiresIn: '24h' });
+              console.log("no login:", user.tipo);
+              const token = jwt.sign({ userId: user._id, type: user.tipo }, config.secret, { expiresIn: '24h' });
 
               res.json({ success: true, message: 'Success!', token: token, user: { nome: user.nome, id: user._id, tipo: user.tipo, hectaresContratados: user.hectaresContratados } });
             }

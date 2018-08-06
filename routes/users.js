@@ -6,6 +6,7 @@ const bcrypt = require('bcrypt-nodejs');
 
 const jwt = require('jsonwebtoken'); // Compact, URL-safe means of representing claims to be transferred between two parties.
 
+var permissions = require('./permissions');
 
 router.get('/', function (req, res) {
     var token = req.headers['x-access-token'];
@@ -83,16 +84,88 @@ router.patch('/senha', function (req, res) {
     });
 });
 
+router.patch('/hectares', function (req, res) {
+    var token = req.headers['x-access-token'];
+
+    if (!token) return res.status(401).send({ auth: false, message: 'Nenhum token fornecido.' });
+    console.log("patch usuario senha", token);
+    console.log("body", req.body);
+    jwt.verify(token, config.secret, function (err, decoded) {
+        if (err) {
+            console.log(err);
+            return res.status(500).send({ auth: false, message: 'Falha no token.' });
+        }
+
+        User.findById(decoded.userId, function (err, user) {
+
+            user.hectaresContratados = req.body.hectaresContratados;
+
+            user.save((err) => {
+                if (err)
+                    res.json({ success: false, message: 'Hectares contratados não pode ser alterado' });
+                else {
+                    res.json({ success: true, message: 'Hectares contratados alterado' });
+                }
+            });
+        });
+    });
+});
+
 router.get('/tecnicos/', function (req, res) {
     console.log("Get technicians");
 
     User.find({ tipo: "tecnico" }, function (err, user) {
-        console.log
+
         if (err) {
             res.json({ success: false, message: 'Não foi possivel encontrar os tecnicos' });
         }
         else {
             res.json(user);
+        }
+    });
+});
+
+router.patch('/:id/tecnico', permissions.requireAdmin, function (req, res, next) {
+
+    console.log("body:", req.body);
+
+    var query = { _id: req.params.id };
+    console.log("query:", query);
+
+    User.findById(query, function (err, user) {
+        if (err) {
+            res.json({ success: false, message: 'Não foi possivel encontrar o cliente' });
+        }
+        else {
+
+            user.tecnicoId = req.body.tecnicoId;
+
+            user.save((err) => {
+                if (err) {
+                    res.json({ success: false, message: 'Nâo foi possivel atribuir o tecnico ao cliente' });
+                }
+                else {
+
+                    query = { usuarioId: req.params.id };
+
+                    Property.findById(query, function (err, property) {
+                        if (err) {
+                            res.json({ success: false, message: 'Não foi possivel encontrar as propriedades do cliente. Error: ', err }); // Return error if not related to validation              
+                        } else {
+
+                            property.tecnicoId = req.body.tecnicoId;
+
+                            property.save((err) => {
+                                if (err)
+                                    res.json({ success: false, message: 'Tecnico não pôde ser atribuido a propriedade' });
+                                else {
+                                    res.json({ success: true, message: 'Técnico atribuido!' });
+                                }
+                            });
+                        }
+                    });
+                }
+            });
         }
     });
 });

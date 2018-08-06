@@ -25,7 +25,7 @@ export class PropertyDetailsComponent implements OnInit {
 
   newPolygons: Array<any> = new Array<any>();
   map: any;
-  
+
   technicians: Array<User> = new Array<User>();;
   property: Property = new Property();
   analyses: Array<Analysis> = new Array<Analysis>();
@@ -57,12 +57,13 @@ export class PropertyDetailsComponent implements OnInit {
   drawnPoints = false;
   requestedAnalysis = false;
 
-  stateLayer:any;
+  stateLayer: any;
 
-  /**********************************************variables*****************************************/
+  /********************************************** Variables *****************************************/
 
   areas: Array<Area> = new Array<Area>();
   alreadyDrawnPolygonsAndLabels = false;
+  selectedTechnician:any;
 
   constructor(private route: ActivatedRoute,
     private router: Router,
@@ -78,21 +79,11 @@ export class PropertyDetailsComponent implements OnInit {
 
     console.log("prop id route", propId);
 
-    if (usr.tipo == "administrador") {
-      
-      this.userService.getTechnicians().subscribe(data => {
-
-        this.technicians = data as Array<User>;
-        console.log("get technicians:", data);
-      })
-
-    }
-
     this.propertyService.getPropertyById(propId).subscribe(data => {
       this.property = data as Property;
       console.log("property res", data);
 
-      this.propertyService.getAreasByProperty(this.property.id).subscribe( data => {
+      this.propertyService.getAreasByProperty(this.property.id).subscribe(data => {
         console.log("areas:", data);
         this.areas = data as Array<Area>;
 
@@ -100,12 +91,19 @@ export class PropertyDetailsComponent implements OnInit {
           this.drawPolygonsAndLabels();
         }
       });
-      
-      //this.mapProps.center = new google.maps.LatLng(this.property.AreasOverlay[0].Coordinates[0][0], this.property.AreasOverlay[0].Coordinates[0][1]);
-      // this.propertyService.getPropertyAnalyses(this.property._id).subscribe(data => {
-      //   this.analyses = data
-      //   console.log("analysis res", this.analyses);
-      // });
+
+      if (usr.tipo == "administrador" && !this.property.tecnicoId) {
+        
+        this.userService.getTechnicians().subscribe(data => {
+
+          this.technicians = data as Array<User>;
+          console.log("get technicians:", data);
+        });
+      }
+      else if (this.property.tecnicoId) {
+        this.selectedTechnician = this.property.tecnicoId;
+      }
+
     });
 
 
@@ -157,10 +155,10 @@ export class PropertyDetailsComponent implements OnInit {
         },
 
       });
-  
+
       marker.setMap(this.map);
       this.areaNameLabels.push(marker);
-     
+
     }
 
     if (this.globalBounds) {
@@ -168,12 +166,12 @@ export class PropertyDetailsComponent implements OnInit {
       this.mapProps.center = new google.maps.LatLng(this.globalBounds.getCenter().lat(), this.globalBounds.getCenter().lng());
       this.map.fitBounds(this.globalBounds);
     }
-   
+
   }
 
   clearPolygons() {
     console.log(this.newPolygons);
-    for(let i=0; i < this.newPolygons.length; i++) {
+    for (let i = 0; i < this.newPolygons.length; i++) {
       this.newPolygons[i].setMap(null);
     }
   }
@@ -186,10 +184,9 @@ export class PropertyDetailsComponent implements OnInit {
 
     var geojson = JSON.parse(path);
 
-    this.geoJsonObject = geojson; 
+    this.geoJsonObject = geojson;
 
-    this.dataLayer['initialized$'].subscribe( dl =>
-    {    
+    this.dataLayer['initialized$'].subscribe(dl => {
       this.stateLayer = new google.maps.Data();
     })
 
@@ -217,7 +214,7 @@ export class PropertyDetailsComponent implements OnInit {
     modalRef.result.then((userResponse) => {
       if (userResponse) {
         this.propertyService.deletePropertyById(this.property.id).subscribe(data => {
-          console.log("delete property:",data);
+          console.log("delete property:", data);
           this.router.navigate(['/home']);
         });
       }
@@ -232,13 +229,13 @@ export class PropertyDetailsComponent implements OnInit {
 
     let dt = new Date().toISOString().split('T')[0]
 
-    if (this.checkBoxBtn.NDVI || this.checkBoxBtn.NDWI || this.checkBoxBtn.Produtividade ) {
+    if (this.checkBoxBtn.NDVI || this.checkBoxBtn.NDWI || this.checkBoxBtn.Produtividade) {
       let analysis = {
         PropertyId: this.property.id,
-        Type: (this.checkBoxBtn.NDVI ? '1': (this.checkBoxBtn.NDWI ? '2' : '3')),
+        Type: (this.checkBoxBtn.NDVI ? '1' : (this.checkBoxBtn.NDWI ? '2' : '3')),
         Date: dt,
       }
-  
+
       this.propertyService.registerPropertyAnalysis(analysis).subscribe(data => {
 
         if (data.success) {
@@ -258,7 +255,7 @@ export class PropertyDetailsComponent implements OnInit {
 
 
     this.stateLayer.addGeoJson(this.geoJsonObject);
-    this.stateLayer.setStyle(function(feature) {
+    this.stateLayer.setStyle(function (feature) {
       var ascii = feature.getProperty('ascii');
       var color = feature.getProperty('fill');
       var fillOpacity = feature.getProperty('fill-opacity');
@@ -270,9 +267,9 @@ export class PropertyDetailsComponent implements OnInit {
         fillOpacity: fillOpacity,
         strokeColor: stroke,
         stroke_opacity: stroke_opacity
-        
+
       };
-    });  
+    });
     this.stateLayer.setMap(this.map);
 
     this.requestedAnalysis = true;
@@ -282,7 +279,7 @@ export class PropertyDetailsComponent implements OnInit {
   }
 
   requestSamplingPoints() {
-    
+
 
     console.log("Requesting sampling points:");
 
@@ -449,7 +446,6 @@ export class PropertyDetailsComponent implements OnInit {
     //this.ref.detectChanges();
   }
 
-
   /* GeoJson functions */
 
   styleFunc(feature) {
@@ -458,4 +454,33 @@ export class PropertyDetailsComponent implements OnInit {
       strokeWeight: 1
     };
   }
+
+  /********************************************** Administrator fuctions *****************************************/
+
+
+  registerTechToProperty() {
+    
+    if (this.selectedTechnician) {
+
+      let reqTechProp = {
+        tecnicoId: this.selectedTechnician,
+      }
+
+      console.log(reqTechProp);
+
+      this.propertyService.registerTechnicianToProperty(this.property.id, reqTechProp).subscribe(data => {
+        console.log("register tech to property:", data);
+      })
+    }
+    else {
+
+    }
+
+  }
+
+  ChangeValue(event) {
+    console.log(event);
+    this.selectedTechnician = event.target.value;
+  }
+
 }

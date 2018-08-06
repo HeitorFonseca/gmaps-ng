@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var auth = require('authorized');
+const mongoose = require('mongoose'); // Node Tool for MongoDB
 
 var Property = require('../models/property');
 var Area = require('../models/area');
@@ -8,16 +9,75 @@ var User = require('../models/user'); // Import User Model Schema
 const config = require('../config/database')
 const jwt = require('jsonwebtoken');
 
+var permissions = require('./permissions');
+
 /* GET all properties */
-router.get('/', function (req, res, next) {
+router.get('/', permissions.requireToken, function (req, res, next) {
   console.log("get all here");
-  Property.find({}, function(err, properties) {
+
+  var token = req.headers['x-access-token'];
+
+  jwt.verify(token, config.secret, function (err, decoded) {
     if (err) {
-      res.json({success:false, message:"Não foi possivel encontrar as propriedades"});
+      console.log(err);
+      console.log("falha na autenticacao");
+      return res.status(500).send({ success: false, message: 'Falha na autenticação do token.' });
     }
-    console.log(properties);
-    res.json(properties);
-  });   
+
+    console.log("usr id", decoded.userId);
+    console.log("tipo é:", decoded.type);
+    var query = {};
+
+    if (decoded.type == "produtor") {
+      query = { usuarioId: mongoose.Types.ObjectId(decoded.userId) };
+    }
+    else if (decoded.type == "tecnico") {
+      query = { tecnicoId: mongoose.Types.ObjectId(decoded.userId) };
+    }
+    else if (decoded.type == "administrador") {
+      query = {};
+    }
+    else {
+      return res.status(500).send({ success: false, message: "Operação não permitida!" });
+    }
+    console.log("query", query);
+    Property.aggregate([
+
+       { $match: query },
+      {
+        $lookup: {
+          localField: "usuarioId",
+          from: "users",
+          foreignField: "_id",
+          as: "usuario"
+        }
+      },
+      { $unwind: "$usuario" },
+      { $addFields: { id: "$_id" } },
+      { $addFields: { cliente: { id: '$usuario._id', nome: '$usuario.nome' } } },
+      {
+        $project: { _id: 0, usuarioId: 0, tecnicoId: 0, usuario: 0 }
+      }
+    ], function (err, tasks) {
+      if (err) {
+        console.log("error", err);
+        res.json({ success: false, message: 'Não foi possivel retornar as propriedades. Erro: ', err });
+      }
+      else {
+        console.log("propriedades:", tasks);
+        res.json(tasks);
+      }
+    });
+
+    // Property.find(query, function (err, properties) {
+    //   if (err) {
+    //     res.json({ success: false, message: "Não foi possivel encontrar as propriedades" });
+    //   }
+    //   console.log(properties);
+    //   res.json(properties);
+    // });
+  });
+
 });
 
 /* GET single property by id */
@@ -26,38 +86,10 @@ router.get('/:id', function (req, res, next) {
   console.log(req.params);
   Property.findById(req.params.id, function (err, property) {
     if (err) {
-      res.json({success:false, message:"Não foi possivel encontrar a propriedade"});
+      res.json({ success: false, message: "Não foi possivel encontrar a propriedade" });
     }
     console.log(property);
     res.json(property);
-  });
-});
-
-/* GET property by user id */
-router.get('/clientes/:id', function (req, res, next) {
-  console.log("get property by user id");
-  var query = { usuarioId: req.params.id };
-  console.log(query);
-  Property.find(query, function (err, properties) {
-    if (err) {
-      res.json({success:false, message:"Não foi possivel encontrar as propriedades"});
-    }
-    console.log(properties);
-    res.json(properties);
-  });
-});
-
-/* GET property by tecnician id */
-router.get('/tecnicos/:id', function (req, res, next) {
-  console.log("get property by technician id");
-  var query = { tecnicoId: req.params.id };
-  console.log(query);
-  Property.find(query, function (err, properties) {
-    if (err) {
-      res.json({success:false, message:"Não foi possivel encontrar as propriedades"});
-    }
-    console.log(properties);
-    res.json(properties);
   });
 });
 
@@ -73,9 +105,9 @@ router.put('/:id', function (req, res, next) {
 
   Property.findOneAndUpdate(query, req.body, function (err, post) {
     if (err) {
-      res.json({ success: false, message: 'Could not update property. Error: ', err }); // Return error if not related to validation              
+      res.json({ success: false, message: 'Não foi possivel editar a propriedade. Error: ', err }); // Return error if not related to validation              
     } else {
-      res.json({ success: true, message: 'Property updated!' }); // Return success
+      res.json({ success: true, message: 'Propriedade editada!' }); // Return success
     }
   });
 });
@@ -93,12 +125,12 @@ router.delete('/:id', function (req, res, next) {
     post.remove();
 
     console.log("deleted");
-    res.json({success: true, message:"Propriedade deletada"});
+    res.json({ success: true, message: "Propriedade deletada" });
   });
 });
 
 /* REGISTER Property */
-router.post('/register', requireProductor, function (req, res, next) {
+router.post('/register', permissions.requireProductor, function (req, res, next) {
   console.log("register property", req.body);
   Property.create(req.body, function (err, post) {
 
@@ -132,7 +164,7 @@ router.get('/:propriedadeId/areas', function (req, res, next) {
 });
 
 /* REGISTER Area */
-router.post('/:propriedadeId/areas', requireProductorAndHectare, function (req, res, next) {
+router.post('/:propriedadeId/areas', permissions.requireProductorAndHectare, function (req, res, next) {
   console.log(req.body);
 
   Area.create(req.body, function (err, post) {
@@ -154,7 +186,7 @@ router.put('/areas/:id', function (req, res, next) {
 
   Area.findByIdAndUpdate(query, req.body, function (err, post) {
     if (err) {
-      res.json({ success: false, message: 'Não foi possivel salvar a area.'}); // Return error if not related to validation              
+      res.json({ success: false, message: 'Não foi possivel salvar a area.' }); // Return error if not related to validation              
     } else {
       res.json({ success: true, message: 'Area registrada!' }); // Return success
     }
@@ -177,65 +209,5 @@ router.delete('/areas/:id', function (req, res, next) {
 
 /*______________________________________________Auxiliar function____________________________________________________*/
 
-
-function requireProductor(req, res, next) {
-
-  var token = req.headers['x-access-token'];
-
-  if (!token) return res.status(401).send({ success: false, message: 'Nenhum token fornecido.' });
-  console.log("get user", token);
-
-  jwt.verify(token, config.secret, function (err, decoded) {
-    if (err) {
-      console.log(err);
-      console.log("falha na autenticacao");
-      return res.status(500).send({ success: false, message: 'Falha na autenticação do token.' });
-    }
-
-    User.findById(decoded.userId, { senha: 0 }, function (err, user) {
-      if (err) return res.status(500).send({ success: false, message: "Encontramos problema ao encontrar o usuário." });
-      if (!user) return res.status(404).send({ success: false, message: "Nenhum usuário encontrado." });
-
-      console.log("role:", user.tipo);
-      if (user.tipo != 'produtor') {
-        res.json({  success: false, message: 'Permission denied.' });
-      } else {
-        next();
-      }
-    });
-  });
-};
-
-function requireProductorAndHectare(req, res, next) {
-
-  var token = req.headers['x-access-token'];
-  console.log(req);
-
-  if (!token) return res.status(401).send({ success: false, message: 'Nenhum token fornecido.' });
-  console.log("get user", token);
-
-  jwt.verify(token, config.secret, function (err, decoded) {
-    if (err) {
-      console.log(err);
-      return res.status(500).send({ success: false, message: 'Falha na autenticação do token.' });
-    }
-
-    User.findById(decoded.userId, { senha: 0 }, function (err, user) {
-      if (err) return res.status(500).send({ success: false, message: "Encontramos problema ao encontrar o usuário." });
-      if (!user) return res.status(404).send({ success: false, message: "Nenhum usuário encontrado." });
-
-      console.log("role:", user);
-      if (user.tipo != 'produtor') {
-        res.json({ success: false, message: 'Voce não tem permissão para esta ação' });
-      }
-      else if (user.hectaresRestantes < req.body.areaTotal) {
-        res.json({ success: false, message: 'Hectares insuficientes' })
-      }
-      else {
-        next();
-      }
-    });
-  })
-};
 
 module.exports = router;

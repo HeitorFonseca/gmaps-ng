@@ -1,39 +1,45 @@
-
-<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp"
+    crossorigin="anonymous">
 
 <nav class="navbar navbar-expand-sm navbar-light bg-light ">
-  <a class="navbar-brand" routerLink="/home" routerLinkActive="active"> <img src="../../../assets/images/logo.png" width="150px"  /> </a>
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
+    <a class="navbar-brand" routerLink="/home" routerLinkActive="active">
+        <img src="../../../assets/images/logo.png" width="150px" /> </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+        aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
 
-  <div class="collapse navbar-collapse" id="navbarSupportedContent">
-    <div class="navbar-nav mr-auto">
-        <li class="nav-item">
-            <a class="nav-link" routerLink="/home" routerLinkActive="active" >Início</a>
-        </li>
-        <li class="nav-item" *ngxPermissionsOnly="['produtor']">
-            <a class="nav-link" routerLink="/map" routerLinkActive="active" >Criar Propriedade</a>
-        </li>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto">
+            <li class="nav-item">
+                <a class="nav-link" routerLink="/home" routerLinkActive="active">Início</a>
+            </li>
+            <li class="nav-item" *ngxPermissionsOnly="['produtor']">
+                <a class="nav-link" routerLink="/map" routerLinkActive="active">Criar Propriedade</a>
+            </li>
+            <li class="nav-item" *ngxPermissionsOnly="['administrador']">
+                <a class="nav-link" routerLink="/techRegister" routerLinkActive="active">Cadastrar técnico</a>
+            </li>
+        </div>
+
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item dropdown " ngbDropdown>
+                <a href="javascript:void(0)" class="nav-link" ngbDropdownToggle>
+                    <i class="fa fa-user"></i> {{username}}
+                    <b class="caret"></b>
+                </a>
+                <div class="dropdown-menu dropdown-menu-right" ngbDropdownMenu>
+                    <a class="dropdown-item" href="javascript:void(0)">
+                        <i class="fas fa-map"></i> Propriedades
+                    </a>
+                    <a class="dropdown-item" [routerLink]="['/profile']">
+                        <i class="fas fa-cog"></i> Perfil
+                    </a>
+                    <a class="dropdown-item" (click)="onLogoutClick()">
+                        <i class="fa fa-fw fa-power-off"></i> Log Out
+                    </a>
+                </div>
+            </li>
+        </ul>
     </div>
-
-    <ul class="navbar-nav ml-auto"> 
-        <li class="nav-item dropdown " ngbDropdown >
-            <a href="javascript:void(0)" class="nav-link" ngbDropdownToggle>
-                <i class="fa fa-user"></i> {{username}} <b class="caret"></b>
-            </a>
-            <div class="dropdown-menu dropdown-menu-right" ngbDropdownMenu >
-                <a class="dropdown-item" href="javascript:void(0)" >
-                    <i class="fas fa-map"></i> Propriedades
-                </a>
-                <a class="dropdown-item" [routerLink]="['/profile']">
-                    <i class="fas fa-cog"></i> Perfil
-                </a>
-                <a class="dropdown-item" (click)="onLogoutClick()">
-                    <i class="fa fa-fw fa-power-off"></i> Log Out
-                </a>
-            </div>
-        </li>
-    </ul>
-  </div>
 </nav>

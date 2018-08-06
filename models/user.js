@@ -6,20 +6,19 @@ mongoose.Promise = global.Promise; // Configure Mongoose Promises
 const Schema = mongoose.Schema; // Import Schema from Mongoose
 const bcrypt = require('bcrypt-nodejs'); // A native JS bcrypt library for NodeJS
 
-var Area = require('./area');
-
 // User Model Definition
 const userSchema = new Schema({
   email: { type: String, required: true, unique: true, lowercase: true },
   nome: { type: String, required: true, lowercase: true },
-  senha: { type: String, required: true},
-  tipo: { type: String, required: true},
-  hectaresContratados: { type: Number, required: true},
-  hectaresRestantes:{ type: Number, required:true},    
+  senha: { type: String, required: true },
+  tipo: { type: String, required: true },
+  hectaresContratados: { type: Number, required: true },
+  tecnicoId: {type : mongoose.Schema.Types.ObjectId, ref : 'user'},
+  hectaresRestantes: { type: Number, required: true },
 });
 
 // Schema Middleware to Encrypt Password
-userSchema.pre('save', function(next) {
+userSchema.pre('save', function (next) {
   // Ensure password is new or modified before applying encryption
   if (!this.isModified('senha'))
     return next();
@@ -32,8 +31,20 @@ userSchema.pre('save', function(next) {
   });
 });
 
+userSchema.set('toJSON', {
+  transform: function (doc, ret, options) {
+    var retJson = {
+      id: ret._id,
+      nome: ret.nome,
+      email: ret.email,
+      tecnicoId: ret.tecnicoId
+    };
+    return retJson;
+  }
+});
+
 // Methods to compare password to encrypted password upon login
-userSchema.methods.comparePassword = function(senha) {
+userSchema.methods.comparePassword = function (senha) {
   return bcrypt.compareSync(senha, this.senha); // Return comparison of login password to password in database (true or false)
 };
 

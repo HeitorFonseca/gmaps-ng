@@ -26,4 +26,9 @@ export class UserService {
     return this.http.get<any>(this.domain + 'usuario/tecnicos').map(res => res);
   }
 
+  // Function to change user password
+  registerTechnicianToProductor(propId, tecnicoId) {
+    return this.http.patch<any>(this.domain + 'usuario/' + propId + '/tecnico', tecnicoId).map(res => res);
+  }
+  
 }

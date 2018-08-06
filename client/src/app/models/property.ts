@@ -3,6 +3,7 @@ export class Property {
     nome: string;
     areaTotal: number = 0;
     usuarioId: string;
+    tecnicoId: string;
     // AreasOverlay: Array<AreasOverlay> = new Array<AreasOverlay>();    
     // Analyses: Array<Analysis> = new Array<Analysis>();    
 }
@@ -13,10 +14,8 @@ export class Area {
     nome: string;
     areaTotal: number = 0;
     plantio: string;
-    dataColheita: string;
     area: Array<Array<number>> = new Array<Array<number>>();    
     imagem: string;    
-
 }
 
 export class Analysis {

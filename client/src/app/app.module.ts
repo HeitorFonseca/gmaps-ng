@@ -1,10 +1,10 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule, APP_INITIALIZER  } from '@angular/core';
-import { HttpClientModule, HTTP_INTERCEPTORS  } from '@angular/common/http';
+import { NgModule, APP_INITIALIZER } from '@angular/core';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 import { NgbModule, NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms'
-import { NguiMapModule} from '@ngui/map';
+import { NguiMapModule } from '@ngui/map';
 import { NguiAutoCompleteModule } from '@ngui/auto-complete';
 import { FlashMessagesModule } from 'angular2-flash-messages';
 import { JwtModule } from '@auth0/angular-jwt';
@@ -35,7 +35,8 @@ import { Profile } from 'selenium-webdriver/firefox';
 
 
 import { TokenInterceptor } from './services/token-interceptor';
-import { UserRegisterComponent } from './components/user-register/user-register.component'
+import { UserRegisterComponent } from './components/user-register/user-register.component';
+import { TechRegisterComponent } from './components/home/tech-register/tech-register.component'
 
 
 
@@ -57,15 +58,16 @@ export function tokenGetter() {
     CalendarComponent,
     PointFormComponent,
     ProfileComponent,
-    UserRegisterComponent
+    UserRegisterComponent,
+    TechRegisterComponent
   ],
   imports: [
     BrowserModule,
-    HttpClientModule,    
+    HttpClientModule,
     FormsModule,
     DemoUtilsModule,
     ReactiveFormsModule,
-    BrowserAnimationsModule, 
+    BrowserAnimationsModule,
     CalendarModule.forRoot(),
     FlashMessagesModule.forRoot(),
     NgxPermissionsModule.forRoot(),
@@ -77,22 +79,27 @@ export function tokenGetter() {
       }
     }),
     RouterModule.forRoot([
-      { 
+      {
         path: "login",
         component: LoginComponent
       },
-      { 
+      {
         path: "register",
         component: UserRegisterComponent
       },
-      { 
+      {
         path: "about",
-        component: AboutComponent,  
+        component: AboutComponent,
         canActivate: [AuthGuard]
       },
       {
         path: "home",
         component: HomeComponent,
+        canActivate: [AuthGuard]
+      },
+      {
+        path: "techRegister",
+        component: TechRegisterComponent,
         canActivate: [AuthGuard]
       },
       {
@@ -117,47 +124,48 @@ export function tokenGetter() {
       },
       {
         path: "",
-         redirectTo: '/home', 
-         pathMatch: 'full' ,
+        redirectTo: '/home',
+        pathMatch: 'full',
       },
       {
-        path: '**', 
+        path: '**',
         component: AboutComponent
       }
 
     ]),
-    NgbModule.forRoot(),    
-    NguiMapModule.forRoot({apiUrl: 'https://maps.google.com/maps/api/js?key=AIzaSyCVRKkMBanRLv3SJzkcc3XaYdGB-4q1_98&libraries=visualization,places,drawing'})
+    NgbModule.forRoot(),
+    NguiMapModule.forRoot({ apiUrl: 'https://maps.google.com/maps/api/js?key=AIzaSyCVRKkMBanRLv3SJzkcc3XaYdGB-4q1_98&libraries=visualization,places,drawing' })
   ],
   providers: [
-          AuthService, 
-          AuthGuard, 
-          Data, 
-          NgbActiveModal,
-          {
-            provide: HTTP_INTERCEPTORS, 
-            useClass: TokenInterceptor, 
-            multi: true 
-          },
-          {
-            provide: APP_INITIALIZER,
-            useFactory: (dt: Data, ps:NgxPermissionsService) => function()
-            { 
-              console.log("initialize", userObj, dt);
-              if (dt) { 
-                var userObj = JSON.parse(localStorage.getItem('user'));
-                console.log("GET ROLE:", userObj.tipo);                               
+    AuthService,
+    AuthGuard,
+    Data,
+    NgbActiveModal,
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: TokenInterceptor,
+      multi: true
+    },
+    {
+      provide: APP_INITIALIZER,
+      useFactory: (dt: Data, ps: NgxPermissionsService) => function () {
+        console.log("initialize", userObj, dt);
+        if (dt) {
+          var userObj = JSON.parse(localStorage.getItem('user'));
 
-                var arr = new Array<any>();
-                arr.push(userObj.tipo);
-                                
-                return ps.loadPermissions(arr)
-                
-              }             
-            },
-            multi: true,
-            deps: [Data, NgxPermissionsService]
-          }],
+          if (userObj) {
+            console.log("GET ROLE:", userObj.tipo);
+
+            var arr = new Array<any>();
+            arr.push(userObj.tipo);
+
+            return ps.loadPermissions(arr)
+          }
+        }
+      },
+      multi: true,
+      deps: [Data, NgxPermissionsService]
+    }],
   bootstrap: [AppComponent]
 })
 

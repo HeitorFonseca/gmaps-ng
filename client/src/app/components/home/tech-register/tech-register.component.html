@@ -1,8 +1,8 @@
 
-<div class="register-page">
+<div>
 
     <!-- <img src="../../../assets/images/logo.png" width="300px"  /> -->
-    <h1>Registrar</h1>
+    <h1>Registrar técnico</h1>
 
     <!-- Custom Success/Error Message -->
     <div class="row show-hide-message">
@@ -36,17 +36,6 @@
       </div>
     </div>
 
-
-    <!-- Password Field  -->
-    <div class="form-group">
-      <div [ngClass]="{'has-error': form.controls.senha.errors && form.controls.senha.dirty, 'has-success': form.controls.senha.valid && form.controls.senha.dirty }">
-        <input class="form-control input-underline input-lg" type="password" placeholder="senha" name="senha" formControlName="senha" />
-        <!-- Validation -->
-        <ul class="help-block">
-          <li *ngIf="form.controls.senha.errors?.required && form.controls.senha.dirty">Este campo é obrigatório.</li>
-        </ul>
-      </div>
-    </div>
 
     <!-- Submit Button -->
     <input [disabled]="!form.valid || processing" class="btn btn-primary" type="submit" value="Registrar" />

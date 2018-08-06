@@ -24,17 +24,25 @@
 <div class="row">
     <div class="col-12 col-xl-6 col-lg-6 col-md-6 col-sm-6 text-xs-center">
 
-        <div class="card card-default">
+        <div class="card card-default" *ngxPermissionsOnly="['administrador']">
             <div class="card-header">
                 Tecnico Responsável
             </div>
-            <div class="card-body" *ngIf="technicians">
+            <div class="card-body" *ngIf="!property.tecnicoId">
                 <div>
-                    <select>
+                    <select (change)="ChangeValue($event)" (ngModel)="technician">
                         <option *ngFor="let technician of technicians" [value]="technician.id"> {{technician.nome}}</option>
                     </select>
-                </div>               
+                    <input class="btn btn-secondary ml-3" type="button" value="Cadastrar tecnico na propriedade" (click)="registerTechToProperty()">
+                </div>
             </div>
+
+            <div class="card-body" *ngIf="property.tecnicoId">
+                <div>
+                    <p> {{selectedTechnician}}</p>
+                </div>
+            </div>
+
         </div>
 
         <div class="card card-default">

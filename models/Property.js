@@ -8,13 +8,6 @@ var PropertySchema = new mongoose.Schema({
     areaTotal: {type: String, required: true},
     usuarioId: {type : mongoose.Schema.Types.ObjectId, ref : 'user'},
     tecnicoId: {type : mongoose.Schema.Types.ObjectId, ref : 'user'}
-    // AreasOverlay: [{
-    //   HarvestDate: String,
-    //   HarvestType: String,
-    //   AreaName: String,
-    //   Area: Number,
-    //   Coordinates: [ mongoose.Schema.Types.Mixed ],
-    // }]   
   });
 
   PropertySchema.set('toJSON', {
@@ -29,8 +22,6 @@ var PropertySchema = new mongoose.Schema({
   });
 
   PropertySchema.pre('remove', function (next) {
-
-    console.log("removing area");
     Area.remove({ propriedadeId: this._id }).exec();
     next();
   });
