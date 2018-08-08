@@ -15,7 +15,8 @@ var PropertySchema = new mongoose.Schema({
         var retJson = {
             id: ret._id,
             nome: ret.nome,
-            areaTotal: ret.areaTotal
+            areaTotal: ret.areaTotal,
+            usuarioId: ret.usuarioId
         };
         return retJson;
     }

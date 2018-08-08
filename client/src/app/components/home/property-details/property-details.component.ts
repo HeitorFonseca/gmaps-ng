@@ -468,9 +468,9 @@ export class PropertyDetailsComponent implements OnInit {
 
       console.log(reqTechProp);
 
-      this.propertyService.registerTechnicianToProperty(this.property.id, reqTechProp).subscribe(data => {
-        console.log("register tech to property:", data);
-      })
+      // this.propertyService.registerTechnicianToProperty(this.property., reqTechProp).subscribe(data => {
+      //   console.log("register tech to property:", data);
+      // });
     }
     else {
 

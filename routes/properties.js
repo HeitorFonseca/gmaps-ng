@@ -42,8 +42,7 @@ router.get('/', permissions.requireToken, function (req, res, next) {
     }
     console.log("query", query);
     Property.aggregate([
-
-       { $match: query },
+      { $match: query },
       {
         $lookup: {
           localField: "usuarioId",
@@ -58,39 +57,60 @@ router.get('/', permissions.requireToken, function (req, res, next) {
       {
         $project: { _id: 0, usuarioId: 0, tecnicoId: 0, usuario: 0 }
       }
-    ], function (err, tasks) {
+    ], function (err, properties) {
       if (err) {
         console.log("error", err);
         res.json({ success: false, message: 'Não foi possivel retornar as propriedades. Erro: ', err });
       }
       else {
-        console.log("propriedades:", tasks);
-        res.json(tasks);
+        console.log("propriedades:", properties);
+        res.json(properties);
       }
     });
-
-    // Property.find(query, function (err, properties) {
-    //   if (err) {
-    //     res.json({ success: false, message: "Não foi possivel encontrar as propriedades" });
-    //   }
-    //   console.log(properties);
-    //   res.json(properties);
-    // });
   });
-
 });
 
 /* GET single property by id */
 router.get('/:id', function (req, res, next) {
   console.log("get property by id");
   console.log(req.params);
-  Property.findById(req.params.id, function (err, property) {
-    if (err) {
-      res.json({ success: false, message: "Não foi possivel encontrar a propriedade" });
+
+  var query = { _id: mongoose.Types.ObjectId(req.params.id) };
+
+  Property.aggregate([
+    { $match: query },
+    {
+      $lookup: {
+        localField: "usuarioId",
+        from: "users",
+        foreignField: "_id",
+        as: "usuario"
+      }
+    },
+    { $unwind: "$usuario" },
+    { $addFields: { id: "$_id" } },
+    { $addFields: { cliente: { id: '$usuario._id', nome: '$usuario.nome' } } },
+    {
+      $project: { _id: 0, usuarioId: 0, tecnicoId: 0, usuario: 0 }
     }
-    console.log(property);
-    res.json(property);
+  ], function (err, property) {
+    if (err) {
+      console.log("error", err);
+      res.json({ success: false, message: 'Não foi possivel retornar as propriedades. Erro: ', err });
+    }
+    else {
+      console.log("propriedade:", property);
+      res.json(property[0]);
+    }
   });
+
+  // Property.findById(req.params.id, function (err, property) {
+  //   if (err) {
+  //     res.json({ success: false, message: "Não foi possivel encontrar a propriedade" });
+  //   }
+  //   console.log(property);
+  //   res.json(property);
+  // });
 });
 
 /* UPDATE Property */
@@ -152,8 +172,8 @@ router.post('/register', permissions.requireProductor, function (req, res, next)
 /* GET areas by property id */
 router.get('/:propriedadeId/areas', function (req, res, next) {
   console.log("get areas by property id");
-  console.log(req.query);
-  var query = { propriedadeId: req.query.propriedadeId };
+  console.log(req.params);
+  var query = { propriedadeId: req.params.propriedadeId };
   Area.find(query, function (err, areas) {
     if (err) {
       res.json(err);

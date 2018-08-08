@@ -57,10 +57,8 @@ export class PropertyService {
   }
 
   getAreasByProperty(propertyId) {
-    let params = new HttpParams();
-    params = params.append('propriedadeId', propertyId);
-
-    return this.http.get<Property>(this.domain + 'propriedades/' + propertyId + "/areas", { params: params }).map(res => res);
+    console.log("id:", propertyId);
+    return this.http.get<Property>(this.domain + 'propriedades/' + propertyId + "/areas").map(res => res);
   }
 
   registerArea(propertyId, area) {
@@ -75,11 +73,6 @@ export class PropertyService {
   deleteAreaById(id) {
     console.log("remove area called", id);
     return this.http.delete(this.domain + 'propriedades/areas/' + id).map(res => res);
-  }
-
-  // Function to change user password
-  registerTechnicianToProperty(propId, tecnicoId) {
-    return this.http.patch<any>(this.domain + 'propriedades/' + propId + '/tecnico', tecnicoId).map(res => res);
   }
 
   // TODO: ONLY FOR TEST - REMOVE
