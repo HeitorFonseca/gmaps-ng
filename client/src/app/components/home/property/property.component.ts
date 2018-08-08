@@ -65,6 +65,7 @@ export class PropertyComponent implements OnInit {
   /*********************************************** Variable Declarations ***********************************************/
 
   areas: Array<Area> = new Array<Area>();;
+  selectedArea: Area;
 
   /* auxiliar */
   drawnArea: Area;
@@ -232,63 +233,52 @@ export class PropertyComponent implements OnInit {
     if (!this.propIdParameter) {
       this.propertyService.registerProperty(this.property).subscribe(data => {
         console.log("register:", data);
-        if (!data.success) {
-          this.messageClass = 'alert alert-danger';
-          this.message = data.message;
-          this.processingAdd = false;
-        } else {
-          this.messageClass = 'alert alert-success';
-          this.message = data.message;
 
+        this.property.id = data.id;
 
-          this.property.id = data.propriedade.id;
-
-          for (let area of this.areas) {
-            let reqArea = {
-              nome: area.nome,
-              propriedadeId: this.property.id,
-              areaTotal: area.areaTotal,
-              plantio: area.plantio,
-              //dataColheita: area.dataColheita,
-              area: area.area
-            }
-            this.propertyService.registerArea(this.property.id, reqArea).subscribe(data => {
-              console.log("register area:", data);
-
-              if (!data.success) {
-                this.messageClass = 'alert alert-danger';
-                this.message = data.message;
-                this.processingAdd = false;
-              }
-              else {
-                this.messageClass = 'alert alert-success';
-                this.message = data.message;
-              }
-            });
+        for (let area of this.areas) {
+          let reqArea = {
+            nome: area.nome,
+            propriedadeId: this.property.id,
+            areaTotal: area.areaTotal,
+            plantio: area.plantio,
+            area: area.area
           }
 
+          this.propertyService.registerArea(this.property.id, reqArea).subscribe(areaData => {
+            console.log("register area:", areaData);
+
+            this.messageClass = 'alert alert-success';
+            this.message = areaData.message;
+
+          }, err => {
+            this.messageClass = 'alert alert-danger';
+            this.message = err.error.message;
+            this.processingAdd = false;
+          });
         }
-        console.log(data);
+      }, err => {
+        console.log("error");
+        this.messageClass = 'alert alert-danger';
+        this.message = err.error.message;
+        this.processingAdd = false;
       });
     }
     else { //Edit
       this.propertyService.updatePropertyById(this.property).subscribe(data => {
-        console.log("edit property");
-        if (!data.success) {
-          this.messageClass = 'alert alert-danger';
-          this.message = data.message;
-          this.processingAdd = false;
-        } else {
-          this.messageClass = 'alert alert-success';
-          this.message = data.message;
+        console.log("edit property:", data);
 
-          for (let i = 0; i < this.areas.length; i++) {
+        this.messageClass = 'alert alert-success';
+        this.message = data.message;
 
-            if (this.areas[i].id) {
+        for (let i = 0; i < this.areas.length; i++) {
+
+          if (this.areas[i].id) {
+            console.log(this.areas[i]);
             this.propertyService.updateAreaById(this.areas[i]).subscribe(data => {
 
               console.log("update areas:", data);
-  
+
             });
           }
           else {
@@ -305,14 +295,15 @@ export class PropertyComponent implements OnInit {
             this.propertyService.registerArea(this.property.id, reqArea).subscribe(data => {
 
               console.log("register area:", data);
-  
+
             });
           }
         }
-          
 
-        }
-        console.log(data);
+      }, err => {
+        this.messageClass = 'alert alert-danger';
+        this.message = err.error.message;
+        this.processingAdd = false;
       });
     }
   }
@@ -321,7 +312,7 @@ export class PropertyComponent implements OnInit {
     var areaM2 = google.maps.geometry.spherical.computeArea(overlay.getPath()); // Get area
     var areaHa = this.squareMetersToHectare(areaM2)                             // Convert to Hectare
     this.mapProps.drawingMode = '';                                             // Stop drawing mode 
-    console.log("area:",areaHa);
+    console.log("area:", areaHa);
     var areasOverlay: Area = new Area();
 
     areasOverlay.areaTotal = areaHa;//.toString();          
@@ -342,7 +333,7 @@ export class PropertyComponent implements OnInit {
 
   fillPropertyArea(data: Area) {
     let num = new Number(+data.areaTotal);
-    this.form.get('propertyArea').setValue(num.toPrecision(1));
+    this.form.get('propertyArea').setValue(num.toPrecision(2));
   }
 
   onRemoveOverlayClick(area) {
@@ -350,11 +341,13 @@ export class PropertyComponent implements OnInit {
     for (let i = 0; i < this.areas.length; i++) {
       if (this.areas[i] == area) {
         console.log("achou i");
-        this.propertyService.deleteAreaById(this.areas[i].id).subscribe( data => {
+        this.propertyService.deleteAreaById(this.areas[i].id).subscribe(data => {
           this.areas.splice(i, 1);
           this.deleteSelectedOverlay(i);
           this.deleteSelectedMarker(i);
-        });                
+        }, err=> {
+          //TODO: ERROR MESSAGE 
+        });
       }
 
     }

@@ -29,24 +29,29 @@ export class AuthService {
 
   // Function to register user accounts
   registerUser(user) {
-    return this.http.post<any>(this.domain + 'authentication/register', user).map(res => res);
+    return this.http.post<any>(this.domain + 'conta/nova', user).map(res => res);
   }
 
   // Function to check if username is taken
   checkUsername(username) {
-    return this.http.get(this.domain + 'authentication/checkUsername/' + username).map(res => res);
+    return this.http.get(this.domain + 'conta/checkUsername/' + username).map(res => res);
   }
 
   // Function to check if e-mail is taken
   checkEmail(email) {
-    return this.http.get(this.domain + 'authentication/checkEmail/' + email).map(res => res);
+    return this.http.get(this.domain + 'conta/checkEmail/' + email).map(res => res);
+  }
+
+  // Function to check if e-mail is taken
+  forgotPassword(email) {
+    return this.http.get(this.domain + 'conta/redefinir-senha/' + email).map(res => res);
   }
 
   // Function to login user
   login(user) {
     console.log(user);
     this.getLoggedInName.emit(user.username);
-    return this.http.post<any>(this.domain + 'authentication/login', user);
+    return this.http.post<any>(this.domain + 'conta/login', user);
   }
 
   // Function to login user

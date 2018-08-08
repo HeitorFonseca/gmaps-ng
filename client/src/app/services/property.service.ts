@@ -27,8 +27,8 @@ export class PropertyService {
 
   // Function to edit property
   updatePropertyById(property: Property) {
-    console.log("edit property called", property);
-    return this.http.put<any>(this.domain + 'propriedades/' + property.id, property).map(res => res);
+    console.log("edit property called", property.nome);
+    return this.http.put<any>(this.domain + 'propriedades/' + property.id, {nome:property.nome}).map(res => res);
   }
 
   // Function to get properties
@@ -66,7 +66,7 @@ export class PropertyService {
   }
 
   updateAreaById(area: Area) {
-    console.log("edit property called", area);
+    console.log("edit area called", area);
     return this.http.put<any>(this.domain + 'propriedades/areas/' + area.id, area).map(res => res);
   }
 

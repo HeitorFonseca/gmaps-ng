@@ -11,21 +11,23 @@ var permissions = require('./permissions');
 router.get('/', function (req, res) {
     var token = req.headers['x-access-token'];
 
-    if (!token) return res.status(401).send({ auth: false, message: 'Nenhum token fornecido.' });
+    if (!token) {
+        return res.status(401).json({ message: 'Nenhum token fornecido.' });
+    } 
     console.log("get user", token);
 
     jwt.verify(token, config.secret, function (err, decoded) {
         if (err) {
             console.log(err);
-            return res.status(500).send({ auth: false, message: 'Falha na autenticação do token.' });
+            return res.status(500).send({message: 'Falha na autenticação do token.' });
         }
 
         User.findById(decoded.userId, { senha: 0 }, function (err, user) {
             if (err) return res.status(500).send("Encontramos problema ao encontrar o usuário.");
             if (!user) return res.status(404).send("Nenhum usuário encontrado.");
-            //res.status(200).send(user); //Comment this out!
-            res.json({ user: { nome: user.nome, email: user.email, tipo: user.tipo, hectaresContratados: user.hectaresContratados } })
-            //next(user); // add this line
+            
+            res.status(200).json({ nome: user.nome, email: user.email, tipo: user.tipo, hectaresContratados: user.hectaresContratados } )
+            
         });
     });
 });

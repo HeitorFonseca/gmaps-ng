@@ -5,7 +5,7 @@ import { NgxPermissionsService, NgxRolesService } from 'ngx-permissions'
 
 import { AuthService } from '../../services/auth.service'
 
-import {User} from "./../../models/user";
+import { User } from "./../../models/user";
 
 import { Data } from "./../../providers/data";
 
@@ -24,14 +24,14 @@ export class LoginComponent implements OnInit {
 
   user: User = new User();
 
-  constructor( private formBuilder: FormBuilder, 
-               private authService: AuthService, 
-               private router: Router,
-               private permissionsService: NgxPermissionsService,
-               private rolesService: NgxRolesService,
-               private usrData:Data) {
-                this.createForm(); // Create Login Form when component is constructed
-                }
+  constructor(private formBuilder: FormBuilder,
+    private authService: AuthService,
+    private router: Router,
+    private permissionsService: NgxPermissionsService,
+    private rolesService: NgxRolesService,
+    private usrData: Data) {
+    this.createForm(); // Create Login Form when component is constructed
+  }
 
   ngOnInit() {
     //TODO FIX THIS WITH GUARD
@@ -41,80 +41,73 @@ export class LoginComponent implements OnInit {
   }
 
 
-  createForm()
-  {
+  createForm() {
     this.form = this.formBuilder.group({
       email: ['', Validators.required],
       senha: ['', Validators.required]
     });
   }
 
-  disableForm()
-  {
+  disableForm() {
     this.form.controls['email'].disable();
     this.form.controls['senha'].disable();
   }
 
-  enableForm()
-  {
+  enableForm() {
     this.form.controls['email'].enable();
     this.form.controls['senha'].enable();
   }
 
-  onLoginSubmit()
-  {
+  onLoginSubmit() {
     this.processing = true; // Used to submit button while is being processed
     this.disableForm();     // Disable form while being process
-    
+
     // Create user object from user's input
     const reqUser = {
       email: this.form.get('email').value, // Username input field
       senha: this.form.get('senha').value // Password input field
     }
-    
+
     console.log(reqUser);
 
     this.authService.login(reqUser).subscribe(data => {
-      
+
       console.log(data);
-      if (!data.success) {
-        this.messageClass = 'alert alert-danger';
-        this.message = data.message;
-        this.processing = false;
-        this.enableForm();
-      } else {
-        this.messageClass = 'alert alert-success';
-        this.message = data.message;
 
-        this.user = data.user as User;
+      this.messageClass = 'alert alert-success';
+      this.message = data.message;
 
-        this.authService.storeUserData(data.token, data.user);        
+      this.user = data.user as User;
+      this.authService.storeUserData(data.token, data.user);
+      this.setUserPermissionsAndRole(this.user);
+      this.authService.showNavBar.emit(true);
 
-        this.setUserPermissionsAndRole(this.user);
+      setTimeout(() => {
+        this.router.navigate(['']);
+      }, 1500);
 
-        this.authService.showNavBar.emit(true);
-        
-        setTimeout(() => {
-          this.router.navigate(['']);
-        }, 1500);
-      }
+    }, err => {
+      this.messageClass = 'alert alert-danger';
+      this.message = err.error.message;
+      this.processing = false;
+      this.enableForm();
     });
-    
+
   }
 
-  
+
   onRegisterUser() {
     this.router.navigate(['/register']);
   }
 
-  setUserPermissionsAndRole(user:User) {
+  setUserPermissionsAndRole(user: User) {
 
     if (user.tipo) {
       var arr = new Array<any>();
       arr.push(user.tipo);
       this.permissionsService.loadPermissions(arr);
       console.log("Setou permissao para:", user.tipo);
-      
+
     }
   }
 }

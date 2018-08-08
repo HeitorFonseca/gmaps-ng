@@ -10,17 +10,18 @@ var AreaSchema = new mongoose.Schema({
     area: [ mongoose.Schema.Types.Mixed ]
   });
 
-  AreaSchema.set('toJSON', {
-    transform: function(doc, ret, options) {
-        var retJson = {
-            id: ret._id,
-            nome: ret.nome,
-            areaTotal: ret.areaTotal,
-            plantio: ret.plantio,
-            area: ret.area
-        };
-        return retJson;
-    }
-  });
+//   AreaSchema.set('toJSON', {
+//     transform: function(doc, ret, options) {
+//         var retJson = {
+//             id: ret._id,
+//             propriedadeId: ret.propriedadeId
+//             nome: ret.nome,
+//             area: ret.area,
+//             areaTotal: ret.areaTotal,
+//             plantio: ret.plantio,            
+//         };
+//         return retJson;
+//     }
+//   });
 
   module.exports = mongoose.model('area', AreaSchema);

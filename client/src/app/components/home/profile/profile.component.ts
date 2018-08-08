@@ -33,8 +33,8 @@ export class ProfileComponent implements OnInit {
       console.log("user: ", data);
 
       this.formUserData.setValue({
-        name: data.user.nome,
-        email: data.user.email
+        name: data.nome,
+        email: data.email
       });
     })
   }

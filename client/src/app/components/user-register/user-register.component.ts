@@ -16,44 +16,40 @@ export class UserRegisterComponent implements OnInit {
   processing = false;
   form: FormGroup;
 
-  constructor(private formBuilder: FormBuilder, 
-    private authService: AuthService, 
-    private router: Router,) {
+  constructor(private formBuilder: FormBuilder,
+    private authService: AuthService,
+    private router: Router) {
     this.createForm();
-   }
+  }
 
   ngOnInit() {
 
   }
 
-  createForm()
-  {
+  createForm() {
     this.form = this.formBuilder.group({
-      name:  ['', Validators.required],
+      name: ['', Validators.required],
       email: ['', Validators.required],
       senha: ['', Validators.required]
     });
   }
 
-  disableForm()
-  {
+  disableForm() {
     this.form.controls['name'].disable();
     this.form.controls['email'].disable();
     this.form.controls['senha'].disable();
   }
 
-  enableForm()
-  {
+  enableForm() {
     this.form.controls['name'].enable();
     this.form.controls['email'].enable();
     this.form.controls['senha'].enable();
   }
 
-  onRegisterSubmit()
-  {
+  onRegisterSubmit() {
     this.processing = true; // Used to submit button while is being processed
     this.disableForm();     // Disable form while being process
-    
+
     // Create user object from user's input
     const reqUser = {
       email: this.form.get('email').value, // Username input field
@@ -62,27 +58,25 @@ export class UserRegisterComponent implements OnInit {
       tipo: 'produtor',
       hectaresContratados: 0
     }
-    
+
     console.log(reqUser);
 
     this.authService.registerUser(reqUser).subscribe(data => {
-      
-      console.log(data);
-      if (!data.success) {
-        this.messageClass = 'alert alert-danger';
-        this.message = data.message;
-        this.processing = false;
-        this.enableForm();
-      } else {
-        this.messageClass = 'alert alert-success';
-        this.message = data.message;
-      
-        setTimeout(() => {
-          this.router.navigate(['/login']);
-        }, 1500);
-      }
+
+      this.messageClass = 'alert alert-success';
+      this.message = data.message;
+
+      setTimeout(() => {
+        this.router.navigate(['/login']);
+      }, 1500);
+
+    }, err => {
+      this.messageClass = 'alert alert-danger';
+      this.message = err.error.message;
+      this.processing = false;
+      this.enableForm();
     });
-    
+
   }
 
 }
