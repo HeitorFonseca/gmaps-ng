@@ -12,9 +12,10 @@ const userSchema = new Schema({
   nome: { type: String, required: true, lowercase: true },
   senha: { type: String, required: true },
   tipo: { type: String, required: true },
-  hectaresContratados: { type: Number, required: true },
+  hectaresContratados: { type: Number},
+  hectaresRestantes: { type: Number },
   tecnicoId: {type : mongoose.Schema.Types.ObjectId, ref : 'user'},
-  hectaresRestantes: { type: Number, required: true },
+  
 });
 
 // Schema Middleware to Encrypt Password

@@ -6,6 +6,7 @@ mongoose.Promise = global.Promise;
 var PropertySchema = new mongoose.Schema({    
     nome: {type: String, required: true},
     areaTotal: {type: String, required: true},
+    ultimaAtualizacao: {type: String, required: true},
     usuarioId: {type : mongoose.Schema.Types.ObjectId, ref : 'user'},
     tecnicoId: {type : mongoose.Schema.Types.ObjectId, ref : 'user'}
   });

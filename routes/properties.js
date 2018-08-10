@@ -120,7 +120,7 @@ router.get('/:id', function (req, res, next) {
   Property.findById(req.params.id, function (err, property) {
 
     if (err) {
-      res.status(500).json({ message: "Não foi possivel encontrar aa propriedade." });
+      res.status(500).json({ message: "Não foi possivel encontrar a propriedade." });
     }
     if (!property) {
       res.status(404).json({ message: "Propriedade não encontrada." });
@@ -174,7 +174,7 @@ router.put('/:id', function (req, res, next) {
 
   Property.findOneAndUpdate(query, req.body, function (err, property) {
     if (err) {
-      res.status(500).json({ message: 'Não foi possivel editar a propriedade. Error: ', err }); // Return error if not related to validation              
+      res.status(500).json({ message: 'Não foi possivel editar a propriedade.' }); // Return error if not related to validation              
     } else {
       res.status(201).json({ message: 'Propriedade editada!', id: property._id, nome: req.body.nome }); // Return success
     }
@@ -185,13 +185,13 @@ router.put('/:id', function (req, res, next) {
 router.delete('/:id', function (req, res, next) {
   console.log("delete property by id:", req.params);
 
-  Property.findByIdAndRemove(req.params.id, function (err, post) {
+  Property.findByIdAndRemove(req.params.id, function (err, property) {
     if (err) {
       console.log(err);
       res.status(500).json({ message: "Não foi possivel remover a propriedade!" });
     } else {
 
-      post.remove();
+      property.remove();
 
       console.log("deleted");
       res.status(204).json({ message: "Propriedade deletada!." });
@@ -242,13 +242,14 @@ router.get('/:propriedadeId/areas', function (req, res, next) {
 router.post('/:propriedadeId/areas', permissions.requireProductorAndHectare, function (req, res, next) {
   console.log("BODY:", req.body);
 
-  Area.create(req.body, function (err, post) {
+  Area.create(req.body, function (err, area) {
 
     if (err) {
 
       res.status(500).json({ message: 'Não foi possivel salvar a area. Error: ', err }); // Return error if not related to validation              
     } else {
-      res.status(200).json({ message: 'Area registrada!' }); // Return success
+      res.status(200).json({ message: 'Area registrada!', 
+                             id: area._id, propriedadeId: area.propriedadeId, nome: area.nome, areaTotal: area.areaTotal, plantio: area.plantio, area: area.area }); // Return success
     }
   });
 });
@@ -258,12 +259,11 @@ router.get('/areas/:id', function (req, res, next) {
   console.log("get areas by property id");
   console.log(req.params);
   
-  Area.findById(req.params.id, function (err, areas) {
+  Area.findById(req.params.id, function (err, area) {
     if (err) {
       res.status(500).json({message: "Nâo foi possivel encontrar a area"});
     } else  {
-
-      res.status(200).json({id: element._id, propriedadeId: element.propriedadeId, nome: element.nome, areaTotal: element.areaTotal, plantio: element.plantio, area: element.area});
+      res.status(200).json({id: area._id, propriedadeId: area.propriedadeId, nome: area.nome, areaTotal: area.areaTotal, plantio: area.plantio, area: area.area});
     }  
   });
 });

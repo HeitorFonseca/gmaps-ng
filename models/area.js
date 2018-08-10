@@ -5,9 +5,14 @@ mongoose.Promise = global.Promise;
 var AreaSchema = new mongoose.Schema({    
     nome: {type: String, required: true},
     areaTotal: {type: String, required: true},
-    propriedadeId: {type : mongoose.Schema.Types.ObjectId, ref : 'user'},
+    propriedadeId: {type : mongoose.Schema.Types.ObjectId, ref : 'user', required: true},
     plantio: {type: String, required: true},
-    area: [ mongoose.Schema.Types.Mixed ]
+    ultimaAtualizacao: {type: String, required: true},
+    area: [ mongoose.Schema.Types.Mixed ],
+    temMapaProducao: {type: String },
+    temPontosAmostragem: {type: String },
+    temPrevisaoProdutividade: {type: String},
+    temRecomendacoes: {type: String },    
   });
 
 //   AreaSchema.set('toJSON', {
