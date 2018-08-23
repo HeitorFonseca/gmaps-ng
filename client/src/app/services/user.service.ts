@@ -10,7 +10,8 @@ export class UserService {
 
   constructor(private http: HttpClient, private router: Router) { }
 
-  domain = "http://localhost:3000/api/";
+  // domain = "http://localhost:3000/api/";
+  domain = "api/";
 
   // Function to get properties
   getUser() {

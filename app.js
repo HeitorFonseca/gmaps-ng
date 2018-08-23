@@ -12,6 +12,7 @@ var authRouter = require('./routes/authentication');
 var samplingPoints = require('./routes/samplingPoints');
 var analyses = require('./routes/analyses');
 var users = require('./routes/users');
+var clients = require('./routes/clients');
 
 var app = express();
 
@@ -21,13 +22,14 @@ app.use(express.urlencoded({ extended: false }));
 app.use(bodyParser.urlencoded({ extended: true })); // parse application/x-www-form-urlencoded
 app.use(bodyParser.json()); // parse application/json
 app.use(cors());
-app.use(express.static(path.join(__dirname, 'dist/gmaps-ng5')));
-app.use('/', express.static(path.join(__dirname, 'dist/gmaps-ng5')));
+app.use(express.static(path.join(__dirname, 'client/dist/gmaps-ng5')));
+app.use('/', express.static(path.join(__dirname, 'client/dist/gmaps-ng5/index.html')));
 app.use('/api/propriedades', propertyRouter);
 app.use('/api/conta', authRouter);
 app.use('/api/points', samplingPoints);
 app.use('/api/analyses', analyses);
 app.use('/api/usuario', users);
+app.use('/api/cliente', clients);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

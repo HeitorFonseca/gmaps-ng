@@ -100,6 +100,25 @@ export class LoginComponent implements OnInit {
     this.router.navigate(['/register']);
   }
 
+  forgotPassword() {
+    let email = this.form.get('email').value;
+
+    if (email) {
+      this.authService.forgotPassword({email:email}).subscribe(data => {
+
+        this.messageClass = 'alert alert-success';
+        this.message = data.message;
+        
+      }, err => {
+        this.messageClass = 'alert alert-danger';
+        this.message = err.error.message;
+        this.processing = false;
+        this.enableForm();
+      }) 
+
+    }
+  }
+
   setUserPermissionsAndRole(user: User) {
 
     if (user.tipo) {

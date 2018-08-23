@@ -20,7 +20,8 @@ export class AuthService {
   showNavBar = new EventEmitter<boolean>();
   @Output() getLoggedInName: EventEmitter<any> = new EventEmitter();
 
-  domain = "http://localhost:3000/api/";
+  // domain = "http://localhost:3000/api/";
+  domain = "api/";
   authToken;
   user;
   requestOptions;
@@ -44,12 +45,11 @@ export class AuthService {
 
   // Function to check if e-mail is taken
   forgotPassword(email) {
-    return this.http.get(this.domain + 'conta/redefinir-senha/' + email).map(res => res);
+    return this.http.post<any>(this.domain + 'conta/redefinir-senha/', email).map(res => res);
   }
 
   // Function to login user
   login(user) {
-    console.log(user);
     this.getLoggedInName.emit(user.username);
     return this.http.post<any>(this.domain + 'conta/login', user);
   }

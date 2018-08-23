@@ -227,7 +227,7 @@ router.get('/propriedades/:propriedadeId', permissions.requireToken, function (r
 /*______________________________________________Areas____________________________________________________*/
 
 /* GET areas by property id */
-router.get('/:propriedadeId/areas', function (req, res, next) {
+router.get('/areas', function (req, res, next) {
     console.log("get areas by property id");
     console.log(req.params);
     var query = { propriedadeId: req.params.propriedadeId };
@@ -249,7 +249,7 @@ router.get('/:propriedadeId/areas', function (req, res, next) {
 });
 
 /* GET areas by id */
-router.get('proprieades/:proprieadeId/areas/:areaId', function (req, res, next) {
+router.get('/areas/:areaId', function (req, res, next) {
     console.log("get areas by property id");
     console.log(req.params);
 

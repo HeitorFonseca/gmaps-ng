@@ -14,7 +14,8 @@ import { Area } from '../models/property';
 })
 export class PropertyService {
 
-  domain = "http://localhost:3000/api/";
+  // domain = "http://localhost:3000/api/";
+  domain = "api/";
 
   constructor(private http: HttpClient, private router: Router) { }
 

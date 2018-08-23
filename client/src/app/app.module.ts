@@ -73,9 +73,9 @@ export function tokenGetter() {
     NgxPermissionsModule.forRoot(),
     JwtModule.forRoot({
       config: {
-        tokenGetter: tokenGetter,
-        whitelistedDomains: ['localhost:3001'],
-        blacklistedRoutes: ['localhost:3001/auth/']
+        tokenGetter: tokenGetter
+        // whitelistedDomains: ['localhost:3001'],
+        // blacklistedRoutes: ['localhost:3001/auth/']
       }
     }),
     RouterModule.forRoot([

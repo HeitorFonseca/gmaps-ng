@@ -15,7 +15,11 @@ export class Area {
     areaTotal: number = 0;
     plantio: string;
     area: Array<Array<number>> = new Array<Array<number>>();    
-    imagem: string;    
+    imagem: string; 
+    temMapaProducao: string;
+    temPontosAmostragem: string;
+    temPrevisaoProdutividade: string;
+    temRecomendacoes: string;    
 }
 
 export class Analysis {
