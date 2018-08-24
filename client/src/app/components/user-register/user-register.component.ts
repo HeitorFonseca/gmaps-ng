@@ -59,10 +59,10 @@ export class UserRegisterComponent implements OnInit {
       hectaresContratados: 0
     }
 
-    console.log(reqUser);
+    //console.log(reqUser);
 
     this.authService.registerUser(reqUser).subscribe(data => {
-
+      console.log("Registrou: ", data);
       this.messageClass = 'alert alert-success';
       this.message = "Usuário cadastrado com sucesso";
 
@@ -71,10 +71,14 @@ export class UserRegisterComponent implements OnInit {
       }, 1500);
 
     }, err => {
-      this.messageClass = 'alert alert-danger';
-      this.message = err.error.message;
-      this.processing = false;
-      this.enableForm();
+      console.log("Error:", err);
+      if (err.error) {
+        this.enableForm();
+        this.messageClass = 'alert alert-danger';
+        this.message = err.error.message;
+        this.processing = false;
+      }
+
     });
 
   }
