@@ -6,7 +6,7 @@ services:
       context: 'client'
       dockerfile: Dockerfile
       args:
-        baseurl: http://200.165.138.253:8005
+        baseurl: http://200.165.138.253:8005/api/
         port: 8081
     container_name: hidrofito-front
     ports:
