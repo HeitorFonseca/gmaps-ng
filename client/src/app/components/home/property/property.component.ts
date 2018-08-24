@@ -6,6 +6,7 @@ import { } from '@types/googlemaps';
 import { NguiMap, DataLayer, DrawingManager, NguiMapComponent } from '@ngui/map';
 import { zip } from 'rxjs';
 
+import { Messages } from '../../../messages/messages';
 import { PropertyService } from '../../../services/property.service';
 import { Property, Area } from '../../../models/property';
 
@@ -246,30 +247,23 @@ export class PropertyComponent implements OnInit {
           }
 
           this.propertyService.registerArea(this.property.id, reqArea).subscribe(areaData => {
-            console.log("register area:", areaData);
-
-            this.messageClass = 'alert alert-success';
-            this.message = areaData.message;
-
+            this.setMessage('alert alert-success', Messages.SUC_REGISTER_AREA);
           }, err => {
-            this.messageClass = 'alert alert-danger';
-            this.message = err.error.message;
-            this.processingAdd = false;
+            this.processingAdd = false;            
+            this.setMessage('alert alert-danger', err.error.message);
           });
         }
       }, err => {
-        console.log("error");
-        this.messageClass = 'alert alert-danger';
-        this.message = err.error.message;
-        this.processingAdd = false;
+        console.log("error register property");
+        this.processingAdd = false;        
+        this.setMessage('alert alert-danger', err.error.message);
       });
     }
     else { //Edit
       this.propertyService.updatePropertyById(this.property).subscribe(data => {
         console.log("edit property:", data);
 
-        this.messageClass = 'alert alert-success';
-        this.message = data.message;
+        this.setMessage('alert alert-success', Messages.SUC_EDIT_PROPERTY);
 
         for (let i = 0; i < this.areas.length; i++) {
 
@@ -570,6 +564,11 @@ export class PropertyComponent implements OnInit {
   }
 
   /*********************************************** Utilities ***********************************************/
+
+  setMessage(messageClass, message) {
+    this.messageClass = messageClass;
+    this.message = message;
+  }
 
   squareMetersToHectare(area: any): number {
     return area / 10000;

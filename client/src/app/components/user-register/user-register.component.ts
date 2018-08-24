@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
 import { Router } from '@angular/router';
 
+import {Messages} from '../../messages/messages'
+
 import { AuthService } from '../../services/auth.service'
 
 @Component({
@@ -18,7 +20,8 @@ export class UserRegisterComponent implements OnInit {
 
   constructor(private formBuilder: FormBuilder,
     private authService: AuthService,
-    private router: Router) {
+    private router: Router,
+    ) {
     this.createForm();
   }
 
@@ -63,8 +66,8 @@ export class UserRegisterComponent implements OnInit {
 
     this.authService.registerUser(reqUser).subscribe(data => {
       console.log("Registrou: ", data);
-      this.messageClass = 'alert alert-success';
-      this.message = "Usuário cadastrado com sucesso";
+
+      this.setMessage('alert alert-success', Messages.SUC_USER_REGISTER);      
 
       setTimeout(() => {
         this.router.navigate(['/login']);
@@ -81,6 +84,11 @@ export class UserRegisterComponent implements OnInit {
 
     });
 
+  }
+
+  setMessage(messageClass, message){
+    this.messageClass = messageClass;
+    this.message = message;
   }
 
 }

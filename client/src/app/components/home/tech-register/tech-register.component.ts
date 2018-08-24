@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
 
+import { Messages } from '../../../messages/messages';
+
 import { AuthService } from '../../../services/auth.service'
 
 @Component({
@@ -15,40 +17,36 @@ export class TechRegisterComponent implements OnInit {
   processing = false;
   form: FormGroup;
 
-  constructor(private formBuilder: FormBuilder, 
+  constructor(private formBuilder: FormBuilder,
     private authService: AuthService) {
     this.createForm();
-   }
+  }
 
   ngOnInit() {
 
   }
 
-  createForm()
-  {
+  createForm() {
     this.form = this.formBuilder.group({
-      name:  ['', Validators.required],
+      name: ['', Validators.required],
       email: ['', Validators.required],
     });
   }
 
-  disableForm()
-  {
+  disableForm() {
     this.form.controls['name'].disable();
     this.form.controls['email'].disable();
   }
 
-  enableForm()
-  {
+  enableForm() {
     this.form.controls['name'].enable();
     this.form.controls['email'].enable();
   }
 
-  onRegisterSubmit()
-  {
+  onRegisterSubmit() {
     this.processing = true; // Used to submit button while is being processed
     this.disableForm();     // Disable form while being process
-    
+
     let name = this.form.get('name').value as string;
     let splitName = name.toLowerCase().split(" ");
     let password = splitName[0] + splitName[splitName.length - 1];
@@ -60,24 +58,23 @@ export class TechRegisterComponent implements OnInit {
       tipo: 'tecnico',
       hectaresContratados: 0
     }
-    
+
     console.log(reqUser);
 
     this.authService.registerUser(reqUser).subscribe(data => {
-      
-      console.log(data);
-      if (!data.success) {
-        this.messageClass = 'alert alert-danger';
-        this.message = data.message;
-        this.processing = false;
-        this.enableForm();
-      } else {
-        this.messageClass = 'alert alert-success';
-        this.message = data.message; 
-        this.enableForm();  
-        this.createForm();        
-      }
+      this.setMessage('alert alert-success', Messages.SUC_REGISTER_TECHNICIAN);
+    }, err => {
+      this.enableForm();
+      this.createForm();
+      this.processing = false;
+      this.setMessage('alert alert-danger', err.error.message);      
     });
-    
+
   }
+  
+  setMessage(messageClass, message) {
+    this.messageClass = messageClass;
+    this.message = message;
+  }
+
 }

@@ -3,10 +3,9 @@ import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms'
 import { Router } from '@angular/router';
 import { NgxPermissionsService, NgxRolesService } from 'ngx-permissions'
 
+import { Messages } from '../../messages/messages';
 import { AuthService } from '../../services/auth.service'
-
 import { User } from "./../../models/user";
-
 import { Data } from "./../../providers/data";
 
 @Component({
@@ -71,26 +70,19 @@ export class LoginComponent implements OnInit {
     console.log(reqUser);
 
     this.authService.login(reqUser).subscribe(data => {
-
-      console.log(data);
-
-      this.messageClass = 'alert alert-success';
-      this.message = "Login realizado com sucessoo";
-
+      this.setMessage('alert alert-success', Messages.SUC_USER_LOGIN);
       this.user = data.user as User;
       this.authService.storeUserData(data.token, data.user);
       this.setUserPermissionsAndRole(this.user);
       this.authService.showNavBar.emit(true);
-
+      // Redirect to home
       setTimeout(() => {
         this.router.navigate(['']);
       }, 1500);
-
     }, err => {
-      this.messageClass = 'alert alert-danger';
-      this.message = err.error.message;
       this.processing = false;
       this.enableForm();
+      this.setMessage('alert alert-danger', err.error.message);      
     });
 
   }
@@ -105,17 +97,12 @@ export class LoginComponent implements OnInit {
 
     if (email) {
       this.authService.forgotPassword({email:email}).subscribe(data => {
-
-        this.messageClass = 'alert alert-success';
-        this.message = data.message;
-        
+        this.setMessage('alert alert-success', Messages.SUC_FORGOT_PASSWORD);    
       }, err => {
-        this.messageClass = 'alert alert-danger';
-        this.message = err.error.message;
         this.processing = false;
         this.enableForm();
-      }) 
-
+        this.setMessage('alert alert-danger', err.error.message);        
+      });
     }
   }
 
@@ -126,7 +113,12 @@ export class LoginComponent implements OnInit {
       arr.push(user.tipo);
       this.permissionsService.loadPermissions(arr);
       console.log("Setou permissao para:", user.tipo);
-
     }
   }
+
+  setMessage(messageClass, message) {
+    this.messageClass = messageClass;
+    this.message = message;
+  }
+
 }
