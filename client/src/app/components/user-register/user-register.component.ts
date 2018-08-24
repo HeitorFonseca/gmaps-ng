@@ -64,7 +64,7 @@ export class UserRegisterComponent implements OnInit {
     this.authService.registerUser(reqUser).subscribe(data => {
 
       this.messageClass = 'alert alert-success';
-      this.message = data.message;
+      this.message = "Usuário cadastrado com sucesso";
 
       setTimeout(() => {
         this.router.navigate(['/login']);

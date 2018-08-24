@@ -75,7 +75,7 @@ export class LoginComponent implements OnInit {
       console.log(data);
 
       this.messageClass = 'alert alert-success';
-      this.message = data.message;
+      this.message = "Login realizado com sucesso";
 
       this.user = data.user as User;
       this.authService.storeUserData(data.token, data.user);
