@@ -214,8 +214,11 @@ export class PropertyDetailsComponent implements OnInit {
     modalRef.result.then((userResponse) => {
       if (userResponse) {
         this.propertyService.deletePropertyById(this.property.id).subscribe(data => {
-          console.log("delete property:", data);
+          console.log("Property deleted:");          
           this.router.navigate(['/home']);
+
+        }, err => {
+          //TODO: ERROR MESSAGE
         });
       }
     }).catch(() => { });

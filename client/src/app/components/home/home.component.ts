@@ -10,31 +10,10 @@ import { DrawingManager } from '@ngui/map';
 })
 export class HomeComponent implements OnInit {
 
-  @ViewChild(DrawingManager) drawingManager: DrawingManager;
-  areaText: string = "";
-  selectedPolygon: any;
-  @ViewChild('search') public searchElement: ElementRef;
-  @ViewChild('gmap') public gmap: ElementRef;
-
-  autocomplete: google.maps.places.Autocomplete;
-  address: any = {};
-
-  mapProps: any = {
-    center: 'Recife',
-    zoom: 11
-  };
-
-  checkBoxBtn = {
-    NDVI: true,
-    NDWI: true,
-    Produtividade: true
-  };
-
   constructor(private ref: ChangeDetectorRef) { }
 
   initialized(autocomplete: any) {
-    console.log(autocomplete);
-    this.autocomplete = autocomplete;
+
   }
 
   placeChanged() {

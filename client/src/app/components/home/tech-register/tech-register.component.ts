@@ -74,7 +74,7 @@ export class TechRegisterComponent implements OnInit {
       } else {
         this.messageClass = 'alert alert-success';
         this.message = data.message; 
-        this.enableForm();
+        this.enableForm();  
         this.createForm();        
       }
     });

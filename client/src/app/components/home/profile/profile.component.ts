@@ -8,6 +8,7 @@ import { UserService } from '../../../services/user.service'
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.css']
 })
+
 export class ProfileComponent implements OnInit {
 
   formUserData: FormGroup;
@@ -44,10 +45,9 @@ export class ProfileComponent implements OnInit {
     let reqPassword = {
       senhaAtual: this.formPassword.controls["currentPassword"].value,
       senhaNova: this.formPassword.controls["newPassword"].value
-
     }
-    this.userService.changePassword(reqPassword).subscribe(data => {
-      
+
+    this.userService.changePassword(reqPassword).subscribe(data => {      
       console.log("change password:", data);
     });
 

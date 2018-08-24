@@ -3,6 +3,8 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { JwtHelperService } from '@auth0/angular-jwt';
 
+import {environment} from './../../environments/environment';
+
 interface LoginData {
   success: string;
   message: string;
@@ -20,8 +22,6 @@ export class AuthService {
   showNavBar = new EventEmitter<boolean>();
   @Output() getLoggedInName: EventEmitter<any> = new EventEmitter();
 
-  // domain = "http://localhost:3000/api/";
-  domain = "api/";
   authToken;
   user;
   requestOptions;
@@ -30,28 +30,28 @@ export class AuthService {
 
   // Function to register user accounts
   registerUser(user) {
-    return this.http.post<any>(this.domain + 'conta/nova', user).map(res => res);
+    return this.http.post<any>(environment.domain + 'conta/nova', user).map(res => res);
   }
 
   // Function to check if username is taken
   checkUsername(username) {
-    return this.http.get(this.domain + 'conta/checkUsername/' + username).map(res => res);
+    return this.http.get(environment.domain + 'conta/checkUsername/' + username).map(res => res);
   }
 
   // Function to check if e-mail is taken
   checkEmail(email) {
-    return this.http.get(this.domain + 'conta/checkEmail/' + email).map(res => res);
+    return this.http.get(environment.domain + 'conta/checkEmail/' + email).map(res => res);
   }
 
   // Function to check if e-mail is taken
   forgotPassword(email) {
-    return this.http.post<any>(this.domain + 'conta/redefinir-senha/', email).map(res => res);
+    return this.http.post<any>(environment.domain + 'conta/redefinir-senha/', email).map(res => res);
   }
 
   // Function to login user
   login(user) {
     this.getLoggedInName.emit(user.username);
-    return this.http.post<any>(this.domain + 'conta/login', user);
+    return this.http.post<any>(environment.domain + 'conta/login', user);
   }
 
   // Function to login user

@@ -16,7 +16,7 @@ export class TokenInterceptor implements HttpInterceptor {
         console.log("intercepted request ... ");
 
         let token = (localStorage.getItem('token') ? localStorage.getItem('token') : '');
-
+        
         // Clone the request to add the new header.
         const authReq = req.clone({ headers: req.headers.set("x-access-token", token) });
 

@@ -1,0 +1,17 @@
+version: '2.1'
+services:
+  ###################################### PRODUCTION ####################################
+
+  hidrofito-back:
+    build:
+      context: 'backend'
+      dockerfile: Dockerfile
+    command: npm start
+    container_name: hidrofito-back
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+    tty: true
+    ports:
+      - '3000:3000' #obrigatorio
+

@@ -1,14 +1,9 @@
-
-
 .cell-totals {
     margin: 5px;
     text-align: center;
-  }
-  .badge {
-    margin-right: 5px;
-  }
-
-  
-  .cal-month-view .cal-day-cell.cal-today .cal-day-number {
-    font-size: 1.0em !important; 
 }
+
+.badge {
+margin-right: 5px;
+}
+

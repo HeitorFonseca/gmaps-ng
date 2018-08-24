@@ -1,16 +1,16 @@
 :host .navbar {
-background-color: #222;
-border-bottom:5px solid #000;
+    background-color: #222;
+    border-bottom:5px solid #000;
 }
 :host .navbar .navbar-brand {
-color: #fff;
+    color: #fff;
 }
 :host .navbar .nav-item > a {
-color: rgb(0, 0, 0);
+    color: rgb(0, 0, 0);
 }
 
 :host .navbar .nav-item > a:hover {
-color: rgb(116, 116, 116);
+    color: rgb(116, 116, 116);
     border-bottom: 3px solid rgb(45, 141, 16);
 }
 
@@ -21,8 +21,6 @@ a.nav-link.active {
 :host .messages {
     width: 300px;
 }
-
-
 
 .dropdown-menu-right {
     right: 0 !important;
