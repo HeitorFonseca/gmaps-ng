@@ -1,7 +1,16 @@
 version: '2.1'
 services:
   ###################################### PRODUCTION ####################################
-
+  hidrofito-front:
+    build:
+      context: 'client'
+      dockerfile: Dockerfile
+      args:
+        baseurl: http://200.165.138.253:8005
+        port: 8081
+    container_name: hidrofito-front
+    ports:
+      - '8081:8081' #obrigratorio
   hidrofito-back:
     build:
       context: 'backend'
@@ -10,8 +19,8 @@ services:
     container_name: hidrofito-back
     environment:
       NODE_ENV: production
-      PORT: 3000
+      PORT: 8005
     tty: true
     ports:
-      - '3000:3000' #obrigatorio
-
+      - '8005:8005' #obrigatorio
+    network_mode: mongo_net

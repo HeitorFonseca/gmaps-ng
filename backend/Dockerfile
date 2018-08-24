@@ -6,8 +6,8 @@ COPY package.json package-lock.json  $HOME/hidrofit-api/
 
 WORKDIR $HOME/hidrofit-api
 
-RUN npm install
+RUN npm install --silent --progress=false
 
-COPY . $HOME/hidrofit-api/
+COPY . $HOME/hidrofit-api/ 
 
 CMD ["npm", "start"]
