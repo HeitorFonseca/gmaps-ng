@@ -62,14 +62,12 @@ export class LoginComponent implements OnInit {
     this.disableForm();     // Disable form while being process
 
     // Create user object from user's input
-    const reqUser = {
-      email: this.form.get('email').value, // Username input field
-      senha: this.form.get('senha').value // Password input field
-    }
 
-    console.log(reqUser);
+     let email = this.form.get('email').value; // Username input field
+     let password =  this.form.get('senha').value; // Password input field
+  
 
-    this.authService.login(reqUser).subscribe(data => {
+    this.authService.login(email, password).subscribe(data => {
       this.setMessage('alert alert-success', Messages.SUC_USER_LOGIN);
       this.user = data.user as User;
       this.authService.storeUserData(data.token, data.user);
@@ -96,7 +94,7 @@ export class LoginComponent implements OnInit {
     let email = this.form.get('email').value;
 
     if (email) {
-      this.authService.forgotPassword({email:email}).subscribe(data => {
+      this.authService.forgotPassword(email).subscribe(data => {
         this.setMessage('alert alert-success', Messages.SUC_FORGOT_PASSWORD);    
       }, err => {
         this.processing = false;
@@ -120,5 +118,4 @@ export class LoginComponent implements OnInit {
     this.messageClass = messageClass;
     this.message = message;
   }
-
 }

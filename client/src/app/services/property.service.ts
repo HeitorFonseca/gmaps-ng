@@ -26,8 +26,11 @@ export class PropertyService {
 
   // Function to edit property
   updatePropertyById(property: Property) {
-    console.log("edit property called", property.nome);
-    return this.http.put<any>(environment.domain + 'propriedades/' + property.id, {nome:property.nome}).map(res => res);
+    const reqProperty = {
+      nome: property.nome
+    };
+
+    return this.http.put<any>(environment.domain + 'propriedades/' + property.id, reqProperty).map(res => res);
   }
 
   // Function to get properties
@@ -60,8 +63,17 @@ export class PropertyService {
     return this.http.get<any>(environment.domain + 'propriedades/' + propertyId + "/areas").map(res => res);
   }
 
-  registerArea(propertyId, area) {
-    return this.http.post<any>(environment.domain + 'propriedades/' + propertyId + "/areas", area).map(res => res);
+  registerArea(propertyId, name, totalArea, harvestType, area) {
+
+    const reqArea = {
+      nome: name,
+      propriedadeId: propertyId,
+      areaTotal: totalArea,
+      plantio: harvestType,
+      area: area
+    }
+
+    return this.http.post<any>(environment.domain + 'propriedades/' + propertyId + "/areas", reqArea).map(res => res);
   }
 
   updateAreaById(area: Area) {

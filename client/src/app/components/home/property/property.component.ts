@@ -238,15 +238,8 @@ export class PropertyComponent implements OnInit {
         this.property.id = data.id;
 
         for (let area of this.areas) {
-          let reqArea = {
-            nome: area.nome,
-            propriedadeId: this.property.id,
-            areaTotal: area.areaTotal,
-            plantio: area.plantio,
-            area: area.area
-          }
 
-          this.propertyService.registerArea(this.property.id, reqArea).subscribe(areaData => {
+          this.propertyService.registerArea(this.property.id, area.nome, area.areaTotal, area.plantio, area.area).subscribe(areaData => {
             this.setMessage('alert alert-success', Messages.SUC_REGISTER_AREA);
           }, err => {
             this.processingAdd = false;            
@@ -286,7 +279,7 @@ export class PropertyComponent implements OnInit {
               area: this.areas[i].area
             }
 
-            this.propertyService.registerArea(this.property.id, reqArea).subscribe(data => {
+            this.propertyService.registerArea(this.property.id, this.areas[i].nome, this.areas[i].areaTotal, this.areas[i].plantio, this.areas[i].area).subscribe(data => {
 
               console.log("register area:", data);
 

@@ -19,8 +19,12 @@ export class UserService {
   }
 
   // Function to change user password
-  changePassword(newPassword) {
-    return this.http.patch<any>(environment.domain + 'usuario/senha', newPassword).map(res => res);
+  changePassword(currentPassword, newPassword) {
+    const reqPassword = {
+      senhaAtual: currentPassword,
+      senhaNova: newPassword
+    }
+    return this.http.patch<any>(environment.domain + 'usuario/senha', reqPassword).map(res => res);
   }
 
   getTechnicians() {

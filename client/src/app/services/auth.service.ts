@@ -45,23 +45,30 @@ export class AuthService {
 
   // Function to check if e-mail is taken
   forgotPassword(email) {
-    return this.http.post<any>(environment.domain + 'conta/redefinir-senha/', email).map(res => res);
+    let reqEmail = {
+      email: email
+    }
+    return this.http.post<any>(environment.domain + 'conta/redefinir-senha/', reqEmail).map(res => res);
   }
 
   // Function to check if e-mail is taken
   changePassword(token, email, password) {
     let req = {
-      'token': token,
-      'email': email,
-      'senhaNova': password
+      token: token,
+      email: email,
+      senhaNova: password
     }
     return this.http.post<any>(environment.domain + 'conta/alterar-senha/', req).map(res => res);
   }
 
   // Function to login user
-  login(user) {
-    this.getLoggedInName.emit(user.username);
-    return this.http.post<any>(environment.domain + 'conta/login', user);
+  login(email, password) {
+    const reqUser = {
+      email: email, 
+      senha: password
+    }
+    // this.getLoggedInName.emit(user.username);
+    return this.http.post<any>(environment.domain + 'conta/login', reqUser);
   }
 
   // Function to login user

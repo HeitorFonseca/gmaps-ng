@@ -42,12 +42,12 @@ export class ProfileComponent implements OnInit {
 
   onChangePasswordClick() {
 
-    let reqPassword = {
-      senhaAtual: this.formPassword.controls["currentPassword"].value,
-      senhaNova: this.formPassword.controls["newPassword"].value
-    }
 
-    this.userService.changePassword(reqPassword).subscribe(data => {      
+    let currentPassword = this.formPassword.controls["currentPassword"].value;
+    let newPassword = this.formPassword.controls["newPassword"].value;
+
+
+    this.userService.changePassword(currentPassword, newPassword).subscribe(data => {
       console.log("change password:", data);
     });
 
