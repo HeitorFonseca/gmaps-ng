@@ -12,7 +12,7 @@ const environment = {
     uri: "mongodb://localhost/Hidrofito", // Databse URI and database name
     secret: crypto, // Cryto-created secret
     db: "Hidrofito", // Database name
-    port: 5000
+    port: 3000
   }
 
 }

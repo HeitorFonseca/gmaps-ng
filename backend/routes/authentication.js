@@ -2,7 +2,8 @@ var express = require('express');
 var router = express.Router();
 const User = require('../models/user'); // Import User Model Schema
 const config = require('../config/database')
-const crypto = require('crypto')
+const crypto = require('crypto') // TODO: REMOVE
+const bcrypt = require('bcrypt-nodejs'); // A native JS bcrypt library for NodeJS
 var async = require('async');
 var nodemailer = require('nodemailer');
 
@@ -181,9 +182,7 @@ router.post('/redefinir-senha', (req, res, next) => {
           // Preview only available when sending through an Ethereal account
           console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
 
-          req.status(204);
-          done(err, 'done');
-
+          return req.status(204).send();
         });
 
       }
@@ -194,16 +193,16 @@ router.post('/redefinir-senha', (req, res, next) => {
   }
 });
 
-
 router.get('/reset/:token', (req, res, next) => {
 
+  console.log("reset token:", req.params);
   User.findOne({ resetPasswordToken: req.params.token, resetPasswordExpires: { $gt: Date.now() } }, function (err, user) {
 
     if (err) {
-      req.status(500).json({ message: 'Erro ao encontrar o token!' });
+      res.status(500).json({ message: 'Erro ao encontrar o token!' });
     } else {
       if (!user) {
-        req.status(500).json({ message: 'Token invalido ou expirou!' });
+        res.status(500).json({ message: 'Token invalido ou expirou!' });
       } else {
         res.status(204).send();
       }
@@ -211,67 +210,67 @@ router.get('/reset/:token', (req, res, next) => {
   });
 });
 
-// router.post('/alterar-senha', (req, res, next) => {
+router.post('/alterar-senha', (req, res, next) => {
 
-//   async.waterfall([
-  
-//     function (done) {
-//       User.findOne({ resetPasswordToken: req.params.token, resetPasswordExpires: { $gt: Date.now() } }, function(err, user) {
-//         if (!user) {
-//           req.flash('error', 'Password reset token is invalid or has expired.');
-//           return res.redirect('back');
-//         }
 
-//         user.password = req.body.password;
-//         user.resetPasswordToken = undefined;
-//         user.resetPasswordExpires = undefined;
+  User.findOne({
+    resetPasswordToken: req.body.token,
+    resetPasswordExpires: {
+      $gt: Date.now()
+    }
+  }).exec(function (err, user) {
+    if (err) {
+      console.log(err);
+      res.status(500).send({ message: 'Erro ao redefinir senha' });
+    }
+    else {
+      if (!user) {
+        console.log(req.body);
+        res.status(400).send({ message: 'Token inválido ou expirou.' });
+      }
+      else {
+        user.senha = req.body.novaSenha;
+        user.resetPasswordToken = undefined;
+        user.resetPasswordExpires = undefined;
+        user.save(function (err) {
+          if (err) {
+            res.status(500).json({ message: "Erro ao redefinir senha" });
+          } else {
 
-//         user.save(function(err) {
-//           req.logIn(user, function(err) {
-//             done(err, user);
-//           });
-//         });
-//       });
-//     },
-//     function (token, user, done) {
+            let transporter = nodemailer.createTransport({
+              host: 'smtp.gmail.com',
+              port: 587,
+              secure: false, // true for 465, false for other ports
+              auth: {
+                user: 'heitorfonseca.araujo@gmail.com', // generated gmail user
+                pass: 'Hfa!180693' // generated gmail account password
+              }
+            });
+            var mailOptions = {
+              to: user.email,
+              from: 'heitorfonseca.araujo@gmail.com',
+              subject: 'Confirmação de mudança de senha',
+              text: 'Senha mudada com sucesso!! \n\n'
+            };
 
-//       let transporter = nodemailer.createTransport({
-//         host: 'smtp.gmail.com',
-//         port: 587,
-//         secure: false, // true for 465, false for other ports
-//         auth: {
-//           user: 'heitorfonseca.araujo@gmail.com', // generated gmail user
-//           pass: 'Hfa!180693' // generated gmail account password
-//         }
-//       });
-//       var mailOptions = {
-//         to: user.email,
-//         from: 'heitorfonseca.araujo@gmail.com',
-//         subject: 'Digital Farms Password Reset',
-//         text: 'Clique no link para resetar a sua senha\n\n' +
-//           'http://' + req.headers.host + '/reset/' + token + '\n\n' +
-//           '\n'
-//       };
+            // send mail with defined transport object
+            transporter.sendMail(mailOptions, (error, info) => {
+              if (error) {
+                return res.status(500).json({ message: "Erro ao enviar e-mail de confirmação de senha" });
+              } else {
 
-//       // send mail with defined transport object
-//       transporter.sendMail(mailOptions, (error, info) => {
-//         if (error) {
-//           return console.log(error);
-//         }
-//         console.log('Message sent: %s', info.messageId);
-//         // Preview only available when sending through an Ethereal account
-//         console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
+                console.log('Message sent: %s', info.messageId);
+                // Preview only available when sending through an Ethereal account
+                console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
 
-//         req.status(204);
-//         done(err, 'done');
-
-//       });
-
-//     }
-//   ], function (err) {
-//     if (err) return next(err);
-//     res.status(500).json({ message: "Erro ao redirecionar senha" });
-//   });
-// });
+                return res.status(204).send();
+              }
+            });
+          }
+        });
+      }
+    }
+  });
+});
 
 module.exports = router;
