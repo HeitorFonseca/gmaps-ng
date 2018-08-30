@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
 import { Router } from '@angular/router';
 
-import {Messages} from '../../messages/messages'
+import { Messages } from '../../messages/messages';
 
 import { AuthService } from '../../services/auth.service'
 
@@ -21,7 +21,7 @@ export class UserRegisterComponent implements OnInit {
   constructor(private formBuilder: FormBuilder,
     private authService: AuthService,
     private router: Router,
-    ) {
+  ) {
     this.createForm();
   }
 
@@ -53,40 +53,28 @@ export class UserRegisterComponent implements OnInit {
     this.processing = true; // Used to submit button while is being processed
     this.disableForm();     // Disable form while being process
 
-    // Create user object from user's input
-    const reqUser = {
-      email: this.form.get('email').value, // Username input field
-      senha: this.form.get('senha').value, // Password input field
-      nome: this.form.get('name').value,
-      tipo: 'produtor',
-      hectaresContratados: 0
-    }
-
-    //console.log(reqUser);
-
-    this.authService.registerUser(reqUser).subscribe(data => {
+    let email = this.form.get('email').value;
+    let password =  this.form.get('senha').value;
+    let name = this.form.get('name').value;
+    
+    this.authService.registerUser(email, name, password, 'produtor', 0).subscribe(data => {
       console.log("Registrou: ", data);
 
-      this.setMessage('alert alert-success', Messages.SUC_USER_REGISTER);      
+      this.setMessage('alert alert-success', Messages.SUC_USER_REGISTER);
 
       setTimeout(() => {
         this.router.navigate(['/login']);
       }, 1500);
 
     }, err => {
-      console.log("Error:", err);
-      if (err.error) {
-        this.enableForm();
-        this.messageClass = 'alert alert-danger';
-        this.message = err.error.message;
-        this.processing = false;
-      }
-
+      this.enableForm();  
+      this.processing = false;      
+      this.setMessage('alert alert-danger', err.error.message);
     });
 
   }
 
-  setMessage(messageClass, message){
+  setMessage(messageClass, message) {
     this.messageClass = messageClass;
     this.message = message;
   }

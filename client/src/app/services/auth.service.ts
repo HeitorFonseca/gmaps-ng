@@ -3,7 +3,7 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { JwtHelperService } from '@auth0/angular-jwt';
 
-import {environment} from './../../environments/environment';
+import { environment } from './../../environments/environment';
 
 interface LoginData {
   success: string;
@@ -29,23 +29,33 @@ export class AuthService {
   constructor(private http: HttpClient, private router: Router, private helper: JwtHelperService) { }
 
   // Function to register user accounts
-  registerUser(user) {
-    return this.http.post<any>(environment.domain + 'conta/nova', user).map(res => res);
-  }
+  registerUser(email, name, password, type, hectare) {
 
-  // Function to check if username is taken
-  checkUsername(username) {
-    return this.http.get(environment.domain + 'conta/checkUsername/' + username).map(res => res);
-  }
+    // Create user object from user's input
+    const reqUser = {
+      email: email,
+      nome: name,
+      senha: password,
+      tipo: type,
+      hectaresContratados: hectare
+    }
 
-  // Function to check if e-mail is taken
-  checkEmail(email) {
-    return this.http.get(environment.domain + 'conta/checkEmail/' + email).map(res => res);
+    return this.http.post<any>(environment.domain + 'conta/nova', reqUser).map(res => res);
   }
 
   // Function to check if e-mail is taken
   forgotPassword(email) {
     return this.http.post<any>(environment.domain + 'conta/redefinir-senha/', email).map(res => res);
+  }
+
+  // Function to check if e-mail is taken
+  changePassword(token, email, password) {
+    let req = {
+      'token': token,
+      'email': email,
+      'senhaNova': password
+    }
+    return this.http.post<any>(environment.domain + 'conta/alterar-senha/', req).map(res => res);
   }
 
   // Function to login user
@@ -73,13 +83,13 @@ export class AuthService {
 
   createAuthenticationHeaders() {
     this.loadToken();
-    
+
     this.requestOptions = {
       params: new HttpParams()
     };
 
     this.requestOptions.params.set('Content-Type', 'application/json');
-    this.requestOptions.params.set('authorization', this.authToken);  
+    this.requestOptions.params.set('authorization', this.authToken);
   }
 
   loadToken() {
@@ -90,18 +100,17 @@ export class AuthService {
   // Function to check if user is logged in
   loggedIn() {
     this.loadToken();
-    
+
     console.log(this.authToken);
     console.log(this.helper.isTokenExpired(this.authToken));
 
-    if (!this.helper.isTokenExpired(this.authToken))
-    {
+    if (!this.helper.isTokenExpired(this.authToken)) {
       this.showNavBar.emit(true);
 
       return true;
     }
 
-    
+
     this.router.navigate(['/login']);
     return false;
   }

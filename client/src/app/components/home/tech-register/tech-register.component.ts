@@ -47,21 +47,12 @@ export class TechRegisterComponent implements OnInit {
     this.processing = true; // Used to submit button while is being processed
     this.disableForm();     // Disable form while being process
 
+    let email = this.form.get('email').value;    
     let name = this.form.get('name').value as string;
     let splitName = name.toLowerCase().split(" ");
     let password = splitName[0] + splitName[splitName.length - 1];
-    // Create user object from user's input
-    const reqUser = {
-      email: this.form.get('email').value,
-      nome: name,
-      senha: password,
-      tipo: 'tecnico',
-      hectaresContratados: 0
-    }
 
-    console.log(reqUser);
-
-    this.authService.registerUser(reqUser).subscribe(data => {
+    this.authService.registerUser(email, name, password, 'tecnico', 0).subscribe(data => {
       this.setMessage('alert alert-success', Messages.SUC_REGISTER_TECHNICIAN);
     }, err => {
       this.enableForm();

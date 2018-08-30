@@ -36,7 +36,8 @@ import { Profile } from 'selenium-webdriver/firefox';
 
 import { TokenInterceptor } from './services/token-interceptor';
 import { UserRegisterComponent } from './components/user-register/user-register.component';
-import { TechRegisterComponent } from './components/home/tech-register/tech-register.component'
+import { TechRegisterComponent } from './components/home/tech-register/tech-register.component';
+import { ForgotPasswordComponent } from './components/forgot-password/forgot-password.component'
 
 
 
@@ -59,7 +60,8 @@ export function tokenGetter() {
     PointFormComponent,
     ProfileComponent,
     UserRegisterComponent,
-    TechRegisterComponent
+    TechRegisterComponent,
+    ForgotPasswordComponent
   ],
   imports: [
     BrowserModule,
@@ -86,6 +88,10 @@ export function tokenGetter() {
       {
         path: "register",
         component: UserRegisterComponent
+      },
+      {
+        path: "reset/:token",
+        component: ForgotPasswordComponent
       },
       {
         path: "about",
