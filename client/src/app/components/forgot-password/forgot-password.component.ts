@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormArray, FormBuilder, Validators, FormControl, Form } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
+import { Messages } from '../../messages/messages';
 
 @Component({
   selector: 'app-forgot-password',
@@ -13,22 +15,23 @@ export class ForgotPasswordComponent implements OnInit {
   message;
   processing = false;
 
-  tokenParameter:string;
+  tokenParameter: string;
   form: FormGroup;
-  
+
   constructor(private formBuilder: FormBuilder,
-              private route: ActivatedRoute) { }
+    private authService: AuthService,
+    private route: ActivatedRoute,
+    private router: Router) { }
 
   ngOnInit() {
 
     this.tokenParameter = this.route.snapshot.paramMap.get('token');
 
-    this.createForm();  
+    this.createForm();
   }
 
-
   createForm() {
-    this.form = this.formBuilder.group({     
+    this.form = this.formBuilder.group({
       email: ['', Validators.required],
       senha1: ['', Validators.required],
       senha2: ['', Validators.required]
@@ -50,5 +53,34 @@ export class ForgotPasswordComponent implements OnInit {
   onChangePasswordSubmit() {
     this.processing = true; // Used to submit button while is being processed
     this.disableForm();     // Disable form while being process
+
+    let email = this.form.get('email').value;
+    let firstPassword = this.form.get('senha1').value;
+    let secondPassword = this.form.get('senha2').value;
+    console.log(this.tokenParameter);
+
+    if (firstPassword === secondPassword && this.tokenParameter) {
+      console.log(this.tokenParameter);
+
+      this.authService.changePassword(this.tokenParameter, email, firstPassword).subscribe(data => {
+        this.message = Messages.SUC_FORGOT_CHANGE_PASSWORD;
+        this.messageClass = "alert alert-success";
+
+      }, err => {
+        this.processing = false;
+        this.enableForm();
+        this.message = err.error.message;
+        this.messageClass = 'alert alert-danger';
+      });
+    }
+    else {
+      this.message = "Senhas não coincidem";
+      this.messageClass = "alert alert-danger";
+    }
+  }
+
+  goToLoginPage() {
+    // Redirect to home
+    this.router.navigate(['/login']);
   }
 }

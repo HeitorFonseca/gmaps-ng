@@ -6,5 +6,7 @@ export const Messages = {
     SUC_REGISTER_TECHNICIAN: "Técnico registrado com sucesso",
     SUC_REGISTER_AREA: "Area registrada com sucesso",
     SUC_EDIT_PROPERTY: "Propriedade editada com sucesso",
+    SUC_FORGOT_CHANGE_PASSWORD: "Senha mudada com sucesso",
+    
     
 }

@@ -137,20 +137,24 @@ router.post('/redefinir-senha', (req, res, next) => {
         crypto.randomBytes(20, function (err, buf) {
           var token = buf.toString('hex');
           done(err, token);
+          return;
         });
       },
       function (token, done) {
         User.findOne({ email: req.body.email }, function (err, user) {
           if (!user) {
-            return res.status(404).json({ message: "Email não encontrado" });
-          }
-          console.log("achou usuario");
-          user.resetPasswordToken = token;
-          user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
+            res.status(404).json({ message: "Email não encontrado" });
+            return;
+          } else {
+            console.log("achou usuario");
+            user.resetPasswordToken = token;
+            user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
 
-          user.save(function (err) {
-            done(err, token, user);
-          });
+            user.save(function (err) {
+              done(err, token, user);
+              return;
+            });
+          }
         });
       },
       function (token, user, done) {
@@ -158,7 +162,6 @@ router.post('/redefinir-senha', (req, res, next) => {
         let transporter = nodemailer.createTransport({
           host: 'smtp.gmail.com',
           port: 587,
-          secure: false, // true for 465, false for other ports
           auth: {
             user: 'heitorfonseca.araujo@gmail.com', // generated gmail user
             pass: 'Hfa!180693' // generated gmail account password
@@ -176,19 +179,22 @@ router.post('/redefinir-senha', (req, res, next) => {
         // send mail with defined transport object
         transporter.sendMail(mailOptions, (error, info) => {
           if (error) {
-            return console.log(error);
+            done(error);
+            return;
           }
-          console.log('Message sent: %s', info.messageId);
-          // Preview only available when sending through an Ethereal account
-          console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
+          else {
+            console.log('Message sent: %s', info.messageId);
+            console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
 
-          return req.status(204).send();
+            res.status(204).send();
+            return;
+          }
         });
 
       }
     ], function (err) {
-      if (err) return next(err);
-      res.status(500).json({ message: "Erro ao redirecionar senha" });
+
+      return res.status(500).json({ message: "Erro ao redirecionar senha" });
     });
   }
 });
@@ -210,8 +216,8 @@ router.get('/reset/:token', (req, res, next) => {
   });
 });
 
-router.post('/alterar-senha', (req, res, next) => {
 
+router.post('/alterar-senha', (req, res, next) => {
 
   User.findOne({
     resetPasswordToken: req.body.token,
@@ -229,7 +235,7 @@ router.post('/alterar-senha', (req, res, next) => {
         res.status(400).send({ message: 'Token inválido ou expirou.' });
       }
       else {
-        user.senha = req.body.novaSenha;
+        user.senha = req.body.senhaNova;
         user.resetPasswordToken = undefined;
         user.resetPasswordExpires = undefined;
         user.save(function (err) {
@@ -260,7 +266,6 @@ router.post('/alterar-senha', (req, res, next) => {
               } else {
 
                 console.log('Message sent: %s', info.messageId);
-                // Preview only available when sending through an Ethereal account
                 console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
 
                 return res.status(204).send();
